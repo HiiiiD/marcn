@@ -47,3 +47,5 @@ yarn-error.*
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+.claude
