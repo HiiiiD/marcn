@@ -50,6 +50,22 @@
       "description": "Card container with header, title, description, content and footer parts.",
       "registryDependencies": ["@marcn/theme", "@marcn/text"],
       "files": [{ "path": "registry/marcn/ui/card.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "Text input with focus, error (aria-invalid) and disabled states.",
+      "registryDependencies": ["@marcn/theme"],
+      "files": [{ "path": "registry/marcn/ui/input.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "Multiline text input.",
+      "registryDependencies": ["@marcn/input"],
+      "files": [{ "path": "registry/marcn/ui/textarea.tsx", "type": "registry:ui" }]
     }
   ]
 }
