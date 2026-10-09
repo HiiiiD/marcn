@@ -1,4 +1,6 @@
 import { render, screen } from '@testing-library/react-native';
+import { createRef } from 'react';
+import { View } from 'react-native';
 import { Badge } from '@/registry/marcn/ui/badge';
 import { Text } from '@/registry/marcn/ui/text';
 import { lightColors } from '@/registry/marcn/lib/theme';
@@ -27,4 +29,24 @@ test('is pill shaped', () => {
 test('plain string children are wrapped in Text with the variant color', () => {
   render(<Badge>New</Badge>);
   expect(screen.getByText('New')).toHaveStyle({ color: lightColors.primaryForeground });
+});
+
+test('render element keeps variant style and text inheritance', () => {
+  render(<Badge variant="destructive" render={<View testID="b" />}>tag</Badge>);
+  expect(screen.getByTestId('b')).toHaveStyle({ backgroundColor: lightColors.destructive, borderRadius: 9999 });
+  expect(screen.getByText('tag')).toHaveStyle({ color: lightColors.destructiveForeground });
+});
+
+test('render function receives view props', () => {
+  const fn = jest.fn((props: object) => <View {...props} testID="b" />);
+  render(<Badge render={fn}>tag</Badge>);
+  expect(fn).toHaveBeenCalledWith(expect.objectContaining({ children: expect.anything() }), {});
+});
+
+test('ref reaches the host, with and without render', () => {
+  const plain = createRef<View>();
+  const rendered = createRef<View>();
+  render(<><Badge ref={plain}>a</Badge><Badge ref={rendered} render={<View />}>b</Badge></>);
+  expect(plain.current).not.toBeNull();
+  expect(rendered.current).not.toBeNull();
 });

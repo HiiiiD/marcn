@@ -1,9 +1,11 @@
+import type { Ref } from 'react';
 import { StyleSheet, View, type ViewProps } from 'react-native';
+import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
 import { Text, TextStyleContext } from '@/registry/marcn/ui/text';
 
 export type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline';
-export type BadgeProps = ViewProps & { variant?: BadgeVariant };
+export type BadgeProps = ViewProps & { variant?: BadgeVariant; render?: RenderProp<ViewProps>; ref?: Ref<View> };
 
 const createStyles = (t: Theme) => {
   const text = { fontSize: t.fontSize.xs, fontWeight: t.fontWeight.medium };
@@ -36,13 +38,15 @@ const createStyles = (t: Theme) => {
   };
 };
 
-export function Badge({ variant = 'default', style, children, ...props }: BadgeProps) {
+export function Badge({ variant = 'default', style, render, children, ...props }: BadgeProps) {
   const s = useStyles(createStyles);
   return (
     <TextStyleContext.Provider value={s.text[variant]}>
-      <View style={[s.root, s.variant[variant], style]} {...props}>
-        {typeof children === 'string' || typeof children === 'number' ? <Text>{children}</Text> : children}
-      </View>
+      {renderElement(View, render, {
+        style: [s.root, s.variant[variant], style],
+        ...props,
+        children: typeof children === 'string' || typeof children === 'number' ? <Text>{children}</Text> : children,
+      } as ViewProps)}
     </TextStyleContext.Provider>
   );
 }

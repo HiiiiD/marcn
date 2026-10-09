@@ -11,6 +11,13 @@
       "files": [{ "path": "registry/marcn/lib/theme.ts", "type": "registry:lib" }]
     },
     {
+      "name": "render",
+      "type": "registry:lib",
+      "title": "Render",
+      "description": "renderElement helper behind the render prop: swap a component's element while keeping its props, styles, handlers and refs.",
+      "files": [{ "path": "registry/marcn/lib/render.tsx", "type": "registry:lib" }]
+    },
+    {
       "name": "icon",
       "type": "registry:ui",
       "title": "Icon",
@@ -24,7 +31,7 @@
       "type": "registry:ui",
       "title": "Text",
       "description": "Typography with shadcn variants. Also exports TextStyleContext for parents that restyle child text.",
-      "registryDependencies": ["@marcn/theme"],
+      "registryDependencies": ["@marcn/theme", "@marcn/render"],
       "files": [{ "path": "registry/marcn/ui/text.tsx", "type": "registry:ui" }]
     },
     {
@@ -32,7 +39,7 @@
       "type": "registry:ui",
       "title": "Button",
       "description": "Pressable button with default, destructive, outline, secondary, ghost and link variants.",
-      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "registryDependencies": ["@marcn/theme", "@marcn/text", "@marcn/render"],
       "files": [{ "path": "registry/marcn/ui/button.tsx", "type": "registry:ui" }]
     },
     {
@@ -40,7 +47,7 @@
       "type": "registry:ui",
       "title": "Badge",
       "description": "Small status label with default, secondary, destructive and outline variants.",
-      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "registryDependencies": ["@marcn/theme", "@marcn/text", "@marcn/render"],
       "files": [{ "path": "registry/marcn/ui/badge.tsx", "type": "registry:ui" }]
     },
     {
@@ -48,7 +55,7 @@
       "type": "registry:ui",
       "title": "Card",
       "description": "Card container with header, title, description, content and footer parts.",
-      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "registryDependencies": ["@marcn/theme", "@marcn/text", "@marcn/render"],
       "files": [{ "path": "registry/marcn/ui/card.tsx", "type": "registry:ui" }]
     },
     {
