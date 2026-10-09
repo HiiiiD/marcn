@@ -125,6 +125,14 @@
       "dependencies": ["lucide-react-native"],
       "registryDependencies": ["@marcn/theme", "@marcn/icon"],
       "files": [{ "path": "registry/marcn/ui/checkbox.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "description": "Single-select group of radio items.",
+      "registryDependencies": ["@marcn/theme"],
+      "files": [{ "path": "registry/marcn/ui/radio-group.tsx", "type": "registry:ui" }]
     }
   ]
 }
