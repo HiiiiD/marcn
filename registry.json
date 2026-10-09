@@ -107,6 +107,15 @@
       "description": "Circular image with a fallback shown while loading or on error.",
       "registryDependencies": ["@marcn/theme", "@marcn/text"],
       "files": [{ "path": "registry/marcn/ui/avatar.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "title": "Switch",
+      "description": "Animated on/off toggle.",
+      "dependencies": ["react-native-reanimated"],
+      "registryDependencies": ["@marcn/theme"],
+      "files": [{ "path": "registry/marcn/ui/switch.tsx", "type": "registry:ui" }]
     }
   ]
 }
