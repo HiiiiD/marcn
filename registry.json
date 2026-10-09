@@ -116,6 +116,15 @@
       "dependencies": ["react-native-reanimated"],
       "registryDependencies": ["@marcn/theme"],
       "files": [{ "path": "registry/marcn/ui/switch.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "title": "Checkbox",
+      "description": "Checkbox with checked, unchecked and indeterminate states.",
+      "dependencies": ["lucide-react-native"],
+      "registryDependencies": ["@marcn/theme", "@marcn/icon"],
+      "files": [{ "path": "registry/marcn/ui/checkbox.tsx", "type": "registry:ui" }]
     }
   ]
 }
