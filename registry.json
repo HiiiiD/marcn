@@ -64,7 +64,7 @@
       "type": "registry:ui",
       "title": "Textarea",
       "description": "Multiline text input.",
-      "registryDependencies": ["@marcn/input"],
+      "registryDependencies": ["@marcn/theme", "@marcn/input"],
       "files": [{ "path": "registry/marcn/ui/textarea.tsx", "type": "registry:ui" }]
     },
     {

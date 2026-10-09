@@ -64,3 +64,8 @@ test('style prop overrides', () => {
   render(<Button style={{ marginTop: 9 }}><Text>x</Text></Button>);
   expect(screen.getByRole('button')).toHaveStyle({ marginTop: 9 });
 });
+
+test('plain string children are wrapped in Text with the variant color', () => {
+  render(<Button>Save</Button>);
+  expect(screen.getByText('Save')).toHaveStyle({ color: lightColors.primaryForeground });
+});

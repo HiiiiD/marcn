@@ -10,7 +10,7 @@ export const TextStyleContext = createContext<TextStyle | undefined>(undefined);
 const createStyles = (t: Theme) =>
   StyleSheet.create({
     base: { color: t.colors.foreground, fontSize: t.fontSize.base },
-    h1: { fontSize: t.fontSize['4xl'], fontWeight: '800', lineHeight: 40 },
+    h1: { fontSize: t.fontSize['4xl'], fontWeight: t.fontWeight.extrabold, lineHeight: 40 },
     h2: { fontSize: t.fontSize['3xl'], fontWeight: t.fontWeight.semibold, lineHeight: 36 },
     h3: { fontSize: t.fontSize['2xl'], fontWeight: t.fontWeight.semibold, lineHeight: 32 },
     h4: { fontSize: t.fontSize.xl, fontWeight: t.fontWeight.semibold, lineHeight: 28 },

@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
-import { TextStyleContext } from '@/registry/marcn/ui/text';
+import { Text, TextStyleContext } from '@/registry/marcn/ui/text';
 
 export type ButtonVariant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
 export type ButtonSize = 'default' | 'sm' | 'lg' | 'icon';
@@ -68,7 +68,7 @@ export function Button({ variant = 'default', size = 'default', style, disabled,
         ]}
         {...props}
       >
-        {children}
+        {typeof children === 'string' || typeof children === 'number' ? <Text>{children}</Text> : children}
       </Pressable>
     </TextStyleContext.Provider>
   );

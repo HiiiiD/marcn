@@ -53,10 +53,10 @@ export const darkColors: Colors = {
   ring: '#737373',
 };
 
-export const radius = { sm: 6, md: 8, lg: 10, xl: 14, full: 9999 } as const;
+export const radius = { xs: 4, sm: 6, md: 8, lg: 10, xl: 14, full: 9999 } as const;
 export const spacing = { 0: 0, 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 8: 32 } as const;
 export const fontSize = { xs: 12, sm: 14, base: 16, lg: 18, xl: 20, '2xl': 24, '3xl': 30, '4xl': 36 } as const;
-export const fontWeight = { normal: '400', medium: '500', semibold: '600', bold: '700' } as const;
+export const fontWeight = { normal: '400', medium: '500', semibold: '600', bold: '700', extrabold: '800' } as const;
 
 export type Theme = {
   colors: Colors;

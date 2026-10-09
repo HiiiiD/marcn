@@ -20,7 +20,7 @@ const createStyles = (t: Theme) =>
 
 export function Switch({ checked = false, onCheckedChange, disabled, style, ...props }: SwitchProps) {
   const s = useStyles(createStyles);
-  const { colors } = useTheme();
+  const { colors, spacing } = useTheme();
   const progress = useSharedValue(checked ? 1 : 0);
 
   useEffect(() => {
@@ -40,6 +40,7 @@ export function Switch({ checked = false, onCheckedChange, disabled, style, ...p
       accessibilityRole="switch"
       accessibilityState={{ checked, disabled: !!disabled }}
       disabled={disabled}
+      hitSlop={spacing[3]}
       onPress={() => onCheckedChange?.(!checked)}
       style={[disabled && s.disabled, style]}
       {...props}

@@ -1,6 +1,6 @@
 import { StyleSheet, View, type ViewProps } from 'react-native';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
-import { TextStyleContext } from '@/registry/marcn/ui/text';
+import { Text, TextStyleContext } from '@/registry/marcn/ui/text';
 
 export type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline';
 export type BadgeProps = ViewProps & { variant?: BadgeVariant };
@@ -36,11 +36,13 @@ const createStyles = (t: Theme) => {
   };
 };
 
-export function Badge({ variant = 'default', style, ...props }: BadgeProps) {
+export function Badge({ variant = 'default', style, children, ...props }: BadgeProps) {
   const s = useStyles(createStyles);
   return (
     <TextStyleContext.Provider value={s.text[variant]}>
-      <View style={[s.root, s.variant[variant], style]} {...props} />
+      <View style={[s.root, s.variant[variant], style]} {...props}>
+        {typeof children === 'string' || typeof children === 'number' ? <Text>{children}</Text> : children}
+      </View>
     </TextStyleContext.Provider>
   );
 }

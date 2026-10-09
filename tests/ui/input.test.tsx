@@ -42,3 +42,10 @@ test('dark mode swaps text color', () => {
   render(<Input placeholder="p" />);
   expect(screen.getByPlaceholderText('p')).toHaveStyle({ color: darkColors.foreground });
 });
+
+test('reports disabled accessibility state', () => {
+  const { rerender } = render(<Input placeholder="p" disabled />);
+  expect(screen.getByPlaceholderText('p').props.accessibilityState).toEqual({ disabled: true });
+  rerender(<Input placeholder="p" />);
+  expect(screen.getByPlaceholderText('p').props.accessibilityState).toEqual({ disabled: false });
+});

@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import { Pressable, StyleSheet, View, type PressableProps, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
-import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
+import { useStyles, useTheme, type Theme } from '@/registry/marcn/lib/theme';
 
 type RadioContextValue = { value?: string; onValueChange?: (value: string) => void; disabled?: boolean };
 const RadioContext = createContext<RadioContextValue | null>(null);
@@ -39,6 +39,7 @@ export type RadioGroupItemProps = Omit<PressableProps, 'style' | 'children' | 'o
 
 export function RadioGroupItem({ value, disabled, style, ...props }: RadioGroupItemProps) {
   const s = useStyles(createStyles);
+  const { spacing } = useTheme();
   const ctx = useContext(RadioContext);
   if (!ctx) throw new Error('RadioGroupItem must be used within a RadioGroup');
   const selected = ctx.value === value;
@@ -48,6 +49,7 @@ export function RadioGroupItem({ value, disabled, style, ...props }: RadioGroupI
       accessibilityRole="radio"
       accessibilityState={{ checked: selected, disabled: !!isDisabled }}
       disabled={isDisabled}
+      hitSlop={spacing[3]}
       onPress={() => ctx.onValueChange?.(value)}
       style={[s.radio, isDisabled && s.disabled, style]}
       {...props}

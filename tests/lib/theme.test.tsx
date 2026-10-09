@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react-native';
-import { darkColors, lightColors, useStyles, useTheme, type Theme } from '@/registry/marcn/lib/theme';
+import { darkColors, fontWeight, lightColors, radius, useStyles, useTheme, type Theme } from '@/registry/marcn/lib/theme';
 import { setScheme } from '../scheme';
 
 test('useTheme returns light colors by default', () => {
@@ -34,4 +34,9 @@ test('useStyles memoizes and recomputes when scheme changes', () => {
 
 test('light and dark define the same token keys', () => {
   expect(Object.keys(darkColors).sort()).toEqual(Object.keys(lightColors).sort());
+});
+
+test('exposes xs radius and extrabold weight tokens', () => {
+  expect(radius.xs).toBe(4);
+  expect(fontWeight.extrabold).toBe('800');
 });

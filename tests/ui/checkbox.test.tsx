@@ -37,3 +37,10 @@ test('disabled blocks press', () => {
   fireEvent.press(screen.getByRole('checkbox'));
   expect(onCheckedChange).not.toHaveBeenCalled();
 });
+
+test('has a default hitSlop that callers can override', () => {
+  const { rerender } = render(<Checkbox />);
+  expect(screen.getByRole('checkbox').props.hitSlop).toEqual(expect.any(Number));
+  rerender(<Checkbox hitSlop={5} />);
+  expect(screen.getByRole('checkbox').props.hitSlop).toBe(5);
+});

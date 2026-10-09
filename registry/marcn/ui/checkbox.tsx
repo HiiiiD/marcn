@@ -18,7 +18,7 @@ const createStyles = (t: Theme) =>
       justifyContent: 'center',
       borderWidth: 1,
       borderColor: t.colors.input,
-      borderRadius: 4,
+      borderRadius: t.radius.xs,
     },
     on: { backgroundColor: t.colors.primary, borderColor: t.colors.primary },
     disabled: { opacity: 0.5 },
@@ -26,13 +26,14 @@ const createStyles = (t: Theme) =>
 
 export function Checkbox({ checked = false, onCheckedChange, disabled, style, ...props }: CheckboxProps) {
   const s = useStyles(createStyles);
-  const { colors } = useTheme();
+  const { colors, spacing } = useTheme();
   const on = checked !== false;
   return (
     <Pressable
       accessibilityRole="checkbox"
       accessibilityState={{ checked: checked === 'indeterminate' ? 'mixed' : checked, disabled: !!disabled }}
       disabled={disabled}
+      hitSlop={spacing[3]}
       onPress={() => onCheckedChange?.(checked !== true)}
       style={[s.box, on && s.on, disabled && s.disabled, style]}
       {...props}

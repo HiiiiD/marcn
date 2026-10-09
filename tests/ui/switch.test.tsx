@@ -33,3 +33,10 @@ test('rerendering with a new checked value does not throw', () => {
   const { rerender } = render(<Switch checked={false} />);
   expect(() => rerender(<Switch checked />)).not.toThrow();
 });
+
+test('has a default hitSlop that callers can override', () => {
+  const { rerender } = render(<Switch />);
+  expect(screen.getByRole('switch').props.hitSlop).toEqual(expect.any(Number));
+  rerender(<Switch hitSlop={5} />);
+  expect(screen.getByRole('switch').props.hitSlop).toBe(5);
+});

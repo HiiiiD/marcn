@@ -23,3 +23,8 @@ test('is pill shaped', () => {
   render(<Badge testID="b"><Text>x</Text></Badge>);
   expect(screen.getByTestId('b')).toHaveStyle({ borderRadius: 9999 });
 });
+
+test('plain string children are wrapped in Text with the variant color', () => {
+  render(<Badge>New</Badge>);
+  expect(screen.getByText('New')).toHaveStyle({ color: lightColors.primaryForeground });
+});

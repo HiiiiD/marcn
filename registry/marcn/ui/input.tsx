@@ -33,6 +33,7 @@ export function Input({ style, disabled, onFocus, onBlur, editable, 'aria-invali
     <TextInput
       placeholderTextColor={colors.mutedForeground}
       editable={disabled ? false : editable}
+      accessibilityState={{ disabled: !!disabled }}
       onFocus={(e) => {
         setFocused(true);
         onFocus?.(e);

@@ -40,3 +40,15 @@ test('item outside a group throws a clear error', () => {
   expect(() => render(<RadioGroupItem value="x" />)).toThrow('RadioGroupItem must be used within a RadioGroup');
   consoleError.mockRestore();
 });
+
+test('items have a default hitSlop that callers can override', () => {
+  const { unmount } = render(<Example value="a" />);
+  expect(screen.getByLabelText('A').props.hitSlop).toEqual(expect.any(Number));
+  unmount();
+  render(
+    <RadioGroup value="a">
+      <RadioGroupItem value="a" accessibilityLabel="A" hitSlop={5} />
+    </RadioGroup>,
+  );
+  expect(screen.getByLabelText('A').props.hitSlop).toBe(5);
+});
