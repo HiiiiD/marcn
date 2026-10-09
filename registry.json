@@ -74,6 +74,14 @@
       "description": "Text label for form fields.",
       "registryDependencies": ["@marcn/theme", "@marcn/text"],
       "files": [{ "path": "registry/marcn/ui/label.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "description": "Callout with default and destructive variants.",
+      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/ui/alert.tsx", "type": "registry:ui" }]
     }
   ]
 }
