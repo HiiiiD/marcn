@@ -9,6 +9,15 @@
       "title": "Theme",
       "description": "Design tokens and the useTheme hook shared by every marcn component.",
       "files": [{ "path": "registry/marcn/lib/theme.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "icon",
+      "type": "registry:ui",
+      "title": "Icon",
+      "description": "Themed wrapper around lucide-react-native icons.",
+      "dependencies": ["lucide-react-native", "react-native-svg"],
+      "registryDependencies": ["@marcn/theme"],
+      "files": [{ "path": "registry/marcn/ui/icon.tsx", "type": "registry:ui" }]
     }
   ]
 }
