@@ -82,6 +82,23 @@
       "description": "Callout with default and destructive variants.",
       "registryDependencies": ["@marcn/theme", "@marcn/text"],
       "files": [{ "path": "registry/marcn/ui/alert.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "Pulsing placeholder for loading content.",
+      "dependencies": ["react-native-reanimated"],
+      "registryDependencies": ["@marcn/theme"],
+      "files": [{ "path": "registry/marcn/ui/skeleton.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "Horizontal or vertical divider.",
+      "registryDependencies": ["@marcn/theme"],
+      "files": [{ "path": "registry/marcn/ui/separator.tsx", "type": "registry:ui" }]
     }
   ]
 }

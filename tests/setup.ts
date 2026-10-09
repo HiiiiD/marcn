@@ -3,6 +3,7 @@ jest.mock('react-native/Libraries/Utilities/useColorScheme', () => ({
   default: jest.fn(() => 'light'),
 }));
 
+jest.mock('react-native-worklets', () => require('react-native-worklets/lib/module/mock'));
 jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
 
 afterEach(() => {
