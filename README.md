@@ -47,3 +47,7 @@ Components install with a shared `theme.ts` in your `lib` alias. Edit its tokens
 `icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, plus the `theme` lib item.
 
 Components are designed to be edited in place: once added, the code is yours.
+
+## Development
+
+Run `corepack enable` once, then `yarn install` (in the repo root and in `apps/example`). Use `yarn test`, `yarn typecheck`, `yarn registry:validate` and `yarn example:sync`.

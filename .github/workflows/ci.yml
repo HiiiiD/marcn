@@ -9,16 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: corepack enable
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run registry:validate
-      - run: npm ci
+        with: { node-version: 22, cache: yarn }
+      - run: yarn install --immutable
+      - run: yarn typecheck
+      - run: yarn test
+      - run: yarn registry:validate
+      - run: yarn install --immutable
         working-directory: apps/example
-      - run: npm run example:sync
-      - run: npx tsc --noEmit
+      - run: yarn example:sync
+      - run: yarn tsc --noEmit
         working-directory: apps/example
 
   deploy:
@@ -30,10 +31,11 @@ jobs:
     environment: { name: github-pages, url: '${{ steps.deployment.outputs.page_url }}' }
     steps:
       - uses: actions/checkout@v4
+      - run: corepack enable
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
-      - run: npm ci
-      - run: npm run registry:build
+        with: { node-version: 22, cache: yarn }
+      - run: yarn install --immutable
+      - run: yarn registry:build
       - uses: actions/upload-pages-artifact@v3
         with: { path: public/r }
       - id: deployment
