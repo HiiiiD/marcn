@@ -3,7 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "paths": { "@/*": ["./*"] },
-    "types": ["jest"]
+    "types": ["jest", "node"]
   },
   "include": ["registry", "tests", "scripts", "*.d.ts"],
   "exclude": ["apps", "node_modules", "public"]

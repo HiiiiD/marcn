@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "marcn",
+  "homepage": "https://github.com/OWNER/marcn",
+  "items": [
+    {
+      "name": "theme",
+      "type": "registry:lib",
+      "title": "Theme",
+      "description": "Design tokens and the useTheme hook shared by every marcn component.",
+      "files": [{ "path": "registry/marcn/lib/theme.ts", "type": "registry:lib" }]
+    }
+  ]
+}
