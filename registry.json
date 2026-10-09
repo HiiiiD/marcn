@@ -34,6 +34,14 @@
       "description": "Pressable button with default, destructive, outline, secondary, ghost and link variants.",
       "registryDependencies": ["@marcn/theme", "@marcn/text"],
       "files": [{ "path": "registry/marcn/ui/button.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "description": "Small status label with default, secondary, destructive and outline variants.",
+      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/ui/badge.tsx", "type": "registry:ui" }]
     }
   ]
 }
