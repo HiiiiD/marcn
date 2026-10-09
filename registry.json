@@ -99,6 +99,14 @@
       "description": "Horizontal or vertical divider.",
       "registryDependencies": ["@marcn/theme"],
       "files": [{ "path": "registry/marcn/ui/separator.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "description": "Circular image with a fallback shown while loading or on error.",
+      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/ui/avatar.tsx", "type": "registry:ui" }]
     }
   ]
 }
