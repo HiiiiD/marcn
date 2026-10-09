@@ -1,7 +1,7 @@
 import { createRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { render, screen } from '@testing-library/react-native';
-import { mergeProps, renderElement } from '@/registry/marcn/lib/render';
+import { mergeProps, mergeRefs, renderElement } from '@/registry/marcn/lib/render';
 
 test('falls back to the default component', () => {
   render(renderElement(View, undefined, { testID: 'host' }));
@@ -110,4 +110,28 @@ test('element function style stays a function and resolves with the host state, 
   expect(typeof merged.style).toBe('function');
   expect(StyleSheet.flatten(merged.style({ pressed: true }))).toEqual({ margin: 5, padding: 1 });
   expect(StyleSheet.flatten(merged.style({ pressed: false }))).toEqual({ margin: 2, padding: 1 });
+});
+
+test('merged ref keeps its identity across calls with the same refs', () => {
+  const a = jest.fn();
+  const b = createRef<unknown>();
+  expect(mergeRefs(a, b)).toBe(mergeRefs(a, b));
+  expect(mergeProps({ ref: a }, { ref: b }).ref).toBe(mergeProps({ ref: a }, { ref: b }).ref);
+});
+
+test('merged ref runs cleanup functions returned by callback refs and nulls the others', () => {
+  const cleanup = jest.fn();
+  const withCleanup = jest.fn(() => cleanup);
+  const plain = jest.fn();
+  const objRef = createRef<unknown>();
+  const merged = mergeRefs(withCleanup, plain) as (node: unknown) => () => void;
+  const detach = merged('node');
+  expect(withCleanup).toHaveBeenCalledWith('node');
+  detach();
+  expect(cleanup).toHaveBeenCalledTimes(1);
+  expect(withCleanup).toHaveBeenCalledTimes(1);
+  expect(plain).toHaveBeenLastCalledWith(null);
+  const mergedObj = mergeRefs(plain, objRef) as (node: unknown) => () => void;
+  mergedObj('n')();
+  expect(objRef.current).toBeNull();
 });

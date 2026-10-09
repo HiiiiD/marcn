@@ -9,15 +9,32 @@ const isHandler = (key: string) => /^on[A-Z]/.test(key);
 const isPrevented = (event: any) =>
   !!event && (event.defaultPrevented === true || (typeof event.isDefaultPrevented === 'function' && event.isDefaultPrevented()));
 
-export function mergeRefs<T>(...refs: (Ref<T> | undefined)[]): Ref<T> | undefined {
-  const live = refs.filter(Boolean) as Ref<T>[];
-  if (live.length < 2) return live[0];
-  return (node: T | null) => {
-    for (const ref of live) {
-      if (typeof ref === 'function') ref(node);
-      else (ref as { current: T | null }).current = node;
-    }
-  };
+const assign = <T,>(ref: Ref<T>, node: T | null) => {
+  if (typeof ref === 'function') return ref(node);
+  (ref as { current: T | null }).current = node;
+};
+
+// Cached per ref pair so the merged ref keeps its identity across renders; a new one would detach and reattach every render.
+const mergedRefs = new WeakMap<object, WeakMap<object, Ref<any>>>();
+
+export function mergeRefs<T>(a: Ref<T> | undefined, b: Ref<T> | undefined): Ref<T> | undefined {
+  if (!a || !b) return a ?? b;
+  let inner = mergedRefs.get(a);
+  if (!inner) mergedRefs.set(a, (inner = new WeakMap()));
+  let merged = inner.get(b);
+  if (!merged) {
+    merged = (node: T | null) => {
+      const attached = [a, b].map((ref) => [ref, assign(ref, node)] as const);
+      return () => {
+        for (const [ref, cleanup] of attached) {
+          if (typeof cleanup === 'function') cleanup();
+          else assign(ref, null);
+        }
+      };
+    };
+    inner.set(b, merged);
+  }
+  return merged;
 }
 
 // The rendered element's own props win, except style/handlers/ref (combined) and children (ours); undefined values are ignored.
