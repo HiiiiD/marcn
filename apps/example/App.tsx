@@ -1,20 +1,29 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import { Text } from '@/components/ui/text';
+import { useTheme } from '@/lib/theme';
+import { ButtonsBadges } from './screens/ButtonsBadges';
+import { CardForm } from './screens/CardForm';
+import { Controls } from './screens/Controls';
+import { Display } from './screens/Display';
 
 export default function App() {
+  const { colors } = useTheme();
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text variant="h2">marcn</Text>
+        <ButtonsBadges />
+        <CardForm />
+        <Display />
+        <Controls />
+      </ScrollView>
       <StatusBar style="auto" />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  root: { flex: 1 },
+  content: { padding: 16, paddingTop: 48, gap: 24 },
 });
