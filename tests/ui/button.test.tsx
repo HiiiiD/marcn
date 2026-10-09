@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
+import { createRef } from 'react';
 import { Pressable, View, type PressableProps } from 'react-native';
 import { Button, type ButtonState } from '@/registry/marcn/ui/button';
 import { Text } from '@/registry/marcn/ui/text';
@@ -138,4 +139,44 @@ test('render element with a function style keeps variant style and applies the e
     <Button variant="outline" render={<Pressable style={({ pressed }) => ({ marginTop: pressed ? 7 : 3 })} />}>Go</Button>,
   );
   expect(screen.getByRole('button')).toHaveStyle({ backgroundColor: lightColors.background, marginTop: 3 });
+});
+
+test('pressed tracking still ends when the element prevents pressIn/pressOut', () => {
+  const prevent = () => {};
+  render(<Button variant="outline" render={<Pressable onPressIn={prevent} onPressOut={prevent} />}>Go</Button>);
+  const el = screen.getByRole('button');
+  fireEvent(el, 'pressIn', { defaultPrevented: true });
+  expect(el).toHaveStyle({ backgroundColor: lightColors.accent });
+  fireEvent(el, 'pressOut', { defaultPrevented: true });
+  expect(el).toHaveStyle({ backgroundColor: lightColors.background });
+});
+
+test('element-form onPressIn composes with the tracking handler', () => {
+  const calls: string[] = [];
+  render(<Button variant="outline" onPressIn={() => calls.push('button')} render={<Pressable onPressIn={() => calls.push('element')} />}>Go</Button>);
+  const el = screen.getByRole('button');
+  fireEvent(el, 'pressIn');
+  expect(calls).toEqual(['element', 'button']);
+  expect(el).toHaveStyle({ backgroundColor: lightColors.accent });
+});
+
+test('disabled Button with an element render reports disabled and ignores press', () => {
+  const onPress = jest.fn();
+  render(<Button disabled onPress={onPress} render={<View testID="v" />}>Go</Button>);
+  expect(screen.getByTestId('v')).toBeOnTheScreen();
+  expect(screen.getByTestId('v')).toHaveProp('accessibilityState', { disabled: true });
+});
+
+test.each([['default path', undefined], ['render element path', <Pressable key="p" />]])('ref reaches the host (%s)', (_name, renderEl) => {
+  const ref = createRef<View>();
+  render(<Button ref={ref} render={renderEl}>Go</Button>);
+  expect(ref.current).not.toBeNull();
+});
+
+test('ref passed to Button and to the rendered element both receive the host', () => {
+  const ours = createRef<View>();
+  const theirs = createRef<View>();
+  render(<Button ref={ours} render={<Pressable ref={theirs} />}>Go</Button>);
+  expect(ours.current).not.toBeNull();
+  expect(theirs.current).toBe(ours.current);
 });

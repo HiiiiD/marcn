@@ -1,10 +1,10 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, type Ref } from 'react';
 import { StyleSheet, Text as RNText, type TextProps as RNTextProps, type TextStyle } from 'react-native';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
 
 export type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'lead' | 'large' | 'small' | 'muted';
-export type TextProps = RNTextProps & { variant?: TextVariant; render?: RenderProp<RNTextProps> };
+export type TextProps = RNTextProps & { variant?: TextVariant; render?: RenderProp<RNTextProps>; ref?: Ref<RNText> };
 
 export const TextStyleContext = createContext<TextStyle | undefined>(undefined);
 

@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react-native';
+import { createRef } from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/registry/marcn/ui/card';
@@ -62,4 +63,12 @@ test('Card render function receives props', () => {
   const fn = jest.fn((props: object) => <View {...props} testID="c" />);
   render(<Card render={fn} />);
   expect(fn).toHaveBeenCalledTimes(1);
+});
+
+test('Card ref reaches the host, with and without render', () => {
+  const plain = createRef<View>();
+  const rendered = createRef<View>();
+  render(<><Card ref={plain} /><Card ref={rendered} render={<View />} /></>);
+  expect(plain.current).not.toBeNull();
+  expect(rendered.current).not.toBeNull();
 });

@@ -135,3 +135,13 @@ test('merged ref runs cleanup functions returned by callback refs and nulls the 
   mergedObj('n')();
   expect(objRef.current).toBeNull();
 });
+
+test('handlers listed in `always` still run when the element prevents the event', () => {
+  const ours = jest.fn();
+  const other = jest.fn();
+  const merged = mergeProps({ onPressOut: ours, onPress: other }, { onPressOut: () => {}, onPress: () => {} }, ['onPressOut']);
+  merged.onPressOut({ defaultPrevented: true });
+  merged.onPress({ defaultPrevented: true });
+  expect(ours).toHaveBeenCalledTimes(1);
+  expect(other).not.toHaveBeenCalled();
+});

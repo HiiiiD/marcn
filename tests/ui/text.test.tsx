@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react-native';
+import { createRef } from 'react';
 import { Text as RNText } from 'react-native';
 import { Text, TextStyleContext } from '@/registry/marcn/ui/text';
 import { darkColors, lightColors } from '@/registry/marcn/lib/theme';
@@ -57,4 +58,12 @@ test('render function receives props', () => {
   const fn = jest.fn((props: object) => <RNText {...props} testID="t" />);
   render(<Text variant="muted" render={fn}>Hi</Text>);
   expect(fn).toHaveBeenCalledWith(expect.objectContaining({ children: 'Hi' }), {});
+});
+
+test('ref reaches the host, with and without render', () => {
+  const plain = createRef<RNText>();
+  const rendered = createRef<RNText>();
+  render(<><Text ref={plain}>a</Text><Text ref={rendered} render={<RNText />}>b</Text></>);
+  expect(plain.current).not.toBeNull();
+  expect(rendered.current).not.toBeNull();
 });

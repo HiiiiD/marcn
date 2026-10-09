@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Pressable, StyleSheet, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
+import { useState, type Ref } from 'react';
+import { Pressable, StyleSheet, type View, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
 import { Text, TextStyleContext } from '@/registry/marcn/ui/text';
@@ -12,6 +12,7 @@ export type ButtonProps = Omit<PressableProps, 'style'> & {
   size?: ButtonSize;
   style?: StyleProp<ViewStyle>;
   render?: RenderProp<PressableProps, ButtonState>;
+  ref?: Ref<View>;
 };
 
 const createStyles = (t: Theme) => {
@@ -108,6 +109,7 @@ export function Button({ variant = 'default', size = 'default', style, disabled,
           children: content,
         } as PressableProps,
         { pressed, disabled: !!disabled },
+        ['onPressIn', 'onPressOut'],
       )}
     </TextStyleContext.Provider>
   );

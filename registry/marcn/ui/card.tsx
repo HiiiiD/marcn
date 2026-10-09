@@ -1,3 +1,4 @@
+import type { Ref } from 'react';
 import { StyleSheet, View, type ViewProps } from 'react-native';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
@@ -19,7 +20,7 @@ const createStyles = (t: Theme) =>
     footer: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: t.spacing[6] },
   });
 
-export type CardProps = ViewProps & { render?: RenderProp<ViewProps> };
+export type CardProps = ViewProps & { render?: RenderProp<ViewProps>; ref?: Ref<View> };
 
 export function Card({ style, render, ...props }: CardProps) {
   const s = useStyles(createStyles);

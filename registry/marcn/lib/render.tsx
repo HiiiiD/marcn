@@ -37,8 +37,9 @@ export function mergeRefs<T>(a: Ref<T> | undefined, b: Ref<T> | undefined): Ref<
   return merged;
 }
 
+// `always` lists handlers that must run even when the element prevents the event (internal bookkeeping).
 // The rendered element's own props win, except style/handlers/ref (combined) and children (ours); undefined values are ignored.
-export function mergeProps(ours: AnyProps, rendered: AnyProps): AnyProps {
+export function mergeProps(ours: AnyProps, rendered: AnyProps, always: string[] = []): AnyProps {
   const theirs = Object.fromEntries(Object.entries(rendered).filter(([, value]) => value !== undefined));
   const out: AnyProps = { ...ours, ...theirs };
   if (ours.children !== undefined) out.children = ours.children;
@@ -51,7 +52,7 @@ export function mergeProps(ours: AnyProps, rendered: AnyProps): AnyProps {
     if (typeof mine === 'function') {
       out[key] = (event: unknown, ...rest: unknown[]) => {
         const result = other(event, ...rest);
-        if (!isPrevented(event)) mine(event, ...rest);
+        if (always.includes(key) || !isPrevented(event)) mine(event, ...rest);
         return result;
       };
     }
@@ -66,8 +67,9 @@ export function renderElement<P extends object, S extends object = {}>(
   render: RenderProp<P, S> | undefined,
   props: P,
   state?: S,
+  always?: string[],
 ): ReactElement {
   if (typeof render === 'function') return render(props, state ?? ({} as S));
-  if (isValidElement(render)) return cloneElement(render as ReactElement<AnyProps>, mergeProps(props, render.props as AnyProps));
+  if (isValidElement(render)) return cloneElement(render as ReactElement<AnyProps>, mergeProps(props, render.props as AnyProps, always));
   return createElement(Default, props);
 }
