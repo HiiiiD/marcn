@@ -1,4 +1,5 @@
 import { StyleSheet, View, type ViewProps } from 'react-native';
+import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
 import { Text, type TextProps } from '@/registry/marcn/ui/text';
 
@@ -18,9 +19,11 @@ const createStyles = (t: Theme) =>
     footer: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: t.spacing[6] },
   });
 
-export function Card({ style, ...props }: ViewProps) {
+export type CardProps = ViewProps & { render?: RenderProp<ViewProps> };
+
+export function Card({ style, render, ...props }: CardProps) {
   const s = useStyles(createStyles);
-  return <View style={[s.card, style]} {...props} />;
+  return renderElement(View, render, { style: [s.card, style], ...props } as ViewProps);
 }
 
 export function CardHeader({ style, ...props }: ViewProps) {

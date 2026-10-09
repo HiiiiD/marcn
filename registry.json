@@ -47,7 +47,7 @@
       "type": "registry:ui",
       "title": "Badge",
       "description": "Small status label with default, secondary, destructive and outline variants.",
-      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "registryDependencies": ["@marcn/theme", "@marcn/text", "@marcn/render"],
       "files": [{ "path": "registry/marcn/ui/badge.tsx", "type": "registry:ui" }]
     },
     {
@@ -55,7 +55,7 @@
       "type": "registry:ui",
       "title": "Card",
       "description": "Card container with header, title, description, content and footer parts.",
-      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "registryDependencies": ["@marcn/theme", "@marcn/text", "@marcn/render"],
       "files": [{ "path": "registry/marcn/ui/card.tsx", "type": "registry:ui" }]
     },
     {
