@@ -89,3 +89,15 @@ test('refs reach the real host through renderElement', () => {
   expect(ours.current).not.toBeNull();
   expect(theirs.current).toBe(ours.current);
 });
+
+test('children always come from ours when ours defines them', () => {
+  const merged = mergeProps({ children: 'ours' }, { children: 'theirs' });
+  expect(merged.children).toBe('ours');
+  expect(mergeProps({}, { children: 'theirs' }).children).toBe('theirs');
+});
+
+test('props the element sets to undefined do not wipe ours', () => {
+  const merged = mergeProps({ disabled: true, accessibilityLabel: 'a' }, { disabled: undefined });
+  expect(merged.disabled).toBe(true);
+  expect(merged.accessibilityLabel).toBe('a');
+});

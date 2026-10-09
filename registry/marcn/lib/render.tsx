@@ -20,16 +20,17 @@ export function mergeRefs<T>(...refs: (Ref<T> | undefined)[]): Ref<T> | undefine
   };
 }
 
-// `theirs` is the rendered element's own props; they win, except style/handlers/ref which combine.
-export function mergeProps(ours: AnyProps, theirs: AnyProps): AnyProps {
+// The rendered element's own props win, except style/handlers/ref (combined) and children (ours); undefined values are ignored.
+export function mergeProps(ours: AnyProps, rendered: AnyProps): AnyProps {
+  const theirs = Object.fromEntries(Object.entries(rendered).filter(([, value]) => value !== undefined));
   const out: AnyProps = { ...ours, ...theirs };
+  if (ours.children !== undefined) out.children = ours.children;
   if (ours.style != null || theirs.style != null) out.style = [ours.style, theirs.style];
   for (const key in theirs) {
     if (!isHandler(key)) continue;
     const mine = ours[key];
     const other = theirs[key];
-    if (typeof other !== 'function') out[key] = mine;
-    else if (typeof mine === 'function') {
+    if (typeof mine === 'function') {
       out[key] = (event: unknown, ...rest: unknown[]) => {
         const result = other(event, ...rest);
         if (!isPrevented(event)) mine(event, ...rest);
