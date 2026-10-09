@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": { "@/*": ["./*"] },
+    "types": ["jest", "node"]
+  },
+  "include": ["registry", "tests", "scripts", "*.d.ts"],
+  "exclude": ["apps", "node_modules", "public"]
+}

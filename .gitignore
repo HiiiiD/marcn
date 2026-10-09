@@ -1,1 +1,13 @@
 docs
+node_modules
+public/r
+apps/example/components/ui
+apps/example/lib
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
