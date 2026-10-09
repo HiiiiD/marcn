@@ -44,9 +44,19 @@ Components install with a shared `theme.ts` in your `lib` alias. Edit its tokens
 
 ## Components
 
-`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, plus the `theme` lib item.
+`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, plus the `theme` and `render` lib items.
 
 Components are designed to be edited in place: once added, the code is yours.
+
+## The `render` prop
+
+Button, Text, Badge and Card (root) accept `render`, like Base UI: pass an element to swap the underlying component while keeping marcn's styling, accessibility props and handlers, or a function `(props, state) => element`.
+
+    <Button render={<Link href="/settings" />}>Settings</Button>
+    <Card render={<Animated.View entering={FadeIn} />} />
+    <Button render={(props, { pressed }) => <MyPressable {...props} />}>Go</Button>
+
+Merging: the element's own props win; `style` becomes `[marcn, element]`; `onX` handlers run element first, then marcn's (skipped if the event is default-prevented); refs are merged. Children come from the marcn component. With `render`, Button tracks `pressed` via `onPressIn`/`onPressOut`, so the rendered element must forward those to a pressable. In function form, attach `props.ref` yourself. Requires React 19 (`ref` as a prop).
 
 ## Development
 
