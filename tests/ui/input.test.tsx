@@ -49,3 +49,8 @@ test('reports disabled accessibility state', () => {
   rerender(<Input placeholder="p" />);
   expect(screen.getByPlaceholderText('p').props.accessibilityState).toEqual({ disabled: false });
 });
+
+test('single-line input removes platform vertical padding so fixed height does not clip text', () => {
+  render(<Input placeholder="p" />);
+  expect(screen.getByPlaceholderText('p')).toHaveStyle({ paddingVertical: 0 });
+});

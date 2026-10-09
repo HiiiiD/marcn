@@ -16,6 +16,7 @@ const createStyles = (t: Theme) =>
       borderColor: t.colors.input,
       borderRadius: t.radius.md,
       paddingHorizontal: t.spacing[3],
+      paddingVertical: 0,
       fontSize: t.fontSize.base,
       color: t.colors.foreground,
     },
