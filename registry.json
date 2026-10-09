@@ -42,6 +42,14 @@
       "description": "Small status label with default, secondary, destructive and outline variants.",
       "registryDependencies": ["@marcn/theme", "@marcn/text"],
       "files": [{ "path": "registry/marcn/ui/badge.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "Card container with header, title, description, content and footer parts.",
+      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/ui/card.tsx", "type": "registry:ui" }]
     }
   ]
 }
