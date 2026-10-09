@@ -66,6 +66,14 @@
       "description": "Multiline text input.",
       "registryDependencies": ["@marcn/input"],
       "files": [{ "path": "registry/marcn/ui/textarea.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "description": "Text label for form fields.",
+      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/ui/label.tsx", "type": "registry:ui" }]
     }
   ]
 }
