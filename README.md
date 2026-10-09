@@ -52,11 +52,11 @@ Components are designed to be edited in place: once added, the code is yours.
 
 Button, Text, Badge and Card (root) accept `render`, like Base UI: pass an element to swap the underlying component while keeping marcn's styling, accessibility props and handlers, or a function `(props, state) => element`.
 
-    <Button render={<Link href="/settings" />}>Settings</Button>
+    <Button render={(props) => <Link href="/settings" asChild><Pressable {...props} /></Link>}>Settings</Button>
     <Card render={<Animated.View entering={FadeIn} />} />
     <Button render={(props, { pressed }) => <MyPressable {...props} />}>Go</Button>
 
-Merging: the element's own props win; `style` becomes `[marcn, element]`; `onX` handlers run element first, then marcn's (skipped if the event is default-prevented); refs are merged. Children come from the marcn component. With `render`, Button tracks `pressed` via `onPressIn`/`onPressOut`, so the rendered element must forward those to a pressable. In function form, attach `props.ref` yourself. Requires React 19 (`ref` as a prop).
+Merging: the element's own props win; `style` becomes `[marcn, element]`; `onX` handlers run element first, then marcn's (skipped if the event is default-prevented); refs are merged. Children come from the marcn component. With `render`, Button tracks `pressed` via `onPressIn`/`onPressOut`, so the rendered element must forward those to a pressable. In function form, attach `props.ref` yourself. Requires React 19 (`ref` as a prop). expo-router's `Link` renders a `Text` unless `asChild` is set, so wrap a `Pressable` as shown instead of passing `<Link />` directly.
 
 ## Development
 
