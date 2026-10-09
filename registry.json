@@ -11,6 +11,13 @@
       "files": [{ "path": "registry/marcn/lib/theme.ts", "type": "registry:lib" }]
     },
     {
+      "name": "render",
+      "type": "registry:lib",
+      "title": "Render",
+      "description": "renderElement helper behind the render prop: swap a component's element while keeping its props, styles, handlers and refs.",
+      "files": [{ "path": "registry/marcn/lib/render.tsx", "type": "registry:lib" }]
+    },
+    {
       "name": "icon",
       "type": "registry:ui",
       "title": "Icon",
