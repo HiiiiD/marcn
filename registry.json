@@ -26,6 +26,14 @@
       "description": "Typography with shadcn variants. Also exports TextStyleContext for parents that restyle child text.",
       "registryDependencies": ["@marcn/theme"],
       "files": [{ "path": "registry/marcn/ui/text.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "Pressable button with default, destructive, outline, secondary, ghost and link variants.",
+      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/ui/button.tsx", "type": "registry:ui" }]
     }
   ]
 }
