@@ -25,7 +25,8 @@ export function mergeProps(ours: AnyProps, rendered: AnyProps): AnyProps {
   const theirs = Object.fromEntries(Object.entries(rendered).filter(([, value]) => value !== undefined));
   const out: AnyProps = { ...ours, ...theirs };
   if (ours.children !== undefined) out.children = ours.children;
-  if (ours.style != null || theirs.style != null) out.style = [ours.style, theirs.style];
+  if (typeof theirs.style === 'function') out.style = (state: unknown) => [ours.style, theirs.style(state)];
+  else if (ours.style != null || theirs.style != null) out.style = [ours.style, theirs.style];
   for (const key in theirs) {
     if (!isHandler(key)) continue;
     const mine = ours[key];

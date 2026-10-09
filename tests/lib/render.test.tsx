@@ -101,3 +101,13 @@ test('props the element sets to undefined do not wipe ours', () => {
   expect(merged.disabled).toBe(true);
   expect(merged.accessibilityLabel).toBe('a');
 });
+
+test('element function style stays a function and resolves with the host state, after ours', () => {
+  const merged = mergeProps(
+    { style: { margin: 1, padding: 1 } },
+    { style: ({ pressed }: { pressed: boolean }) => ({ margin: pressed ? 5 : 2 }) },
+  );
+  expect(typeof merged.style).toBe('function');
+  expect(StyleSheet.flatten(merged.style({ pressed: true }))).toEqual({ margin: 5, padding: 1 });
+  expect(StyleSheet.flatten(merged.style({ pressed: false }))).toEqual({ margin: 2, padding: 1 });
+});

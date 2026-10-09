@@ -132,3 +132,10 @@ test('render path reports disabled in state and does not crash on a non-pressabl
   expect(fn).toHaveBeenLastCalledWith(expect.anything(), { pressed: false, disabled: true });
   expect(screen.getByTestId('v')).toBeOnTheScreen();
 });
+
+test('render element with a function style keeps variant style and applies the element style', () => {
+  render(
+    <Button variant="outline" render={<Pressable style={({ pressed }) => ({ marginTop: pressed ? 7 : 3 })} />}>Go</Button>,
+  );
+  expect(screen.getByRole('button')).toHaveStyle({ backgroundColor: lightColors.background, marginTop: 3 });
+});
