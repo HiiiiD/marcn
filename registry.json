@@ -18,6 +18,14 @@
       "dependencies": ["lucide-react-native", "react-native-svg"],
       "registryDependencies": ["@marcn/theme"],
       "files": [{ "path": "registry/marcn/ui/icon.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "text",
+      "type": "registry:ui",
+      "title": "Text",
+      "description": "Typography with shadcn variants. Also exports TextStyleContext for parents that restyle child text.",
+      "registryDependencies": ["@marcn/theme"],
+      "files": [{ "path": "registry/marcn/ui/text.tsx", "type": "registry:ui" }]
     }
   ]
 }
