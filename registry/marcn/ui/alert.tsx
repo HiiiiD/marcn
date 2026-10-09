@@ -27,7 +27,7 @@ export function Alert({ variant = 'default', style, ...props }: ViewProps & { va
   const s = useStyles(createStyles);
   return (
     <AlertContext.Provider value={variant}>
-      <View accessibilityRole="alert" style={[s.alert, style]} {...props} />
+      <View accessible accessibilityRole="alert" style={[s.alert, style]} {...props} />
     </AlertContext.Provider>
   );
 }

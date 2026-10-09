@@ -9,7 +9,7 @@ test('has alert role and renders parts', () => {
       <AlertDescription>Something happened</AlertDescription>
     </Alert>,
   );
-  expect(screen.UNSAFE_getByProps({ accessibilityRole: 'alert' }).props.accessibilityRole).toBe('alert');
+  expect(screen.getByRole('alert')).toBeOnTheScreen();
   expect(screen.getByText('Heads up')).toHaveStyle({ fontWeight: '500' });
   expect(screen.getByText('Something happened')).toHaveStyle({ color: lightColors.mutedForeground });
 });
