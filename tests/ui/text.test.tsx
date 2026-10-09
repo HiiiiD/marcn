@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react-native';
+import { Text as RNText } from 'react-native';
 import { Text, TextStyleContext } from '@/registry/marcn/ui/text';
 import { darkColors, lightColors } from '@/registry/marcn/lib/theme';
 import { setScheme } from '../scheme';
@@ -33,4 +34,27 @@ test('context style overrides base, style prop overrides context', () => {
   );
   expect(screen.getByText('ctx')).toHaveStyle({ color: 'red', fontSize: 11 });
   expect(screen.getByText('own')).toHaveStyle({ color: 'blue', fontSize: 11 });
+});
+
+test('render element keeps variant style and a11y props', () => {
+  render(<Text variant="h1" render={<RNText testID="t" accessibilityLabel="mine" />}>Hi</Text>);
+  const el = screen.getByTestId('t');
+  expect(el).toHaveStyle({ fontSize: 36 });
+  expect(el).toHaveProp('accessibilityLabel', 'mine');
+  expect(screen.getByText('Hi')).toBeOnTheScreen();
+});
+
+test('render element still inherits TextStyleContext', () => {
+  render(
+    <TextStyleContext.Provider value={{ color: 'red' }}>
+      <Text render={<RNText testID="t" />}>Hi</Text>
+    </TextStyleContext.Provider>,
+  );
+  expect(screen.getByTestId('t')).toHaveStyle({ color: 'red' });
+});
+
+test('render function receives props', () => {
+  const fn = jest.fn((props: object) => <RNText {...props} testID="t" />);
+  render(<Text variant="muted" render={fn}>Hi</Text>);
+  expect(fn).toHaveBeenCalledWith(expect.objectContaining({ children: 'Hi' }), {});
 });

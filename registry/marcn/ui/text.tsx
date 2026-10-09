@@ -1,9 +1,10 @@
 import { createContext, useContext } from 'react';
 import { StyleSheet, Text as RNText, type TextProps as RNTextProps, type TextStyle } from 'react-native';
+import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
 
 export type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'lead' | 'large' | 'small' | 'muted';
-export type TextProps = RNTextProps & { variant?: TextVariant };
+export type TextProps = RNTextProps & { variant?: TextVariant; render?: RenderProp<RNTextProps> };
 
 export const TextStyleContext = createContext<TextStyle | undefined>(undefined);
 
@@ -21,8 +22,8 @@ const createStyles = (t: Theme) =>
     muted: { fontSize: t.fontSize.sm, color: t.colors.mutedForeground },
   });
 
-export function Text({ variant, style, ...props }: TextProps) {
+export function Text({ variant, style, render, ...props }: TextProps) {
   const s = useStyles(createStyles);
   const inherited = useContext(TextStyleContext);
-  return <RNText style={[s.base, inherited, variant && s[variant], style]} {...props} />;
+  return renderElement(RNText, render, { style: [s.base, inherited, variant && s[variant], style], ...props } as RNTextProps);
 }

@@ -31,7 +31,7 @@
       "type": "registry:ui",
       "title": "Text",
       "description": "Typography with shadcn variants. Also exports TextStyleContext for parents that restyle child text.",
-      "registryDependencies": ["@marcn/theme"],
+      "registryDependencies": ["@marcn/theme", "@marcn/render"],
       "files": [{ "path": "registry/marcn/ui/text.tsx", "type": "registry:ui" }]
     },
     {
