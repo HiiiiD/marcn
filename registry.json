@@ -148,6 +148,13 @@
       "description": "Determinate progress bar (0-100).",
       "registryDependencies": ["@marcn/theme"],
       "files": [{ "path": "registry/marcn/ui/progress.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "use-controllable-state",
+      "type": "registry:lib",
+      "title": "useControllableState",
+      "description": "Hook behind value/defaultValue/onValueChange props: works controlled or uncontrolled.",
+      "files": [{ "path": "registry/marcn/lib/use-controllable-state.ts", "type": "registry:lib" }]
     }
   ]
 }
