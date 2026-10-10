@@ -256,6 +256,13 @@
       "title": "Popover position",
       "description": "Pure anchor/side/align positioning with flip and clamp, used by Popover.",
       "files": [{ "path": "registry/marcn/lib/popover-position.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "back-stack",
+      "type": "registry:lib",
+      "title": "Back stack",
+      "description": "Hardware back handling for stacked overlays: only the topmost one is dismissed.",
+      "files": [{ "path": "registry/marcn/lib/back-stack.ts", "type": "registry:lib" }]
     }
   ]
 }
