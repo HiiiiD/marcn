@@ -72,12 +72,12 @@ export type DropdownMenuCheckboxItemProps = ItemProps & {
   onCheckedChange?: (checked: boolean) => void;
 };
 
-export function DropdownMenuCheckboxItem({ checked = false, onCheckedChange, onSelect, ...props }: DropdownMenuCheckboxItemProps) {
+export function DropdownMenuCheckboxItem({ checked = false, onCheckedChange, onSelect, accessibilityState, ...props }: DropdownMenuCheckboxItemProps) {
   const select = useSelect(onSelect, () => onCheckedChange?.(!checked));
   return (
     <MenuItemRow
       accessibilityRole="checkbox"
-      accessibilityState={{ checked }}
+      accessibilityState={{ ...accessibilityState, checked }}
       indicator={checked ? <Icon icon={Check} /> : null}
       onPress={select}
       {...props}
@@ -113,7 +113,7 @@ export function DropdownMenuRadioGroup({ value: valueProp, defaultValue, onValue
 
 export type DropdownMenuRadioItemProps = ItemProps & { value: string };
 
-export function DropdownMenuRadioItem({ value, onSelect, ...props }: DropdownMenuRadioItemProps) {
+export function DropdownMenuRadioItem({ value, onSelect, accessibilityState, ...props }: DropdownMenuRadioItemProps) {
   const group = useContext(RadioContext);
   if (!group) throw new Error('DropdownMenuRadioItem must be used within a DropdownMenuRadioGroup');
   const checked = group.value === value;
@@ -121,7 +121,7 @@ export function DropdownMenuRadioItem({ value, onSelect, ...props }: DropdownMen
   return (
     <MenuItemRow
       accessibilityRole="radio"
-      accessibilityState={{ checked }}
+      accessibilityState={{ ...accessibilityState, checked }}
       indicator={checked ? <Icon icon={Circle} size={8} fill="currentColor" /> : null}
       onPress={select}
       {...props}
@@ -168,7 +168,7 @@ export function DropdownMenuSubTrigger(props: DropdownMenuSubTriggerProps) {
 export function DropdownMenuSubContent({ dismissable, initialFocusRef, ...props }: DropdownMenuContentProps) {
   const close = useContext(MenuCloseContext);
   return (
-    <Overlay modal scrim={false} dismissable={dismissable} initialFocusRef={initialFocusRef}>
+    <Overlay modal scrim={false} dismissable={dismissable} initialFocusRef={initialFocusRef} onBackdropPress={close ?? undefined}>
       <MenuCloseContext.Provider value={close}>
         <MenuSurface role="menu" side="right" align="start" sideOffset={0} {...props} />
       </MenuCloseContext.Provider>

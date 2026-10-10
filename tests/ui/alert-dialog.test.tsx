@@ -106,3 +106,18 @@ test('forwards ref to the surface', () => {
   setup({ defaultOpen: true }, { ref });
   expect(ref.current).not.toBeNull();
 });
+
+test('without a Cancel button focus falls back to the dialog itself', () => {
+  const focus = jest.spyOn(AccessibilityInfo, 'sendAccessibilityEvent').mockImplementation(() => {});
+  render(
+    <PortalHost>
+      <AlertDialog defaultOpen>
+        <AlertDialogContent>
+          <AlertDialogAction>Ok</AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
+    </PortalHost>,
+  );
+  const targets = focus.mock.calls.map(([node]) => (node as unknown as { props: { testID?: string } }).props.testID);
+  expect(targets).toContain('overlay-content');
+});

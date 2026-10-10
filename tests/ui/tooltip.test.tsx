@@ -126,3 +126,31 @@ test('text content inherits the tooltip text style', () => {
   setup({ defaultOpen: true });
   expect(StyleSheet.flatten(screen.getByText('Info').props.style).color).toBe('#ffffff');
 });
+
+test('unmounting the trigger while open closes the tooltip', () => {
+  const onOpenChange = jest.fn();
+  const { view } = setup({ defaultOpen: true, onOpenChange });
+  view.rerender(
+    <PortalHost>
+      <Text>App</Text>
+      <Tooltip defaultOpen onOpenChange={onOpenChange}>
+        <TooltipContent testID="tip">Info</TooltipContent>
+      </Tooltip>
+    </PortalHost>,
+  );
+  expect(onOpenChange).toHaveBeenCalledWith(false);
+});
+
+test('the trigger hint is cleared when the content unmounts', () => {
+  const { view } = setup();
+  expect(screen.getByTestId('trigger').props.accessibilityHint).toBe('Info');
+  view.rerender(
+    <PortalHost>
+      <Text>App</Text>
+      <Tooltip>
+        <TooltipTrigger testID="trigger"><Text>Hold</Text></TooltipTrigger>
+      </Tooltip>
+    </PortalHost>,
+  );
+  expect(screen.getByTestId('trigger').props.accessibilityHint).toBeUndefined();
+});

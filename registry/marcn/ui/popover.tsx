@@ -3,10 +3,9 @@ import { StyleSheet, type LayoutChangeEvent, type View, type ViewProps } from 'r
 import Animated from 'react-native-reanimated';
 import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
 import { asText, OverlayRoot, OverlayTrigger, useOverlay, type OverlayRootProps } from '@/registry/marcn/lib/overlay-root';
-import type { Align, Side } from '@/registry/marcn/lib/popover-position';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
-import { useAnchoredPosition } from '@/registry/marcn/lib/use-anchored-position';
+import { splitAnchored, useAnchoredPosition, type AnchoredOptions } from '@/registry/marcn/lib/use-anchored-position';
 
 const createStyles = (t: Theme) =>
   StyleSheet.create({
@@ -30,16 +29,11 @@ export const Popover = OverlayRoot;
 export type PopoverProps = OverlayRootProps;
 export const PopoverTrigger = OverlayTrigger;
 
-type SurfaceProps = ViewProps & {
-  side?: Side;
-  align?: Align;
-  sideOffset?: number;
-  alignOffset?: number;
-  avoidCollisions?: boolean;
-  collisionPadding?: number;
-  render?: RenderProp<ViewProps>;
-  ref?: Ref<View>;
-};
+type SurfaceProps = ViewProps &
+  AnchoredOptions & {
+    render?: RenderProp<ViewProps>;
+    ref?: Ref<View>;
+  };
 
 export type PopoverContentProps = SurfaceProps & {
   modal?: boolean;
@@ -55,22 +49,11 @@ export function PopoverContent({ modal = false, dismissable, initialFocusRef, ..
   );
 }
 
-function PopoverSurface({
-  side,
-  align,
-  sideOffset,
-  alignOffset,
-  avoidCollisions,
-  collisionPadding,
-  style,
-  render,
-  onLayout,
-  children,
-  ...props
-}: SurfaceProps) {
+function PopoverSurface({ style, render, onLayout, children, ...rest }: SurfaceProps) {
+  const [anchored, props] = splitAnchored(rest);
   const s = useStyles(createStyles);
   const { open, triggerRef } = useOverlay();
-  const pos = useAnchoredPosition(open, triggerRef, { side, align, sideOffset, alignOffset, avoidCollisions, collisionPadding });
+  const pos = useAnchoredPosition(open, triggerRef, anchored);
 
   return renderElement(Animated.View, render, {
     ...props,

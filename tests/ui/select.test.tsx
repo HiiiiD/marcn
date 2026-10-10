@@ -1,5 +1,5 @@
 import { createRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { PortalHost } from '@/registry/marcn/lib/portal';
 import { Dialog, DialogContent } from '@/registry/marcn/ui/dialog';
@@ -166,4 +166,57 @@ test('selected and unselected options reserve the same indicator space', () => {
   const right = (label: string) => StyleSheet.flatten(screen.getByRole('option', { name: label }).props.style).paddingRight;
   expect(right('Banana')).toBe(right('Apple'));
   expect(right('Apple')).toBeGreaterThan(8);
+});
+
+test('an empty-string value shows the placeholder', () => {
+  setup({ value: '' });
+  expect(screen.getByText('Pick a fruit')).toBeOnTheScreen();
+  open();
+  expect(screen.queryByRole('option', { selected: true })).toBeNull();
+});
+
+test('a disabled select ignores picks even when opened in code; the trigger cannot re-enable it', () => {
+  const onValueChange = jest.fn();
+  setup({ disabled: true, defaultOpen: true, onValueChange }, { disabled: false });
+  fireEvent.press(screen.getByText('Apple'));
+  expect(onValueChange).not.toHaveBeenCalled();
+  expect(screen.getByRole('combobox', { includeHiddenElements: true })).toBeDisabled();
+});
+
+test('the list is never narrower than the menu minimum', () => {
+  setup({}, {}, (cb) => cb(10, 10, 60, 36));
+  open();
+  fireEvent(screen.getByTestId('list'), 'layout', { nativeEvent: { layout: { x: 0, y: 0, width: 128, height: 80 } } });
+  expect(StyleSheet.flatten(screen.getByTestId('list').props.style).minWidth).toBe(128);
+});
+
+test('closed items are not mounted, yet the selected label still shows', () => {
+  setup({ defaultValue: 'banana' });
+  expect(screen.getByText('Banana!')).toBeOnTheScreen();
+  expect(screen.queryByRole('option', { includeHiddenElements: true })).toBeNull();
+});
+
+test('a long list opens with the selected option scrolled into view', () => {
+  const scrollTo = jest
+    .spyOn(ScrollView.prototype as unknown as { scrollTo: (o: { y: number; animated: boolean }) => void }, 'scrollTo')
+    .mockImplementation(() => {});
+  const ref = createRef<View>();
+  render(
+    <PortalHost>
+      <Select defaultValue="n150">
+        <SelectTrigger testID="trigger"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          {Array.from({ length: 300 }, (_, i) => (
+            <SelectItem key={i} value={`n${i}`} ref={i === 150 ? ref : undefined}>{`Item ${i}`}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </PortalHost>,
+  );
+  expect(screen.getByText('Item 150')).toBeOnTheScreen();
+  open();
+  ref.current!.measureLayout = ((_: unknown, cb: (x: number, y: number) => void) => cb(0, 5400)) as never;
+  fireEvent(screen.getByRole('option', { selected: true }), 'layout', { nativeEvent: { layout: { x: 0, y: 5400, width: 100, height: 36 } } });
+  expect(scrollTo).toHaveBeenCalledWith(expect.objectContaining({ y: expect.any(Number), animated: false }));
+  expect(scrollTo.mock.calls[0][0].y).toBeGreaterThan(5000);
 });

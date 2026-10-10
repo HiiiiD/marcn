@@ -15,6 +15,20 @@ export type AnchoredOptions = {
   collisionPadding?: number;
 };
 
+// Splits the position props off a component's props, applying that component's own defaults.
+export function splitAnchored<P extends AnchoredOptions>(props: P, defaults: AnchoredOptions = {}) {
+  const { side, align, sideOffset, alignOffset, avoidCollisions, collisionPadding, ...rest } = props;
+  const options: AnchoredOptions = {
+    side: side ?? defaults.side,
+    align: align ?? defaults.align,
+    sideOffset,
+    alignOffset,
+    avoidCollisions,
+    collisionPadding,
+  };
+  return [options, rest] as const;
+}
+
 const UNPLACED = { left: 0, top: 0 };
 
 const sameRect = (a: Rect | null, b: Rect) => !!a && a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
@@ -63,10 +77,11 @@ export function useAnchoredPosition(open: boolean, triggerRef: RefObject<View | 
       : null;
   const position = computed && { ...computed, x: computed.x + insets.left, y: computed.y + insets.top };
 
-  const placed = useSharedValue(position ? 1 : 0);
+  const isPlaced = !!position;
+  const placed = useSharedValue(isPlaced ? 1 : 0);
   useEffect(() => {
-    placed.value = position ? 1 : 0;
-  }, [placed, position]);
+    placed.value = isPlaced ? 1 : 0;
+  }, [placed, isPlaced]);
   // Gated in the worklet: the UI thread would otherwise override a static opacity.
   const fade = useAnimatedStyle(() => ({ opacity: placed.value ? progress.value : 0 }));
 

@@ -271,7 +271,7 @@
       "type": "registry:lib",
       "title": "Menu item",
       "description": "Shared menu row, label, shortcut, separator and close context for Dropdown Menu and Select.",
-      "registryDependencies": ["@marcn/theme", "@marcn/overlay-root", "@marcn/separator", "@marcn/text"],
+      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/overlay-root", "@marcn/separator", "@marcn/text"],
       "files": [{ "path": "registry/marcn/lib/menu-item.tsx", "type": "registry:lib" }]
     },
     {
@@ -451,8 +451,8 @@
         "@marcn/overlay-root",
         "@marcn/menu-item",
         "@marcn/menu-surface",
+        "@marcn/render",
         "@marcn/use-controllable-state",
-        "@marcn/use-presence",
         "@marcn/icon",
         "@marcn/text"
       ],

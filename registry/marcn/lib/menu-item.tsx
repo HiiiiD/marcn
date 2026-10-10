@@ -1,6 +1,7 @@
 import { Children, createContext, useContext, type ReactNode, type Ref } from 'react';
 import { Pressable, StyleSheet, View, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
 import { useOverlay } from '@/registry/marcn/lib/overlay-root';
+import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
 import { Separator, type SeparatorProps } from '@/registry/marcn/ui/separator';
 import { Text, TextStyleContext, type TextProps } from '@/registry/marcn/ui/text';
@@ -40,33 +41,37 @@ export type MenuItemRowProps = Omit<PressableProps, 'style'> & {
   indicator?: ReactNode;
   indicatorSide?: 'start' | 'end';
   style?: StyleProp<ViewStyle>;
+  render?: RenderProp<PressableProps, { pressed: boolean }>;
   ref?: Ref<View>;
 };
 
 export function MenuItemRow({
-  variant = 'default', inset, indicator, indicatorSide = 'start', disabled, accessibilityState, style, children, ...props
+  variant = 'default', inset, indicator, indicatorSide = 'start', disabled, accessibilityState, style, render, children, ...props
 }: MenuItemRowProps) {
   const s = useStyles(createStyles);
   // `null` still reserves the slot, so toggling a checkbox/radio/option does not shift the row's text.
   const hasIndicator = indicator !== undefined;
   return (
     <TextStyleContext.Provider value={s.text[variant]}>
-      <Pressable
-        disabled={disabled}
-        accessibilityState={{ disabled: !!disabled, ...accessibilityState }}
-        style={({ pressed }) => [
+      {renderElement(Pressable, render, {
+        disabled,
+        accessibilityState: { disabled: !!disabled, ...accessibilityState },
+        style: ({ pressed }: { pressed: boolean }) => [
           s.base.row,
           (inset || (hasIndicator && indicatorSide === 'start')) && s.base.padStart,
           hasIndicator && indicatorSide === 'end' && s.base.padEnd,
           pressed && s.base.pressed,
           disabled && s.base.disabled,
           style,
-        ]}
-        {...props}
-      >
-        {Children.map(children as ReactNode, (child) => (typeof child === 'string' || typeof child === 'number' ? <Text>{child}</Text> : child))}
-        {!!indicator && <View style={indicatorSide === 'end' ? s.base.indicatorEnd : s.base.indicatorStart}>{indicator}</View>}
-      </Pressable>
+        ],
+        ...props,
+        children: (
+          <>
+            {Children.map(children as ReactNode, (child) => (typeof child === 'string' || typeof child === 'number' ? <Text>{child}</Text> : child))}
+            {!!indicator && <View style={indicatorSide === 'end' ? s.base.indicatorEnd : s.base.indicatorStart}>{indicator}</View>}
+          </>
+        ),
+      } as PressableProps)}
     </TextStyleContext.Provider>
   );
 }

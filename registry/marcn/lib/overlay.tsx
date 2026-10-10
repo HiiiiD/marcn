@@ -25,11 +25,12 @@ export type OverlayProps = {
   scrim?: boolean;
   dismissable?: boolean;
   dismissOnBackdrop?: boolean;
+  onBackdropPress?: () => void;
   initialFocusRef?: RefObject<View | null>;
 };
 
 export function Overlay({
-  children, modal = true, scrim = modal, dismissable = true, dismissOnBackdrop = true, initialFocusRef,
+  children, modal = true, scrim = modal, dismissable = true, dismissOnBackdrop = true, onBackdropPress, initialFocusRef,
 }: OverlayProps) {
   const ctx = useOverlay();
   const present = usePresence(ctx.open);
@@ -56,6 +57,7 @@ export function Overlay({
           scrim={scrim}
           dismissable={dismissable}
           dismissOnBackdrop={dismissOnBackdrop}
+          onBackdropPress={onBackdropPress}
           onClose={() => ctx.setOpen(false)}
           initialFocusRef={initialFocusRef}
         >
@@ -71,12 +73,13 @@ type LayerProps = {
   scrim: boolean;
   dismissable: boolean;
   dismissOnBackdrop: boolean;
+  onBackdropPress?: () => void;
   onClose: () => void;
   initialFocusRef?: RefObject<View | null>;
   children: ReactNode;
 };
 
-function OverlayLayer({ open, scrim, dismissable, dismissOnBackdrop, onClose, initialFocusRef, children }: LayerProps) {
+function OverlayLayer({ open, scrim, dismissable, dismissOnBackdrop, onBackdropPress, onClose, initialFocusRef, children }: LayerProps) {
   const progress = useProgress(open);
   const rootRef = useRef<View>(null);
   const dismiss = useCallback(() => {
@@ -86,7 +89,8 @@ function OverlayLayer({ open, scrim, dismissable, dismissOnBackdrop, onClose, in
   useBackDismiss(open, dismiss);
 
   useEffect(() => {
-    if (open) focusNode(initialFocusRef ?? rootRef);
+    // A ref with nothing attached (an AlertDialog without a Cancel) must not swallow the focus.
+    if (open) focusNode(initialFocusRef?.current ? initialFocusRef : rootRef);
   }, [open, initialFocusRef]);
 
   const scrimStyle = useAnimatedStyle(() => ({ opacity: progress.value }));
@@ -94,7 +98,7 @@ function OverlayLayer({ open, scrim, dismissable, dismissOnBackdrop, onClose, in
   return (
     <View style={styles.fill}>
       <Animated.View style={[styles.fill, scrim && styles.scrim, scrimStyle, { pointerEvents: open ? 'auto' : 'none' }]}>
-        <Pressable testID="overlay-backdrop" style={styles.fill} accessible={false} onPress={dismissOnBackdrop ? dismiss : undefined} />
+        <Pressable testID="overlay-backdrop" style={styles.fill} accessible={false} onPress={dismissOnBackdrop ? (dismissable && onBackdropPress) || dismiss : undefined} />
       </Animated.View>
       <View
         ref={rootRef}

@@ -1,19 +1,21 @@
-import type { Ref } from 'react';
-import { ScrollView, StyleSheet, type LayoutChangeEvent, type View, type ViewProps } from 'react-native';
+import { createContext, useCallback, useContext, useRef, type Ref } from 'react';
+import { ScrollView, StyleSheet, View, type LayoutChangeEvent, type ViewProps } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useOverlay } from '@/registry/marcn/lib/overlay-root';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
-import { useAnchoredPosition, type AnchoredOptions } from '@/registry/marcn/lib/use-anchored-position';
+import { splitAnchored, useAnchoredPosition, type AnchoredOptions } from '@/registry/marcn/lib/use-anchored-position';
 
-const createStyles = (t: Theme) =>
-  StyleSheet.create({
+const BORDER = 1;
+
+const createStyles = (t: Theme) => ({
+  ...StyleSheet.create({
     surface: {
       position: 'absolute',
       minWidth: 128,
       padding: t.spacing[1],
       borderRadius: t.radius.md,
-      borderWidth: 1,
+      borderWidth: BORDER,
       borderColor: t.colors.border,
       backgroundColor: t.colors.popover,
       shadowColor: '#000',
@@ -22,7 +24,16 @@ const createStyles = (t: Theme) =>
       shadowOffset: { width: 0, height: 2 },
       elevation: 4,
     },
-  });
+  }),
+  chrome: (t.spacing[1] + BORDER) * 2,
+});
+
+const ScrollContext = createContext<((node: View) => void) | null>(null);
+
+// Lets a row bring itself into view in a long list; a no-op outside a MenuSurface.
+export function useScrollIntoView() {
+  return useContext(ScrollContext);
+}
 
 export type MenuSurfaceProps = ViewProps &
   AnchoredOptions & {
@@ -31,34 +42,39 @@ export type MenuSurfaceProps = ViewProps &
     ref?: Ref<View>;
   };
 
-export function MenuSurface({
-  side = 'bottom',
-  align = 'start',
-  sideOffset,
-  alignOffset,
-  avoidCollisions,
-  collisionPadding,
-  matchTriggerWidth,
-  style,
-  render,
-  onLayout,
-  children,
-  ...props
-}: MenuSurfaceProps) {
+export function MenuSurface({ matchTriggerWidth, style, render, onLayout, children, ref, ...rest }: MenuSurfaceProps) {
+  const [anchored, props] = splitAnchored(rest, { side: 'bottom', align: 'start' });
   const s = useStyles(createStyles);
   const { open, triggerRef } = useOverlay();
-  const pos = useAnchoredPosition(open, triggerRef, { side, align, sideOffset, alignOffset, avoidCollisions, collisionPadding });
+  const pos = useAnchoredPosition(open, triggerRef, anchored);
+  const scrollRef = useRef<ScrollView>(null);
+  const contentRef = useRef<View>(null);
+
+  const scrollIntoView = useCallback((node: View) => {
+    const content = contentRef.current;
+    if (!content) return;
+    node.measureLayout(content, (_x, y) => scrollRef.current?.scrollTo({ y: Math.max(0, y - 8), animated: false }), () => {});
+  }, []);
 
   return renderElement(Animated.View, render, {
     ...props,
+    ref,
     onLayout: (e: LayoutChangeEvent) => {
       pos.onLayout(e);
       onLayout?.(e);
     },
-    style: [s.surface, pos.style, matchTriggerWidth && pos.anchor && { minWidth: pos.anchor.width }, style],
+    style: [s.surface, pos.style, matchTriggerWidth && pos.anchor && { minWidth: Math.max(128, pos.anchor.width) }, style],
     children: (
-      <ScrollView style={{ maxHeight: pos.maxHeight }} keyboardShouldPersistTaps="handled" bounces={false}>
-        {children}
+      <ScrollView
+        ref={scrollRef}
+        style={{ maxHeight: Math.max(0, pos.maxHeight - s.chrome) }}
+        keyboardShouldPersistTaps="handled"
+        nestedScrollEnabled
+        bounces={false}
+      >
+        <View ref={contentRef} collapsable={false}>
+          <ScrollContext.Provider value={scrollIntoView}>{children}</ScrollContext.Provider>
+        </View>
       </ScrollView>
     ),
   } as ViewProps);

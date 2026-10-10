@@ -7,7 +7,7 @@ import { asText } from '@/registry/marcn/lib/overlay-root';
 import { Portal } from '@/registry/marcn/lib/portal';
 import { mergeRefs, renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
-import { useAnchoredPosition, type AnchoredOptions } from '@/registry/marcn/lib/use-anchored-position';
+import { splitAnchored, useAnchoredPosition, type AnchoredOptions } from '@/registry/marcn/lib/use-anchored-position';
 import { useControllableState } from '@/registry/marcn/lib/use-controllable-state';
 import { usePresence } from '@/registry/marcn/lib/use-presence';
 import { TextStyleContext } from '@/registry/marcn/ui/text';
@@ -30,6 +30,7 @@ type TooltipContextValue = {
   open: boolean;
   setOpen: (open: boolean) => void;
   triggerRef: RefObject<View | null>;
+  alive: RefObject<boolean>;
   hint?: string;
   setHint: (hint?: string) => void;
   delayDuration: number;
@@ -57,8 +58,15 @@ export function Tooltip({ open: openProp, defaultOpen = false, onOpenChange, del
   const [open, setOpen] = useControllableState({ value: openProp, defaultValue: defaultOpen, onChange: onOpenChange });
   const [hint, setHint] = useState<string>();
   const triggerRef = useRef<View>(null);
+  const alive = useRef(true);
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+    };
+  }, []);
   const value = useMemo(
-    () => ({ open, setOpen, triggerRef, hint, setHint, delayDuration, duration }),
+    () => ({ open, setOpen, triggerRef, alive, hint, setHint, delayDuration, duration }),
     [open, setOpen, hint, delayDuration, duration],
   );
   return <TooltipContext.Provider value={value}>{children}</TooltipContext.Provider>;
@@ -69,7 +77,16 @@ export type TooltipTriggerProps = PressableProps & { render?: RenderProp<Pressab
 export function TooltipTrigger({ render, onLongPress, onPressOut, ref, children, ...props }: TooltipTriggerProps) {
   const ctx = useTooltip();
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  useEffect(() => () => clearTimeout(timer.current), []);
+  const latest = useRef(ctx);
+  latest.current = ctx;
+  useEffect(
+    () => () => {
+      clearTimeout(timer.current);
+      // Only the trigger going away closes it; tearing down the whole tooltip is not a user-visible close.
+      if (latest.current.alive.current && latest.current.open) latest.current.setOpen(false);
+    },
+    [],
+  );
 
   return renderElement(
     Pressable,
@@ -105,6 +122,7 @@ export function TooltipContent({ children, ...props }: TooltipContentProps) {
 
   useEffect(() => {
     setHint(typeof children === 'string' ? children : undefined);
+    return () => setHint(undefined);
   }, [children, setHint]);
 
   if (!present) return null;
@@ -117,22 +135,11 @@ export function TooltipContent({ children, ...props }: TooltipContentProps) {
   );
 }
 
-function TooltipSurface({
-  side = 'top',
-  align,
-  sideOffset,
-  alignOffset,
-  avoidCollisions,
-  collisionPadding,
-  style,
-  render,
-  onLayout,
-  children,
-  ...props
-}: TooltipContentProps) {
+function TooltipSurface({ style, render, onLayout, children, ...rest }: TooltipContentProps) {
+  const [anchored, props] = splitAnchored(rest, { side: 'top' });
   const s = useStyles(createStyles);
   const { open, triggerRef } = useTooltip();
-  const pos = useAnchoredPosition(open, triggerRef, { side, align, sideOffset, alignOffset, avoidCollisions, collisionPadding });
+  const pos = useAnchoredPosition(open, triggerRef, anchored);
 
   return (
     <TextStyleContext.Provider value={s.text.base}>

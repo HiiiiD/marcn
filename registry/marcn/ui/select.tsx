@@ -1,15 +1,17 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import {
+  Children, createContext, isValidElement, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState, type ReactNode,
+} from 'react';
 import { StyleSheet, View, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
 import { Check, ChevronDown } from 'lucide-react-native';
 import { MenuItemRow, MenuLabel, MenuSeparator, useMenuClose, type MenuItemRowProps } from '@/registry/marcn/lib/menu-item';
-import { MenuSurface, type MenuSurfaceProps } from '@/registry/marcn/lib/menu-surface';
+import { MenuSurface, useScrollIntoView, type MenuSurfaceProps } from '@/registry/marcn/lib/menu-surface';
 import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
 import {
   OverlayRoot, OverlayTrigger, useOverlay, type OverlayRootProps, type OverlayTriggerProps,
 } from '@/registry/marcn/lib/overlay-root';
+import { mergeRefs } from '@/registry/marcn/lib/render';
 import { useStyles, useTheme, type Theme } from '@/registry/marcn/lib/theme';
 import { useControllableState } from '@/registry/marcn/lib/use-controllable-state';
-import { usePresence } from '@/registry/marcn/lib/use-presence';
 import { Icon } from '@/registry/marcn/ui/icon';
 import { Text, type TextProps } from '@/registry/marcn/ui/text';
 
@@ -30,14 +32,13 @@ const createStyles = (t: Theme) =>
     disabled: { opacity: 0.5 },
     value: { flexShrink: 1, fontSize: t.fontSize.sm },
     placeholder: { color: t.colors.mutedForeground },
-    hidden: { display: 'none' },
   });
 
 type SelectContextValue = {
   value?: string;
   setValue: (value: string) => void;
   labels: Record<string, string>;
-  registerLabel: (value: string, label: string) => void;
+  registerLabels: (labels: Record<string, string>) => void;
   disabled?: boolean;
 };
 
@@ -65,13 +66,22 @@ export function Select({ value: valueProp, defaultValue, onValueChange, disabled
     },
   });
   const [labels, setLabels] = useState<Record<string, string>>({});
-  const registerLabel = useCallback(
-    (v: string, label: string) => setLabels((prev) => (prev[v] === label ? prev : { ...prev, [v]: label })),
+  const registerLabels = useCallback(
+    (next: Record<string, string>) =>
+      setLabels((prev) => (Object.keys(next).every((key) => prev[key] === next[key]) ? prev : { ...prev, ...next })),
     [],
   );
   const ctx = useMemo(
-    () => ({ value, setValue: (next: string) => setValue(next), labels, registerLabel, disabled }),
-    [value, setValue, labels, registerLabel, disabled],
+    () => ({
+      value,
+      setValue: (next: string) => {
+        if (!disabled) setValue(next);
+      },
+      labels,
+      registerLabels,
+      disabled,
+    }),
+    [value, setValue, labels, registerLabels, disabled],
   );
   return (
     <OverlayRoot {...root}>
@@ -91,7 +101,7 @@ export function SelectTrigger({ size = 'default', style, disabled, children, ...
   const { colors } = useTheme();
   const select = useSelect();
   const { open } = useOverlay();
-  const isDisabled = disabled ?? select.disabled;
+  const isDisabled = disabled || select.disabled;
   return (
     <OverlayTrigger
       accessibilityRole="combobox"
@@ -109,9 +119,10 @@ export function SelectTrigger({ size = 'default', style, disabled, children, ...
 export function SelectValue({ placeholder, style, ...props }: TextProps & { placeholder?: string }) {
   const s = useStyles(createStyles);
   const { value, labels } = useSelect();
-  const text = value === undefined ? placeholder : (labels[value] ?? value);
+  const empty = value === undefined || value === '';
+  const text = empty ? placeholder : (labels[value] ?? value);
   return (
-    <Text numberOfLines={1} style={[s.value, value === undefined && s.placeholder, style]} {...props}>
+    <Text numberOfLines={1} style={[s.value, empty && s.placeholder, style]} {...props}>
       {text}
     </Text>
   );
@@ -122,46 +133,68 @@ export type SelectContentProps = MenuSurfaceProps & {
   initialFocusRef?: OverlayProps['initialFocusRef'];
 };
 
+// Closed items are not mounted, so SelectValue learns their labels by reading the SelectItem elements.
+// Items wrapped in your own components are only discovered once the list has been opened.
+function collectLabels(children: ReactNode, into: Record<string, string> = {}) {
+  Children.forEach(children, (child) => {
+    if (!isValidElement<SelectItemProps & { children?: ReactNode }>(child)) return;
+    if (child.type === SelectItem) into[child.props.value] = itemLabel(child.props);
+    else collectLabels(child.props.children, into);
+  });
+  return into;
+}
+
 export function SelectContent({ dismissable, initialFocusRef, children, ...props }: SelectContentProps) {
-  const s = useStyles(createStyles);
   const select = useSelect();
-  const { open } = useOverlay();
-  const present = usePresence(open);
+  const { registerLabels } = select;
+  useLayoutEffect(() => registerLabels(collectLabels(children)), [registerLabels, children]);
   return (
-    <>
-      {/* Closed items are not mounted in the portal, so a hidden copy keeps their labels registered for SelectValue. */}
-      {!present && <View style={s.hidden}>{children}</View>}
-      <Overlay modal scrim={false} dismissable={dismissable} initialFocusRef={initialFocusRef}>
-        <SelectContext.Provider value={select}>
-          <MenuSurface matchTriggerWidth {...props}>
-            {children}
-          </MenuSurface>
-        </SelectContext.Provider>
-      </Overlay>
-    </>
+    <Overlay modal scrim={false} dismissable={dismissable} initialFocusRef={initialFocusRef}>
+      <SelectContext.Provider value={select}>
+        <MenuSurface matchTriggerWidth {...props}>
+          {children}
+        </MenuSurface>
+      </SelectContext.Provider>
+    </Overlay>
   );
 }
 
-export type SelectItemProps = Omit<MenuItemRowProps, 'onPress' | 'indicator' | 'indicatorSide' | 'variant'> & {
+export type SelectItemProps = Omit<MenuItemRowProps, 'onPress' | 'indicator' | 'indicatorSide' | 'variant' | 'children'> & {
+  children?: ReactNode;
   value: string;
   label?: string;
 };
 
-export function SelectItem({ value, label, children, ...props }: SelectItemProps) {
+const itemLabel = ({ value, label, children }: { value: string; label?: string; children?: ReactNode }) =>
+  label ?? (typeof children === 'string' ? children : value);
+
+export function SelectItem({ value, label, children, ref, onLayout, accessibilityState, ...props }: SelectItemProps) {
   const select = useSelect();
   const close = useMenuClose();
-  const text = label ?? (typeof children === 'string' ? children : value);
-  const { registerLabel } = select;
-  useEffect(() => {
-    registerLabel(value, text);
-  }, [registerLabel, value, text]);
-  const selected = select.value === value;
+  const scrollIntoView = useScrollIntoView();
+  const rowRef = useRef<View>(null);
+  const text = itemLabel({ value, label, children });
+  const { registerLabels } = select;
+  useLayoutEffect(() => {
+    registerLabels({ [value]: text });
+  }, [registerLabels, value, text]);
+  const selected = value !== '' && select.value === value;
+  // Once per mount: a long list opens on the chosen option instead of the top.
+  const scrolled = useRef(false);
   return (
     <MenuItemRow
+      ref={mergeRefs(ref, rowRef)}
       role="option"
-      accessibilityState={{ selected }}
+      accessibilityState={{ ...accessibilityState, selected }}
       indicator={selected ? <Icon icon={Check} /> : null}
       indicatorSide="end"
+      onLayout={(e) => {
+        onLayout?.(e);
+        if (selected && !scrolled.current && rowRef.current && scrollIntoView) {
+          scrolled.current = true;
+          scrollIntoView(rowRef.current);
+        }
+      }}
       onPress={() => {
         select.setValue(value);
         close();

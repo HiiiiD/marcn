@@ -36,6 +36,23 @@ function FruitSelect() {
   );
 }
 
+const numbers = Array.from({ length: 300 }, (_, i) => `Item ${i + 1}`);
+
+function LongSelect() {
+  return (
+    <Select defaultValue="Item 150">
+      <SelectTrigger style={styles.select}>
+        <SelectValue placeholder="Pick one" />
+      </SelectTrigger>
+      <SelectContent>
+        {numbers.map((n) => (
+          <SelectItem key={n} value={n}>{n}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 function Actions() {
   const [bookmarks, setBookmarks] = useState(true);
   const [position, setPosition] = useState('bottom');
@@ -71,6 +88,7 @@ export function Menus() {
       <View style={styles.row}>
         <Actions />
         <FruitSelect />
+        <LongSelect />
         <Tooltip>
           <TooltipTrigger render={outline}>Long-press me</TooltipTrigger>
           <TooltipContent>Add to library</TooltipContent>

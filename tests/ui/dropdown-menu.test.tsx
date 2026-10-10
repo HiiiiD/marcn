@@ -1,5 +1,5 @@
 import { createRef } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { act, fireEvent, isHiddenFromAccessibility, render, screen } from '@testing-library/react-native';
 import { PortalHost } from '@/registry/marcn/lib/portal';
 import { Dialog, DialogContent } from '@/registry/marcn/ui/dialog';
@@ -297,4 +297,44 @@ test('string children next to other elements are wrapped in Text, not left as ra
   open();
   expect(screen.getByText('Profile')).toBeOnTheScreen();
   expect(screen.getByText('Shift+P')).toBeOnTheScreen();
+});
+
+test('an outside tap while a sub-menu is open closes the whole menu', () => {
+  jest.useFakeTimers();
+  subMenu();
+  fireEvent.press(screen.getByText('More'));
+  const backdrops = screen.getAllByTestId('overlay-backdrop');
+  fireEvent.press(backdrops[backdrops.length - 1]);
+  act(() => { jest.advanceTimersByTime(300); });
+  expect(screen.queryByText('Nested')).toBeNull();
+  expect(screen.queryByText('Top item', { includeHiddenElements: true })).toBeNull();
+});
+
+test('a consumer accessibilityState keeps the checked state', () => {
+  setup(
+    {},
+    <>
+      <DropdownMenuCheckboxItem checked accessibilityState={{ busy: true }}>On</DropdownMenuCheckboxItem>
+      <DropdownMenuRadioGroup defaultValue="a">
+        <DropdownMenuRadioItem value="a" accessibilityState={{ busy: true }}>A</DropdownMenuRadioItem>
+      </DropdownMenuRadioGroup>
+    </>,
+  );
+  open();
+  expect(screen.getByRole('checkbox', { checked: true, busy: true })).toBeOnTheScreen();
+  expect(screen.getByRole('radio', { checked: true, busy: true })).toBeOnTheScreen();
+});
+
+test('items accept a render prop', () => {
+  setup({}, <DropdownMenuItem render={<Pressable testID="custom" />}>Profile</DropdownMenuItem>);
+  open();
+  expect(screen.getByTestId('custom')).toHaveTextContent('Profile');
+  expect(screen.getByRole('menuitem')).toBe(screen.getByTestId('custom'));
+});
+
+test('the list height leaves room for the surface padding and border', () => {
+  setup({}, <DropdownMenuItem>Profile</DropdownMenuItem>);
+  open();
+  const { height } = Dimensions.get('window');
+  expect(StyleSheet.flatten(screen.UNSAFE_getByType(ScrollView).props.style).maxHeight).toBe(height - 16 - 10);
 });
