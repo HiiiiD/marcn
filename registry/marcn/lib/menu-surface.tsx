@@ -4,7 +4,7 @@ import Animated from 'react-native-reanimated';
 import { useOverlay } from '@/registry/marcn/lib/overlay-root';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
-import { splitAnchored, useAnchoredPosition, type AnchoredOptions } from '@/registry/marcn/lib/use-anchored-position';
+import { splitAnchored, useAnchoredPosition, type AnchoredOptions, type AnchorPoint } from '@/registry/marcn/lib/use-anchored-position';
 
 const BORDER = 1;
 
@@ -38,15 +38,16 @@ export function useScrollIntoView() {
 export type MenuSurfaceProps = ViewProps &
   AnchoredOptions & {
     matchTriggerWidth?: boolean;
+    anchorPoint?: AnchorPoint | null;
     render?: RenderProp<ViewProps>;
     ref?: Ref<View>;
   };
 
-export function MenuSurface({ matchTriggerWidth, style, render, onLayout, children, ref, ...rest }: MenuSurfaceProps) {
+export function MenuSurface({ matchTriggerWidth, anchorPoint, style, render, onLayout, children, ref, ...rest }: MenuSurfaceProps) {
   const [anchored, props] = splitAnchored(rest, { side: 'bottom', align: 'start' });
   const s = useStyles(createStyles);
   const { open, triggerRef } = useOverlay();
-  const pos = useAnchoredPosition(open, triggerRef, anchored);
+  const pos = useAnchoredPosition(open, triggerRef, { ...anchored, point: anchorPoint });
   const scrollRef = useRef<ScrollView>(null);
   const contentRef = useRef<View>(null);
 

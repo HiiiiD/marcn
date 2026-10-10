@@ -42,6 +42,14 @@ Components that render a single host element (Button, Text, Badge, Card root) ac
 - State that `Pressable` would normally provide (Button's `pressed`) must be tracked by the component on the `render` path, because the rendered element may not accept function styles. Keep the default path unchanged.
 - Tests: element form, function form (props and state), ref reaching the host, and `TextStyleContext` inheritance. Do not add an `asChild` prop; `render` is the only mechanism.
 
+## Upstream reference: shadcn on Base UI, not Radix
+
+When porting a shadcn component, follow the Base UI version of shadcn/ui (the one built on `@base-ui/react`), not the Radix one. That decides the API shape, the part names and the behavior.
+
+- Use `render` (never `asChild`), see the `render` prop section.
+- Match Base UI's anatomy and semantics where it differs from Radix. Example: Combobox puts the text input in the trigger (inline typing, `ComboboxInput` with the list in a popup), instead of a Popover with a search box inside it.
+- Check the Base UI docs and the shadcn Base UI registry before designing a component, and record any deliberate deviation (mobile keyboard, touch) as a ruling in the spec.
+
 ## Testing notes
 
 - RNTL v13: `getByRole` only matches accessible elements; pass `{ includeHiddenElements: true }` for views hidden from accessibility.
