@@ -523,6 +523,37 @@
         "@marcn/text"
       ],
       "files": [{ "path": "registry/marcn/ui/select.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "otp-state",
+      "type": "registry:lib",
+      "title": "OTP state",
+      "description": "Sanitizing and active-slot helpers for Input OTP.",
+      "files": [{ "path": "registry/marcn/lib/otp-state.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "otp-caret",
+      "type": "registry:lib",
+      "title": "OTP caret",
+      "description": "Blinking caret shown in the active Input OTP slot.",
+      "dependencies": ["react-native-reanimated@4.5.1"],
+      "registryDependencies": ["@marcn/theme"],
+      "files": [{ "path": "registry/marcn/lib/otp-caret.tsx", "type": "registry:lib" }]
+    },
+    {
+      "name": "input-otp",
+      "type": "registry:ui",
+      "title": "Input OTP",
+      "description": "One-time-code input: hidden text field with visual slots, groups and separator; paste and SMS autofill.",
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/use-controllable-state",
+        "@marcn/text",
+        "@marcn/otp-state",
+        "@marcn/otp-caret"
+      ],
+      "files": [{ "path": "registry/marcn/ui/input-otp.tsx", "type": "registry:ui" }]
     }
   ]
 }

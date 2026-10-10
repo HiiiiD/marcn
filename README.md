@@ -44,7 +44,7 @@ Components install with a shared `theme.ts` in your `lib` alias. Edit its tokens
 
 ## Components
 
-`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `select`, `calendar`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `calendar-math`, `calendar-styles`, `calendar-range-drag`, `calendar-month`, `calendar-picker`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset`, `use-anchored-position`, `menu-item` and `menu-surface` lib items.
+`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `select`, `calendar`, `input-otp`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `calendar-math`, `calendar-styles`, `calendar-range-drag`, `calendar-month`, `calendar-picker`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset`, `use-anchored-position`, `menu-item`, `menu-surface`, `otp-state` and `otp-caret` lib items.
 
 Components are designed to be edited in place: once added, the code is yours.
 
@@ -95,3 +95,7 @@ Differences on native: `Tooltip` opens on long press (there is no hover) and clo
 ## Development
 
 Run `corepack enable` once, then `yarn install` (in the repo root and in `apps/example`). Use `yarn test`, `yarn typecheck`, `yarn registry:validate` and `yarn example:sync`.
+
+## Input OTP
+
+`input-otp` follows shadcn/ui (`InputOTP`, `InputOTPGroup`, `InputOTPSlot`, `InputOTPSeparator`): `maxLength`, `value`/`defaultValue`/`onChange`, `onComplete`, `pattern` (a single-character RegExp, digits by default). A transparent `TextInput` sits over the slots, so paste and SMS autofill (`oneTimeCode`) work; `inputRef` reaches it and `ref` reaches the container. The caret is always at the end (no mid-code editing) and slots are bordered individually. Every part accepts `render`.
