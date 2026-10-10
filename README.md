@@ -44,7 +44,7 @@ Components install with a shared `theme.ts` in your `lib` alias. Edit its tokens
 
 ## Components
 
-`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, plus the `theme`, `render`, `use-controllable-state` and `slider-math` lib items.
+`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence` and `use-keyboard-inset` lib items.
 
 Components are designed to be edited in place: once added, the code is yours.
 
@@ -63,6 +63,18 @@ Merging: the element's own props win; `style` becomes `[marcn, element]`; `onX` 
 `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group` and `slider` follow the shadcn/ui prop names (`value`/`defaultValue`/`onValueChange`, `type="single" | "multiple"`, `value: number[]` for Slider). Differences on native: no keyboard or focus navigation, no RTL, `Tabs` `activationMode` is accepted but both modes select on press, and Collapsible animates height with reanimated.
 
 `slider` needs `react-native-gesture-handler`: wrap your app root in `GestureHandlerRootView` (`style={{ flex: 1 }}`). A `render` element on Slider must be a native view that accepts a ref.
+
+## Overlays
+
+`dialog`, `popover` and `sheet` render through a JS portal so they can stack (for example a Dialog opened from a Sheet). Mount `PortalHost` once at your app root; it also provides the `GestureHandlerRootView` that `slider` and `sheet` need and a `SafeAreaProvider` (`react-native-safe-area-context`) so overlays keep clear of the status bar, gesture bar and, on Android, the navigation bar under the keyboard:
+
+    import { PortalHost } from '@/lib/portal';
+
+    export default function App() {
+      return <PortalHost>{/* your app */}</PortalHost>;
+    }
+
+Without a host, overlays render nothing and log a dev warning. Overlays follow the shadcn/ui prop names (`open`/`defaultOpen`/`onOpenChange`). Differences on native: no react-native-web support and no Tab-key focus trap. Screen-reader focus is contained to the topmost modal layer, moves into the overlay on open and back to the trigger on close; Android back and the iOS accessibility escape gesture dismiss the topmost layer. `Popover` is non-modal by default (`modal` adds a scrim and contains focus), positions with `side`/`align`/offsets and flips or clamps near screen edges (`collisionPadding`). `Sheet` supports `side` and `snapPoints` (fractions of the window or pixels; `snapIndex`/`defaultSnapIndex`/`onSnapIndexChange` pick the current one). Dragging its handle snaps between them, stretches with a spring-back past the largest, and dismisses when pulled down from the smallest. With several snap points the handle is an `adjustable` for screen readers (increment/decrement steps between them). Dialog and Sheet lift above the keyboard; Popover repositions around it. Compose `SheetClose` for a close button; Dialog has a built-in corner close (`showCloseButton`).
 
 ## Development
 

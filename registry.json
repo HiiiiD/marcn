@@ -249,6 +249,122 @@
         "@marcn/slider-math"
       ],
       "files": [{ "path": "registry/marcn/ui/slider.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "popover-position",
+      "type": "registry:lib",
+      "title": "Popover position",
+      "description": "Pure anchor/side/align positioning with flip and clamp, used by Popover.",
+      "files": [{ "path": "registry/marcn/lib/popover-position.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "back-stack",
+      "type": "registry:lib",
+      "title": "Back stack",
+      "description": "Hardware back handling for stacked overlays: only the topmost one is dismissed.",
+      "files": [{ "path": "registry/marcn/lib/back-stack.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "use-presence",
+      "type": "registry:lib",
+      "title": "usePresence",
+      "description": "Keeps overlay content mounted through its exit animation; useProgress animates 0 to 1.",
+      "dependencies": ["react-native-reanimated"],
+      "files": [{ "path": "registry/marcn/lib/use-presence.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "use-keyboard-inset",
+      "type": "registry:lib",
+      "title": "useKeyboardInset",
+      "description": "Keyboard height as React state and as an animated shared value.",
+      "dependencies": ["react-native-reanimated", "react-native-safe-area-context"],
+      "files": [{ "path": "registry/marcn/lib/use-keyboard-inset.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "sheet-snap",
+      "type": "registry:lib",
+      "title": "Sheet snap",
+      "description": "Pure drag math for Sheet: rubber-band stretch, snap-point and dismiss resolution.",
+      "files": [{ "path": "registry/marcn/lib/sheet-snap.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "portal",
+      "type": "registry:lib",
+      "title": "Portal",
+      "description": "PortalHost (mount once at the app root) and Portal: stacked layers with accessibility containment.",
+      "dependencies": ["react-native-gesture-handler", "react-native-safe-area-context"],
+      "files": [{ "path": "registry/marcn/lib/portal.tsx", "type": "registry:lib" }]
+    },
+    {
+      "name": "overlay-root",
+      "type": "registry:lib",
+      "title": "Overlay root",
+      "description": "Open state, trigger ref and Trigger/Close parts shared by Dialog, Popover and Sheet.",
+      "registryDependencies": ["@marcn/render", "@marcn/use-controllable-state", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/lib/overlay-root.tsx", "type": "registry:lib" }]
+    },
+    {
+      "name": "overlay",
+      "type": "registry:lib",
+      "title": "Overlay",
+      "description": "Presence, scrim, back handling and focus for a stacked overlay layer.",
+      "dependencies": ["react-native-reanimated"],
+      "registryDependencies": ["@marcn/back-stack", "@marcn/overlay-root", "@marcn/portal", "@marcn/use-presence"],
+      "files": [{ "path": "registry/marcn/lib/overlay.tsx", "type": "registry:lib" }]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "Centered modal dialog on the portal layer: stacks, dismisses on back/scrim, avoids the keyboard.",
+      "dependencies": ["lucide-react-native", "react-native-reanimated", "react-native-safe-area-context"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/text",
+        "@marcn/icon",
+        "@marcn/overlay",
+        "@marcn/overlay-root",
+        "@marcn/use-presence",
+        "@marcn/use-keyboard-inset"
+      ],
+      "files": [{ "path": "registry/marcn/ui/dialog.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "Anchored popover on the portal layer with flip/clamp positioning and keyboard awareness.",
+      "dependencies": ["react-native-reanimated", "react-native-safe-area-context"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/overlay",
+        "@marcn/overlay-root",
+        "@marcn/popover-position",
+        "@marcn/use-presence",
+        "@marcn/use-keyboard-inset"
+      ],
+      "files": [{ "path": "registry/marcn/ui/popover.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "sheet",
+      "type": "registry:ui",
+      "title": "Sheet",
+      "description": "Edge-anchored sheet on the portal layer with snap points, rubber-band drag handle, stacking and keyboard lift.",
+      "dependencies": ["react-native-gesture-handler", "react-native-reanimated", "react-native-safe-area-context"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/dialog",
+        "@marcn/overlay",
+        "@marcn/overlay-root",
+        "@marcn/sheet-snap",
+        "@marcn/use-controllable-state",
+        "@marcn/use-presence",
+        "@marcn/use-keyboard-inset"
+      ],
+      "files": [{ "path": "registry/marcn/ui/sheet.tsx", "type": "registry:ui" }]
     }
   ]
 }
