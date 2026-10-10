@@ -19,6 +19,8 @@ export type ComboboxContextValue = {
   disabled?: boolean;
   anchorRef: RefObject<View | null>;
   inputRef: RefObject<TextInput | null>;
+  anchorTick: number;
+  bumpAnchor: () => void;
   isSelected: (value: string) => boolean;
   isDisabled: (value: string) => boolean;
   labelOf: (value: string) => string;
@@ -90,6 +92,9 @@ export function useComboboxState({
   });
   // Only text the user typed filters: opening with a selected label showing in the input lists everything.
   const [edited, setEdited] = useState(false);
+  // Bumped when an anchor lays out again (chips wrapping), so the popup re-measures it.
+  const [anchorTick, setAnchorTick] = useState(0);
+  const bumpAnchor = useCallback(() => setAnchorTick((n) => n + 1), []);
   const query = edited ? inputValue : '';
 
   const setOpen = useCallback((next: boolean) => {
@@ -149,6 +154,8 @@ export function useComboboxState({
       disabled,
       anchorRef,
       inputRef,
+      anchorTick,
+      bumpAnchor,
       isSelected: (v) => values.includes(v),
       isDisabled: (v) => !!byValue.get(v)?.disabled,
       labelOf,
@@ -164,10 +171,14 @@ export function useComboboxState({
         setEdited(false);
       },
       submit: () => {
+        if (!edited) {
+          if (!multiple) setOpen(false);
+          return;
+        }
         const first = filtered.find((o) => !o.disabled);
         if (!first) return;
         select(first.value);
       },
     };
-  }, [open, setOpen, value, setValue, rows, filtered, byValue, find, labelOf, inputValue, query, setInputValue, multiple, disabled]);
+  }, [open, setOpen, value, setValue, rows, filtered, byValue, find, labelOf, inputValue, query, edited, anchorTick, bumpAnchor, setInputValue, multiple, disabled]);
 }

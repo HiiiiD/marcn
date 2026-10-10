@@ -1,4 +1,4 @@
-import { useCallback, type Ref } from 'react';
+import { useCallback, useEffect, type Ref } from 'react';
 import { Pressable, StyleSheet, View, type LayoutChangeEvent, type ViewProps } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useBackDismiss } from '@/registry/marcn/lib/back-stack';
@@ -9,8 +9,6 @@ import { splitAnchored, useAnchoredPosition, type AnchoredOptions } from '@/regi
 import { usePresence } from '@/registry/marcn/lib/use-presence';
 
 const PAD = 8;
-const SIDE_OFFSET = 4;
-const NO_ANCHOR = { x: 0, y: 0, width: 0, height: 0 };
 
 const createStyles = (t: Theme) =>
   StyleSheet.create({
@@ -30,7 +28,7 @@ const createStyles = (t: Theme) =>
     },
   });
 
-export type ComboboxContentProps = ViewProps & AnchoredOptions & { dismissable?: boolean; ref?: Ref<View> };
+export type ComboboxContentProps = ViewProps & Omit<AnchoredOptions, 'side'> & { dismissable?: boolean; ref?: Ref<View> };
 
 export function ComboboxContent({ dismissable = true, ...props }: ComboboxContentProps) {
   const combobox = useCombobox();
@@ -47,30 +45,30 @@ export function ComboboxContent({ dismissable = true, ...props }: ComboboxConten
 }
 
 function ComboboxPopup({ dismissable, style, onLayout, ...rest }: Omit<ComboboxContentProps, 'ref'> & { dismissable: boolean }) {
-  const [anchored, props] = splitAnchored(rest, { align: 'start', sideOffset: SIDE_OFFSET });
+  const [anchored, props] = splitAnchored(rest, { align: 'start' });
   const s = useStyles(createStyles);
-  const { open, setOpen, anchorRef } = useCombobox();
+  const { open, setOpen, anchorRef, anchorTick } = useCombobox();
   const dismiss = useCallback(() => {
     if (dismissable) setOpen(false);
   }, [dismissable, setOpen]);
   useBackDismiss(open, dismiss);
 
   const pos = useAnchoredPosition(open, anchorRef, { ...anchored, fit: true });
-  const a = pos.anchor ?? NO_ANCHOR;
+  const a = pos.anchor;
+  const { measure } = pos;
+  useEffect(measure, [measure, anchorTick]);
 
   const edge = { pointerEvents: open ? 'auto' : 'none' } as const;
-  const right = a.x + a.width;
-  const bottom = a.y + a.height;
-  const hole = {
+  const hole = a && {
     top: { top: 0, left: 0, right: 0, height: a.y },
-    bottom: { top: bottom, left: 0, right: 0, bottom: 0 },
+    bottom: { top: a.y + a.height, left: 0, right: 0, bottom: 0 },
     left: { top: a.y, left: 0, width: a.x, height: a.height },
-    right: { top: a.y, left: right, right: 0, height: a.height },
+    right: { top: a.y, left: a.x + a.width, right: 0, height: a.height },
   };
 
   return (
     <View style={s.layer}>
-      {(Object.keys(hole) as (keyof typeof hole)[]).map((key) => (
+      {hole && (Object.keys(hole) as (keyof typeof hole)[]).map((key) => (
         <Pressable key={key} testID={`combobox-backdrop-${key}`} accessible={false} onPress={dismiss} style={[s.hit, hole[key], edge]} />
       ))}
       <Animated.View
@@ -80,7 +78,7 @@ function ComboboxPopup({ dismissable, style, onLayout, ...rest }: Omit<ComboboxC
           pos.onLayout(e);
           onLayout?.(e);
         }}
-        style={[s.surface, pos.style, edge, { width: a.width, maxHeight: pos.maxHeight }, style]}
+        style={[s.surface, pos.style, edge, { width: a?.width ?? 0, maxHeight: pos.maxHeight }, style]}
       />
     </View>
   );

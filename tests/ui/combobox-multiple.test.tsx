@@ -1,4 +1,4 @@
-import { Text, TextInput } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { PortalHost } from '@/registry/marcn/lib/portal';
 import {
@@ -32,7 +32,12 @@ function setup(props: Partial<ComboboxProps> = {}) {
   );
 }
 
-beforeEach(() => jest.useFakeTimers());
+beforeEach(() => {
+  jest.useFakeTimers();
+  jest
+    .spyOn(View.prototype as unknown as { measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) => void }, 'measureInWindow')
+    .mockImplementation((cb) => cb(10, 100, 280, 40));
+});
 afterEach(() => {
   jest.useRealTimers();
   jest.restoreAllMocks();
@@ -76,6 +81,17 @@ test('picking a selected option again removes it', () => {
   fireEvent(input(), 'focus');
   fireEvent.press(screen.getByRole('option', { name: 'Apple' }));
   expect(onValueChange).toHaveBeenLastCalledWith([]);
+});
+
+test('a chip accepts number children', () => {
+  render(
+    <PortalHost>
+      <Combobox items={fruits} multiple defaultValue={['apple']}>
+        <ComboboxChips><ComboboxChip value="apple">{3}</ComboboxChip></ComboboxChips>
+      </Combobox>
+    </PortalHost>,
+  );
+  expect(screen.getByText('3')).toBeOnTheScreen();
 });
 
 test('the remove button drops that chip', () => {

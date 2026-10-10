@@ -106,6 +106,7 @@ export function useAnchoredPosition(open: boolean, triggerRef: RefObject<View | 
 
   return {
     anchor,
+    measure,
     maxHeight: Math.max(0, room && fit ? room[fitSide as 'top' | 'bottom'] : free.height - collisionPadding * 2),
     onLayout,
     style: [fade, position ? { left: position.x, top: position.y } : UNPLACED] as StyleProp<ViewStyle>,

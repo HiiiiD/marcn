@@ -126,7 +126,7 @@ test('remove drops one value; removeLast drops the last', () => {
 
 test('disabled: never opens and ignores selection', () => {
   const onValueChange = jest.fn();
-  const { result } = setup({ disabled: true, onValueChange });
+  const { result } = setup({ disabled: true, onValueChange, defaultValue: 'Apple' });
   act(() => result.current.setOpen(true));
   expect(result.current.open).toBe(false);
   act(() => result.current.select('Apple'));
@@ -160,4 +160,23 @@ test('typing while closed opens the popup and keeps the typed filter', () => {
   expect(result.current.open).toBe(true);
   expect(result.current.query).toBe('ban');
   expect(result.current.filtered.map((o) => o.value)).toEqual(['Banana']);
+});
+
+test('submit without typed text changes nothing; a single combobox closes', () => {
+  const onValueChange = jest.fn();
+  const single = setup({ defaultValue: 'Banana', defaultOpen: true, onValueChange });
+  act(() => single.result.current.submit());
+  expect(onValueChange).not.toHaveBeenCalled();
+  expect(single.result.current.open).toBe(false);
+  const multi = setup({ multiple: true, defaultOpen: true, onValueChange });
+  act(() => multi.result.current.submit());
+  expect(onValueChange).not.toHaveBeenCalled();
+  expect(multi.result.current.open).toBe(true);
+});
+
+test('anchorTick bumps when an anchor reports a layout', () => {
+  const { result } = setup();
+  const before = result.current.anchorTick;
+  act(() => result.current.bumpAnchor());
+  expect(result.current.anchorTick).toBe(before + 1);
 });

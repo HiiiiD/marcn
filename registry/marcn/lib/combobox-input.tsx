@@ -54,12 +54,12 @@ export function useComboboxInputProps({ disabled, ...props }: TextInputProps & C
         onChangeText?.(text);
       },
       onFocus: (e) => {
-        combobox.setOpen(true);
+        if (!off) combobox.setOpen(true);
         onFocus?.(e);
       },
       // A focused input fires no focus again: this reopens it after Back hid the popup.
       onPressIn: (e) => {
-        combobox.setOpen(true);
+        if (!off) combobox.setOpen(true);
         onPressIn?.(e);
       },
       onSubmitEditing: (e) => {
@@ -91,6 +91,7 @@ export function ComboboxInput({
     <View
       ref={combobox.anchorRef}
       testID="combobox-anchor"
+      onLayout={combobox.bumpAnchor}
       style={[s.field, focused && s.focused, invalid === true && s.invalid, off && s.disabled, containerStyle]}
     >
       <TextInput
@@ -101,8 +102,8 @@ export function ComboboxInput({
         }}
         style={[s.input, style]}
       />
-      {showClear && hasContent && !off ? <ComboboxClear /> : null}
-      {showTrigger ? <ComboboxTrigger /> : null}
+      {showClear && hasContent ? <ComboboxClear disabled={off} /> : null}
+      {showTrigger ? <ComboboxTrigger disabled={off} /> : null}
     </View>
   );
 }

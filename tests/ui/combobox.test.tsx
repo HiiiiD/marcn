@@ -1,5 +1,5 @@
 import { createRef } from 'react';
-import { Keyboard, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { PortalHost } from '@/registry/marcn/lib/portal';
 import { Dialog, DialogContent } from '@/registry/marcn/ui/dialog';
@@ -31,7 +31,13 @@ function setup(props: Partial<ComboboxProps> = {}, inputProps: Partial<Parameter
   );
 }
 
-beforeEach(() => jest.useFakeTimers());
+const measureAnchor = (x = 100, y = 100, width = 260, height = 36) =>
+  jest.spyOn(View.prototype as unknown as { measureInWindow: Measure }, 'measureInWindow').mockImplementation((cb) => cb(x, y, width, height));
+
+beforeEach(() => {
+  jest.useFakeTimers();
+  measureAnchor();
+});
 afterEach(() => {
   jest.useRealTimers();
   jest.restoreAllMocks();
@@ -71,9 +77,10 @@ test('focusing the input opens every option; the selected one is marked', () => 
 });
 
 test('pressing the focused input opens the popup again after back hid it', () => {
+  const back = mockBackHandler();
   setup();
   focus();
-  fireEvent.press(screen.getByTestId('combobox-backdrop-top'));
+  act(() => { back.press(); });
   settle();
   expect(options()).toHaveLength(0);
   fireEvent(input(), 'pressIn');
@@ -323,9 +330,7 @@ test('the list keeps taps working while the keyboard is open', () => {
 });
 
 describe('placement', () => {
-  const measure = ((cb) => cb(100, 100, 260, 36)) as Measure;
   const open = () => {
-    jest.spyOn(View.prototype as unknown as { measureInWindow: Measure }, 'measureInWindow').mockImplementation(measure);
     focus();
     fireEvent(screen.getByTestId('popup'), 'layout', { nativeEvent: { layout: { x: 0, y: 0, width: 260, height: 120 } } });
   };
@@ -347,7 +352,7 @@ describe('placement', () => {
         </Combobox>
       </PortalHost>,
     );
-    jest.spyOn(View.prototype as unknown as { measureInWindow: Measure }, 'measureInWindow').mockImplementation((cb) => cb(100, 800, 260, 36));
+    measureAnchor(100, 800);
     focus();
     fireEvent(screen.getByTestId('popup'), 'layout', { nativeEvent: { layout: { x: 0, y: 0, width: 260, height: 120 } } });
     expect(StyleSheet.flatten(screen.getByTestId('popup').props.style).top).toBe(800 - 4 - 120);
@@ -409,18 +414,19 @@ test('works inside a Dialog: choosing closes only the popup', () => {
 });
 
 describe('trigger and clear', () => {
-  test('the chevron opens the list and a second press closes it', () => {
+  test('the chevron opens the list, focuses the input, and a second press closes it', () => {
+    const focusInput = jest.spyOn(TextInput.prototype as unknown as { focus: () => void }, 'focus').mockImplementation(() => {});
     setup();
     fireEvent.press(screen.getByRole('button', { name: 'Show options' }));
     expect(options()).toHaveLength(4);
+    expect(focusInput).toHaveBeenCalled();
     fireEvent.press(screen.getByRole('button', { name: 'Show options' }));
     settle();
     expect(options()).toHaveLength(0);
   });
 
-  test('showClear appears only with something to clear and resets the value', () => {
-    const onValueChange = jest.fn();
-    setup({ onValueChange }, { showClear: true });
+  test('showClear appears only with something to clear and resets the typed text', () => {
+    setup({}, { showClear: true });
     expect(screen.queryByRole('button', { name: 'Clear' })).toBeNull();
     type('ban');
     expect(screen.getByRole('button', { name: 'Clear' })).toBeOnTheScreen();
@@ -449,4 +455,43 @@ test('selected labels survive the items changing (server-side filtering)', () =>
   render(ui([{ value: 'u1', label: 'Ada' }]));
   screen.rerender(ui([{ value: 'u2', label: 'Grace' }]));
   expect(input().props.value).toBe('Ada');
+});
+
+test('Enter with untouched text keeps the value and just closes', () => {
+  const onValueChange = jest.fn();
+  setup({ defaultValue: 'banana', onValueChange });
+  focus();
+  submit();
+  expect(onValueChange).not.toHaveBeenCalled();
+  settle();
+  expect(options()).toHaveLength(0);
+  expect(input().props.value).toBe('Banana');
+});
+
+describe('disabled input part', () => {
+  test('never opens, by focus, press or chevron, and cannot be cleared', () => {
+    setup({ defaultValue: 'apple' }, { disabled: true, showClear: true });
+    focus();
+    fireEvent(input(), 'pressIn');
+    expect(options()).toHaveLength(0);
+    expect(screen.getByRole('button', { name: 'Show options' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Clear' })).toBeDisabled();
+  });
+});
+
+test('the popup follows an anchor that moves after opening', () => {
+  setup();
+  focus();
+  const top = () => StyleSheet.flatten(screen.getByTestId('combobox-backdrop-top').props.style).height;
+  expect(top()).toBe(100);
+  measureAnchor(100, 180);
+  fireEvent(screen.getByTestId('combobox-anchor'), 'layout', { nativeEvent: { layout: { x: 0, y: 0, width: 260, height: 72 } } });
+  expect(top()).toBe(180);
+});
+
+test('without a measured anchor there is no backdrop to swallow taps', () => {
+  jest.spyOn(View.prototype as unknown as { measureInWindow: Measure }, 'measureInWindow').mockImplementation(() => {});
+  setup();
+  focus();
+  expect(screen.queryByTestId('combobox-backdrop-top')).toBeNull();
 });

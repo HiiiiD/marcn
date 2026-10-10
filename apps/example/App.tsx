@@ -25,7 +25,7 @@ export default function App() {
   return (
     <PortalHost>
       <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <Text variant="h2">marcn</Text>
           <ButtonsBadges />
           <CardForm />

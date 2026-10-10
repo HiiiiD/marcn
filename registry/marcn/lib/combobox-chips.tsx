@@ -34,17 +34,18 @@ const createStyles = (t: Theme) => ({
 });
 
 export type ComboboxChipsProps = Omit<PressableProps, 'style' | 'children'> &
-  ComboboxFieldProps & { style?: StyleProp<ViewStyle>; children?: ReactNode; ref?: Ref<View> };
+  Pick<ComboboxFieldProps, 'aria-invalid'> & { style?: StyleProp<ViewStyle>; children?: ReactNode; ref?: Ref<View> };
 
-export function ComboboxChips({ style, disabled, 'aria-invalid': invalid, children, ref, ...props }: ComboboxChipsProps) {
+export function ComboboxChips({ style, 'aria-invalid': invalid, children, ref, ...props }: ComboboxChipsProps) {
   const f = useStyles(createFieldStyles);
   const s = useStyles(createStyles).base;
   const combobox = useCombobox();
-  const off = disabled || combobox.disabled;
+  const off = combobox.disabled;
   return (
     <Pressable
       ref={mergeRefs(ref, combobox.anchorRef)}
       testID="combobox-anchor"
+      onLayout={combobox.bumpAnchor}
       accessible={false}
       disabled={off}
       onPress={() => combobox.inputRef.current?.focus()}
@@ -67,7 +68,7 @@ export function ComboboxChip({ value, showRemove = true, style, children, ...pro
   return (
     <TextStyleContext.Provider value={styles.chipText}>
       <View style={[s.chip, !removable && s.chipOnly, style]} {...props}>
-        {typeof children === 'string' || children === undefined ? <Text>{children ?? combobox.labelOf(value)}</Text> : children}
+        {typeof children === 'string' || typeof children === 'number' || children === undefined ? <Text>{children ?? combobox.labelOf(value)}</Text> : children}
         {removable ? (
           <Pressable
             accessibilityRole="button"
