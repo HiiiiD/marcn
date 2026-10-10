@@ -167,7 +167,7 @@ test('the accessibility action opens the menu anchored to the trigger, ignoring 
   fireEvent.press(screen.getByTestId('overlay-backdrop'));
   settle();
   expect(screen.queryByText('Copy')).toBeNull();
-  fireEvent(screen.getByText('Area'), 'accessibilityAction', { nativeEvent: { actionName: 'activate' } });
+  fireEvent(screen.getByText('Area'), 'accessibilityAction', { nativeEvent: { actionName: 'longpress' } });
   layout(80, 50);
   expect(screen.getByText('Copy')).toBeOnTheScreen();
   expect(place()).toMatchObject({ left: 10, top: 60 });
@@ -176,8 +176,9 @@ test('the accessibility action opens the menu anchored to the trigger, ignoring 
 test('the trigger exposes the Open menu action and the expanded state', () => {
   setup(<ContextMenuItem>Copy</ContextMenuItem>);
   const trigger = screen.getByText('Area').parent!.parent!;
-  expect(trigger.props.accessibilityActions).toEqual([{ name: 'activate', label: 'Open menu' }]);
+  expect(trigger.props.accessibilityActions).toEqual([{ name: 'longpress', label: 'Open menu' }]);
   expect(trigger.props.accessibilityState).toMatchObject({ expanded: false });
+  expect(trigger.props.accessibilityRole).toBe('button');
 });
 
 test('render prop element and ref reach the host', () => {
@@ -193,7 +194,7 @@ test('controlled open prop renders without a long press', () => {
 
 test('a disabled trigger ignores the accessibility action', () => {
   setup(<ContextMenuItem>Copy</ContextMenuItem>, { disabled: true });
-  fireEvent(screen.getByText('Area'), 'accessibilityAction', { nativeEvent: { actionName: 'activate' } });
+  fireEvent(screen.getByText('Area'), 'accessibilityAction', { nativeEvent: { actionName: 'longpress' } });
   expect(screen.queryByText('Copy')).toBeNull();
 });
 

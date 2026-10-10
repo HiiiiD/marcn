@@ -44,7 +44,7 @@ Components install with a shared `theme.ts` in your `lib` alias. Edit its tokens
 
 ## Components
 
-`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `spinner`, `empty`, `item`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `context-menu`, `select`, `combobox`, `calendar`, `date-picker`, `input-otp`, `field`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `calendar-math`, `calendar-styles`, `calendar-range-drag`, `calendar-month`, `calendar-picker`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset`, `use-anchored-position`, `menu-item`, `menu-surface`, `menu-parts`, `combobox-filter`, `combobox-state`, `otp-state` and `otp-caret` lib items.
+`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `spinner`, `empty`, `item`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `context-menu`, `select`, `combobox`, `calendar`, `date-picker`, `input-otp`, `field`, `sonner`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `calendar-math`, `calendar-styles`, `calendar-range-drag`, `calendar-month`, `calendar-picker`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset`, `use-anchored-position`, `menu-item`, `menu-surface`, `menu-parts`, `combobox-filter`, `combobox-state`, `otp-state`, `otp-caret`, `toast-store`, `toast-stack`, `use-toast-timer`, `toast-view` and `toast-layer` lib items.
 
 Components are designed to be edited in place: once added, the code is yours.
 
@@ -109,10 +109,6 @@ Differences on native: `Tooltip` opens on long press (there is no hover) and clo
 
 `combobox` is shadcn's searchable select (Popover + filtered list): `<Combobox items={...}>` with `ComboboxTrigger`/`ComboboxValue`, then `ComboboxContent` holding `ComboboxInput`, `ComboboxEmpty` and `ComboboxList`. Items are strings or `{ value, label, disabled?, keywords? }` (extra fields reach the list's render function, `<ComboboxList>{(item) => <ComboboxItem value={item.value}>...</ComboboxItem>}</ComboboxList>`; without one it renders a row per item). It takes `value`/`defaultValue`/`onValueChange` (`string | null`, or `string[]` with `multiple`, where options toggle and the popup stays open), `inputValue`/`onInputValueChange`, and `filter` (default: case- and accent-insensitive match on label and keywords; `null` to filter the items yourself). Pressing the selected option clears it. The search input focuses on open and the list keeps taps working while the keyboard is up; Enter picks the first enabled match. `ComboboxValue` joins the selected labels, or takes a `(selected) => ReactNode` child (e.g. badges for `multiple`). Differences on native: the search lives in the popup rather than in the trigger, and there are no groups, chips input or arrow-key highlight.
 
-## Development
-
-Run `corepack enable` once, then `yarn install` (in the repo root and in `apps/example`). Use `yarn test`, `yarn typecheck`, `yarn registry:validate` and `yarn example:sync`.
-
 ## Input OTP
 
 `input-otp` follows shadcn/ui (`InputOTP`, `InputOTPGroup`, `InputOTPSlot`, `InputOTPSeparator`): `maxLength`, `value`/`defaultValue`/`onChange`, `onComplete`, `pattern` (a single-character RegExp, digits by default). A transparent `TextInput` sits over the slots, so paste and SMS autofill (`oneTimeCode`) work; `inputRef` reaches it and `ref` reaches the container. The caret is always at the end (no mid-code editing) and slots are bordered individually. Every part accepts `render`.
@@ -130,3 +126,7 @@ These follow shadcn/ui. `Spinner` is a rotating `Loader2` icon (16px) that takes
 `sonner` follows Sonner: mount `<Toaster position="top" | "bottom" visibleToasts={3} duration={4000} />` once inside `PortalHost`, then call `toast('Saved')` from anywhere, including outside React. `toast.success/error/info/warning/loading`, `toast.custom((id) => <View />)`, `toast.promise(promise, { loading, success, error })` and `toast.dismiss(id?)` are available; options are `description`, `duration` (`Infinity` to persist), `dismissible`, `action`, `cancel`, `onDismiss`, `onAutoClose`. Passing an existing `id` updates that toast in place.
 
 Differences on native: toasts stack newest-in-front; tap the stack to expand it and tap again to collapse (it also collapses after 5 s idle). Timers pause while a toast is touched or the stack is expanded. Swipe toward the screen edge or sideways to dismiss. There is no per-toast position and no hover behavior. The toast layer keeps the stacking position it got when the first toast appeared: a toast fired while a modal is open (and no toasts were showing) appears above it, but while toasts are already showing, new ones sit under a modal opened later until it closes.
+
+## Development
+
+Run `corepack enable` once, then `yarn install` (in the repo root and in `apps/example`). Use `yarn test`, `yarn typecheck`, `yarn registry:validate` and `yarn example:sync`.

@@ -142,3 +142,18 @@ test('unmounting with a live timer leaves no pending timers', () => {
   unmount();
   expect(jest.getTimerCount()).toBe(0);
 });
+
+test('screen readers get a Dismiss action that closes the toast', () => {
+  const onDismiss = jest.fn();
+  const { id } = show({ type: 'default', title: 'Stuck', duration: Infinity, onDismiss });
+  const node = screen.getByTestId(`toast-${id}`);
+  expect(node.props.accessibilityActions).toEqual([{ name: 'dismiss', label: 'Dismiss' }]);
+  fireEvent(node, 'accessibilityAction', { nativeEvent: { actionName: 'dismiss' } });
+  expect(getToasts()[0].dismissed).toBe(true);
+  expect(onDismiss).toHaveBeenCalledTimes(1);
+});
+
+test('a non-dismissible toast exposes no Dismiss action', () => {
+  const { id } = show({ type: 'default', title: 'Pinned', dismissible: false });
+  expect(screen.getByTestId(`toast-${id}`).props.accessibilityActions).toBeUndefined();
+});

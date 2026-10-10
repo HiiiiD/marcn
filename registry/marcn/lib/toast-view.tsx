@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View, type AccessibilityActionEvent, type LayoutChangeEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { CircleCheck, CircleX, Info, TriangleAlert, type LucideIcon } from 'lucide-react-native';
@@ -14,6 +14,7 @@ import { Text } from '@/registry/marcn/ui/text';
 export const TOAST_EXIT_MS = 200;
 const ENTER_OFFSET = 24;
 const MOVE = { duration: 250 };
+const DISMISS_ACTIONS = [{ name: 'dismiss', label: 'Dismiss' }];
 
 const ICONS: Partial<Record<ToastType, LucideIcon>> = {
   success: CircleCheck,
@@ -122,6 +123,10 @@ export function ToastView({ toast, layout, position, duration, paused, onMeasure
         testID={`toast-${id}`}
         accessibilityRole="alert"
         accessibilityLiveRegion={toast.type === 'error' ? 'assertive' : 'polite'}
+        accessibilityActions={toast.dismissible === false ? undefined : DISMISS_ACTIONS}
+        onAccessibilityAction={(e: AccessibilityActionEvent) => {
+          if (e.nativeEvent.actionName === 'dismiss') dismissToast(id);
+        }}
         accessibilityElementsHidden={inert}
         importantForAccessibility={inert ? 'no-hide-descendants' : 'auto'}
         onLayout={(e: LayoutChangeEvent) => onMeasure(id, e.nativeEvent.layout.height)}

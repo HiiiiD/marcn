@@ -56,8 +56,10 @@ export function ContextMenuTrigger({ render, onLongPress, onAccessibilityAction,
     Pressable,
     render,
     {
+      accessibilityRole: 'button',
       accessibilityState: { expanded: ctx.open },
-      accessibilityActions: [{ name: 'activate', label: 'Open menu' }],
+      // A declared 'activate' action swallows the screen-reader double-tap and starves onPress.
+      accessibilityActions: [{ name: 'longpress', label: 'Open menu' }],
       ...props,
       children: asText(children as ReactNode),
       ref: mergeRefs(ref, ctx.triggerRef),
@@ -68,7 +70,7 @@ export function ContextMenuTrigger({ render, onLongPress, onAccessibilityAction,
       },
       onAccessibilityAction: (e: AccessibilityActionEvent) => {
         onAccessibilityAction?.(e);
-        if (props.disabled || e.nativeEvent.actionName !== 'activate') return;
+        if (props.disabled || e.nativeEvent.actionName !== 'longpress') return;
         setPoint(null);
         ctx.setOpen(true);
       },
