@@ -71,7 +71,7 @@ Merging: the element's own props win; `style` becomes `[marcn, element]`; `onX` 
 Differences from shadcn/ui on native:
 - `captionLayout="dropdown"` makes the caption tappable and swaps the grid for an inline month picker, with a year picker one tap further. It does not use native selects.
 - `numberOfMonths > 1` stacks the months vertically, steps one month per arrow, and hides outside days.
-- In range mode, after the first tap you can also press and drag across the grid, then release on the end day. While a range start is pending, a drag over the calendar is claimed by the calendar, so it will not scroll a parent `ScrollView`.
+- In range mode, after the first tap you can also press and drag across the grid (any direction, across months), then release on the end day. While a range start is pending the calendar claims every touch on its grid, so it will not scroll a parent `ScrollView` and taps are resolved by hit-testing; the arrows and the rest of the screen are unaffected, and the claim ends once the range is complete.
 - Month and weekday names come from `Intl` via `locale` (Hermes ships Intl in current React Native). `weekStartsOn` is not derived from the locale.
 
 ## Overlays

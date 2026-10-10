@@ -5,8 +5,6 @@ import { isSameDay, isSameMonth } from '@/registry/marcn/lib/calendar-math';
 
 export type RowsLayout = { top: number; weeks: Date[][]; month: Date; hideOutside: boolean };
 
-const SLOP = 8;
-
 export function hitTest(rows: Iterable<RowsLayout>, width: number, x: number, y: number) {
   if (width <= 0) return undefined;
   for (const { top, weeks, month, hideOutside } of rows) {
@@ -27,10 +25,11 @@ type Options = {
 export function useRangeDrag(bodyRef: RefObject<View | null>, options: Options) {
   const latest = useRef(options);
   latest.current = options;
-  const geo = useRef({ width: 0, pageX: 0, pageY: 0, rows: new Map<number, RowsLayout>() }).current;
+  const geo = useRef({ width: 0, pageX: 0, pageY: 0, ready: false, rows: new Map<number, RowsLayout>() }).current;
   const hover = useRef<Date | undefined>(undefined);
 
   const track = (pageX: number, pageY: number) => {
+    if (!geo.ready) return;
     const date = hitTest(geo.rows.values(), geo.width, pageX - geo.pageX, pageY - geo.pageY);
     if (!date || latest.current.isDisabled(date)) return;
     if (hover.current && isSameDay(hover.current, date)) return;
@@ -41,30 +40,29 @@ export function useRangeDrag(bodyRef: RefObject<View | null>, options: Options) 
   const finish = (commit: boolean) => {
     const date = hover.current;
     hover.current = undefined;
+    geo.ready = false;
     latest.current.onHover(undefined);
     if (commit && date) latest.current.onCommit(date);
   };
 
+  // Claimed on touch start (not after a slop) so the native ScrollView is told not to intercept a vertical drag.
+  // While a range start is pending, taps therefore arrive here too and are resolved by hit-testing.
   const panHandlers = useMemo(
     () =>
       PanResponder.create({
-        onStartShouldSetPanResponderCapture: () => {
-          if (latest.current.enabled) {
-            bodyRef.current?.measure((_x, _y, _w, _h, pageX, pageY) => {
-              geo.pageX = pageX;
-              geo.pageY = pageY;
-            });
-          }
-          return false;
-        },
-        onMoveShouldSetPanResponderCapture: (_e, g) => latest.current.enabled && Math.abs(g.dx) + Math.abs(g.dy) > SLOP,
+        onStartShouldSetPanResponderCapture: () => latest.current.enabled,
         onPanResponderTerminationRequest: () => false,
-        onPanResponderGrant: (_e, g) => track(g.moveX, g.moveY),
-        onPanResponderMove: (_e, g) => track(g.moveX, g.moveY),
-        onPanResponderRelease: (_e, g) => {
-          track(g.moveX, g.moveY);
-          finish(true);
+        onPanResponderGrant: (_e, g) => {
+          geo.ready = false;
+          bodyRef.current?.measure((_x, _y, _w, _h, pageX, pageY) => {
+            geo.pageX = pageX;
+            geo.pageY = pageY;
+            geo.ready = true;
+            track(g.x0, g.y0);
+          });
         },
+        onPanResponderMove: (_e, g) => track(g.moveX, g.moveY),
+        onPanResponderRelease: () => finish(true),
         onPanResponderTerminate: () => finish(false),
       }).panHandlers,
     [],

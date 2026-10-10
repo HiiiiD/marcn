@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
-import { PanResponder } from 'react-native';
+import { PanResponder, View } from 'react-native';
 import { Calendar } from '@/registry/marcn/ui/calendar';
 
 const d = (y: number, m: number, day: number) => new Date(y, m - 1, day);
@@ -9,6 +9,7 @@ type Config = Record<string, (...args: any[]) => any>;
 let config: Config;
 
 beforeEach(() => {
+  (View as any).prototype.measure = (cb: (...a: number[]) => void) => cb(0, 0, 700, 0, 0, 0);
   jest.spyOn(PanResponder, 'create').mockImplementation(((c: Config) => {
     config = c;
     return { panHandlers: {} };
@@ -31,21 +32,23 @@ function layOut() {
   fireEvent(body, 'layout', at(0));
 }
 
+const grant = (x0 = 0, y0 = 0) => act(() => config.onPanResponderGrant(null, { x0, y0 }));
 const move = (moveX: number, moveY: number) => act(() => config.onPanResponderMove(null, { moveX, moveY }));
 // May 22 = week row 3 (19-25), column 3 (Wed)
 const MAY_22 = [350, 40 + 36 * 3 + 10] as const;
 
-test('does not capture the gesture until a range start is pending', () => {
+test('claims the touch only while a range start is pending', () => {
   render(<Calendar mode="range" defaultMonth={d(2024, 5, 1)} locale="en-US" />);
-  expect(config.onMoveShouldSetPanResponderCapture(null, { dx: 30, dy: 0 })).toBe(false);
+  expect(config.onStartShouldSetPanResponderCapture()).toBe(false);
   fireEvent.press(day('Wednesday, May 15, 2024'));
-  expect(config.onMoveShouldSetPanResponderCapture(null, { dx: 30, dy: 0 })).toBe(true);
-  expect(config.onMoveShouldSetPanResponderCapture(null, { dx: 2, dy: 2 })).toBe(false);
+  expect(config.onStartShouldSetPanResponderCapture()).toBe(true);
+  fireEvent.press(day('Wednesday, May 22, 2024'));
+  expect(config.onStartShouldSetPanResponderCapture()).toBe(false);
 });
 
-test('single mode never captures', () => {
+test('single mode never claims the touch', () => {
   render(<Calendar defaultMonth={d(2024, 5, 1)} locale="en-US" />);
-  expect(config.onMoveShouldSetPanResponderCapture(null, { dx: 30, dy: 0 })).toBe(false);
+  expect(config.onStartShouldSetPanResponderCapture()).toBe(false);
 });
 
 test('dragging previews the range and releasing commits it', () => {
@@ -55,13 +58,13 @@ test('dragging previews the range and releasing commits it', () => {
   fireEvent.press(day('Wednesday, May 15, 2024'));
   onSelect.mockClear();
 
-  act(() => config.onPanResponderGrant(null, { moveX: 350, moveY: 40 + 36 * 2 + 10 }));
+  act(() => config.onPanResponderGrant(null, { x0: 350, y0: 40 + 36 * 2 + 10 }));
   move(...MAY_22);
   expect(day('Saturday, May 18, 2024')).toBeSelected();
   expect(day('Wednesday, May 22, 2024')).toBeSelected();
   expect(onSelect).not.toHaveBeenCalled();
 
-  act(() => config.onPanResponderRelease(null, { moveX: MAY_22[0], moveY: MAY_22[1] }));
+  act(() => config.onPanResponderRelease());
   expect(onSelect).toHaveBeenCalledWith({ from: d(2024, 5, 15), to: d(2024, 5, 22) });
   expect(day('Wednesday, May 22, 2024')).toBeSelected();
 });
@@ -72,8 +75,9 @@ test('dragging before the start swaps the ends', () => {
   layOut();
   fireEvent.press(day('Wednesday, May 22, 2024'));
   const may15 = [350, 40 + 36 * 2 + 10] as const;
+  grant();
   move(...may15);
-  act(() => config.onPanResponderRelease(null, { moveX: may15[0], moveY: may15[1] }));
+  act(() => config.onPanResponderRelease());
   expect(onSelect).toHaveBeenLastCalledWith({ from: d(2024, 5, 15), to: d(2024, 5, 22) });
 });
 
@@ -83,6 +87,7 @@ test('terminating the gesture drops the preview without selecting', () => {
   layOut();
   fireEvent.press(day('Wednesday, May 15, 2024'));
   onSelect.mockClear();
+  grant();
   move(...MAY_22);
   expect(day('Wednesday, May 22, 2024')).toBeSelected();
   act(() => config.onPanResponderTerminate());
@@ -96,7 +101,19 @@ test('disabled days are skipped by the drag', () => {
   layOut();
   fireEvent.press(day('Wednesday, May 15, 2024'));
   onSelect.mockClear();
+  grant();
   move(...MAY_22);
-  act(() => config.onPanResponderRelease(null, { moveX: MAY_22[0], moveY: MAY_22[1] }));
+  act(() => config.onPanResponderRelease());
   expect(onSelect).not.toHaveBeenCalled();
+});
+
+test('a tap while pending selects the pressed day through hit-testing', () => {
+  const onSelect = jest.fn();
+  render(<Calendar mode="range" defaultMonth={d(2024, 5, 1)} locale="en-US" onSelect={onSelect} />);
+  layOut();
+  fireEvent.press(day('Wednesday, May 15, 2024'));
+  onSelect.mockClear();
+  act(() => config.onPanResponderGrant(null, { x0: MAY_22[0], y0: MAY_22[1] }));
+  act(() => config.onPanResponderRelease());
+  expect(onSelect).toHaveBeenCalledWith({ from: d(2024, 5, 15), to: d(2024, 5, 22) });
 });
