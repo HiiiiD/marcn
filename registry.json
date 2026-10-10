@@ -636,6 +636,61 @@
       "description": "Form field layout: label, description and error around any control, with groups and fieldsets.",
       "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/text", "@marcn/label"],
       "files": [{ "path": "registry/marcn/ui/field.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "toast-store",
+      "type": "registry:lib",
+      "title": "Toast store",
+      "description": "Module-level toast store: types, upsert, dismiss, subscribe.",
+      "files": [{ "path": "registry/marcn/lib/toast-store.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "toast-stack",
+      "type": "registry:lib",
+      "title": "Toast stack",
+      "description": "Pure stack layout and swipe math for toasts.",
+      "files": [{ "path": "registry/marcn/lib/toast-stack.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "use-toast-timer",
+      "type": "registry:lib",
+      "title": "Toast timer",
+      "description": "Pausable auto-close timer hook.",
+      "files": [{ "path": "registry/marcn/lib/use-toast-timer.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "toast-view",
+      "type": "registry:lib",
+      "title": "Toast view",
+      "description": "Single animated, swipeable toast.",
+      "dependencies": ["react-native-reanimated@4.5.1", "react-native-gesture-handler@~2.32.0", "lucide-react-native@1.53.0"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/toast-store",
+        "@marcn/toast-stack",
+        "@marcn/use-toast-timer",
+        "@marcn/button",
+        "@marcn/icon",
+        "@marcn/text"
+      ],
+      "files": [{ "path": "registry/marcn/lib/toast-view.tsx", "type": "registry:lib" }]
+    },
+    {
+      "name": "toast-layer",
+      "type": "registry:lib",
+      "title": "Toast layer",
+      "description": "Stack state and positioning for toasts.",
+      "dependencies": ["react-native-safe-area-context@~5.7.0"],
+      "registryDependencies": ["@marcn/toast-stack", "@marcn/toast-store", "@marcn/toast-view"],
+      "files": [{ "path": "registry/marcn/lib/toast-layer.tsx", "type": "registry:lib" }]
+    },
+    {
+      "name": "sonner",
+      "type": "registry:ui",
+      "title": "Sonner",
+      "description": "Imperative toast() API with stacked, swipeable toasts; mount <Toaster /> once under PortalHost.",
+      "registryDependencies": ["@marcn/portal", "@marcn/toast-layer", "@marcn/toast-store", "@marcn/toast-stack"],
+      "files": [{ "path": "registry/marcn/ui/sonner.tsx", "type": "registry:ui" }]
     }
   ]
 }

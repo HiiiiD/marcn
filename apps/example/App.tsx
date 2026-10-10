@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import { Text } from '@/components/ui/text';
+import { Toaster } from '@/components/ui/sonner';
 import { PortalHost } from '@/lib/portal';
 import { useTheme } from '@/lib/theme';
 import { ButtonsBadges } from './screens/ButtonsBadges';
@@ -15,6 +16,7 @@ import { InputOtp } from './screens/InputOtp';
 import { Menus } from './screens/Menus';
 import { Overlays } from './screens/Overlays';
 import { SpinnerEmptyItem } from './screens/SpinnerEmptyItem';
+import { Toasts } from './screens/Toasts';
 
 export default function App() {
   const { colors } = useTheme();
@@ -35,8 +37,10 @@ export default function App() {
           <Menus />
           <ContextMenus />
           <InputOtp />
+          <Toasts />
         </ScrollView>
         <StatusBar style="auto" />
+        <Toaster />
       </SafeAreaView>
     </PortalHost>
   );

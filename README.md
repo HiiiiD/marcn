@@ -107,3 +107,9 @@ Run `corepack enable` once, then `yarn install` (in the repo root and in `apps/e
 ## Spinner, Empty, Item
 
 These follow shadcn/ui. `Spinner` is a rotating `Loader2` icon (16px) that takes its color from a parent `TextStyleContext`, so it matches Button text. `Empty` has no border by default, as in shadcn; pass `style={{ borderWidth: 1 }}` for the dashed outline. `Item` is not pressable by itself: use `render={<Pressable onPress={...} />}`. Icons inside `EmptyMedia`/`ItemMedia` need an explicit `size` (24 and 16 in shadcn).
+
+## Toasts
+
+`sonner` follows Sonner: mount `<Toaster position="top" | "bottom" visibleToasts={3} duration={4000} />` once inside `PortalHost`, then call `toast('Saved')` from anywhere, including outside React. `toast.success/error/info/warning/loading`, `toast.custom((id) => <View />)`, `toast.promise(promise, { loading, success, error })` and `toast.dismiss(id?)` are available; options are `description`, `duration` (`Infinity` to persist), `dismissible`, `action`, `cancel`, `onDismiss`, `onAutoClose`. Passing an existing `id` updates that toast in place.
+
+Differences on native: toasts stack newest-in-front; tap the stack to expand it and tap again to collapse (it also collapses after 5 s idle). Timers pause while a toast is touched or the stack is expanded. Swipe toward the screen edge or sideways to dismiss. There is no per-toast position and no hover behavior. A toast fired while a modal is open appears above it; a modal opened afterwards covers toasts already on screen.
