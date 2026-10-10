@@ -1,6 +1,6 @@
 import { Keyboard } from 'react-native';
 import { act, renderHook } from '@testing-library/react-native';
-import { useComboboxState, type ComboboxStateOptions } from '@/registry/marcn/lib/combobox-state';
+import { useComboboxState, type ComboboxStateOptions } from '@/registry/marcn/ui/combobox';
 
 const items = ['Apple', 'Banana', { value: 'c', label: 'Cherry', disabled: true }];
 

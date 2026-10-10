@@ -617,91 +617,22 @@
       "files": [{ "path": "registry/marcn/ui/select.tsx", "type": "registry:ui" }]
     },
     {
-      "name": "combobox-filter",
-      "type": "registry:lib",
-      "title": "Combobox filter",
-      "description": "Item and group normalizing and case/diacritic-insensitive search for Combobox.",
-      "files": [{ "path": "registry/marcn/lib/combobox-filter.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "combobox-state",
-      "type": "registry:lib",
-      "title": "Combobox state",
-      "description": "Context and state hook for Combobox: open, value, input text, filtering and selection.",
-      "registryDependencies": ["@marcn/combobox-filter", "@marcn/use-controllable-state"],
-      "files": [{ "path": "registry/marcn/lib/combobox-state.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "combobox-popup",
-      "type": "registry:lib",
-      "title": "Combobox popup",
-      "description": "ComboboxContent: non-modal popup anchored to the input, with a backdrop that leaves the input tappable.",
-      "dependencies": ["react-native-reanimated@4.5.1"],
-      "registryDependencies": [
-        "@marcn/theme",
-        "@marcn/back-stack",
-        "@marcn/combobox-state",
-        "@marcn/portal",
-        "@marcn/use-anchored-position",
-        "@marcn/use-presence"
-      ],
-      "files": [{ "path": "registry/marcn/lib/combobox-popup.tsx", "type": "registry:lib" }]
-    },
-    {
-      "name": "combobox-input",
-      "type": "registry:lib",
-      "title": "Combobox input",
-      "description": "ComboboxInput (inline text field with chevron and clear buttons), ComboboxTrigger and ComboboxClear.",
-      "dependencies": ["lucide-react-native@1.53.0"],
-      "registryDependencies": ["@marcn/theme", "@marcn/combobox-state", "@marcn/render", "@marcn/icon"],
-      "files": [{ "path": "registry/marcn/lib/combobox-input.tsx", "type": "registry:lib" }]
-    },
-    {
-      "name": "combobox-chips",
-      "type": "registry:lib",
-      "title": "Combobox chips",
-      "description": "ComboboxChips, ComboboxChip, ComboboxChipsInput and ComboboxValue for multiple selection.",
-      "dependencies": ["lucide-react-native@1.53.0"],
-      "registryDependencies": [
-        "@marcn/theme",
-        "@marcn/combobox-filter",
-        "@marcn/combobox-input",
-        "@marcn/combobox-state",
-        "@marcn/render",
-        "@marcn/icon",
-        "@marcn/text"
-      ],
-      "files": [{ "path": "registry/marcn/lib/combobox-chips.tsx", "type": "registry:lib" }]
-    },
-    {
-      "name": "combobox-list",
-      "type": "registry:lib",
-      "title": "Combobox list",
-      "description": "ComboboxList, ComboboxItem, ComboboxEmpty and the group parts.",
-      "dependencies": ["lucide-react-native@1.53.0"],
-      "registryDependencies": [
-        "@marcn/theme",
-        "@marcn/combobox-filter",
-        "@marcn/combobox-state",
-        "@marcn/menu-item",
-        "@marcn/render",
-        "@marcn/icon",
-        "@marcn/text"
-      ],
-      "files": [{ "path": "registry/marcn/lib/combobox-list.tsx", "type": "registry:lib" }]
-    },
-    {
       "name": "combobox",
       "type": "registry:ui",
       "title": "Combobox",
-      "description": "Autocomplete input: type to filter a popup list, optional clear and chevron buttons, single or multiple with chips, groups.",
+      "description": "Autocomplete: type to filter a popup list, or search inside the popup from a trigger button. Single or multiple with chips, groups, clear and chevron buttons.",
+      "dependencies": ["react-native-reanimated@4.5.1", "lucide-react-native@1.53.0"],
       "registryDependencies": [
-        "@marcn/combobox-filter",
-        "@marcn/combobox-state",
-        "@marcn/combobox-popup",
-        "@marcn/combobox-input",
-        "@marcn/combobox-chips",
-        "@marcn/combobox-list"
+        "@marcn/theme",
+        "@marcn/back-stack",
+        "@marcn/portal",
+        "@marcn/render",
+        "@marcn/use-anchored-position",
+        "@marcn/use-controllable-state",
+        "@marcn/use-presence",
+        "@marcn/menu-item",
+        "@marcn/icon",
+        "@marcn/text"
       ],
       "files": [{ "path": "registry/marcn/ui/combobox.tsx", "type": "registry:ui" }]
     },

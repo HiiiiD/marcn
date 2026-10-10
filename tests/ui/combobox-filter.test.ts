@@ -1,6 +1,6 @@
 import {
   defaultFilter, filterOptions, flattenItems, isGroup, toOption, toRows, type ComboboxOption,
-} from '@/registry/marcn/lib/combobox-filter';
+} from '@/registry/marcn/ui/combobox';
 
 const opt = (label: string, extra: Partial<ComboboxOption> = {}): ComboboxOption => ({ value: label.toLowerCase(), label, ...extra });
 
