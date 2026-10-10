@@ -6,6 +6,7 @@ import { useTheme } from '@/lib/theme';
 import { ButtonsBadges } from './screens/ButtonsBadges';
 import { CardForm } from './screens/CardForm';
 import { Calendars } from './screens/Calendars';
+import { ContextMenus } from './screens/ContextMenus';
 import { Controls } from './screens/Controls';
 import { Display } from './screens/Display';
 import { Fields } from './screens/Fields';
@@ -32,6 +33,7 @@ export default function App() {
           <Fields />
           <Overlays />
           <Menus />
+          <ContextMenus />
           <InputOtp />
         </ScrollView>
         <StatusBar style="auto" />

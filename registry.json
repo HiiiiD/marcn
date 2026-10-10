@@ -479,6 +479,27 @@
       "files": [{ "path": "registry/marcn/ui/tooltip.tsx", "type": "registry:ui" }]
     },
     {
+      "name": "context-menu",
+      "type": "registry:ui",
+      "title": "Context Menu",
+      "description": "Long-press menu anchored at the touch point, with items, checkbox and radio items, labels, separators and shortcuts.",
+      "registryDependencies": [
+        "@marcn/overlay",
+        "@marcn/overlay-root",
+        "@marcn/menu-item",
+        "@marcn/menu-parts",
+        "@marcn/menu-surface",
+        "@marcn/render",
+        "@marcn/use-anchored-position"
+      ],
+      "files": [
+        {
+          "path": "registry/marcn/ui/context-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "dropdown-menu",
       "type": "registry:ui",
       "title": "Dropdown Menu",
