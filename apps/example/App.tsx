@@ -1,4 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { useTheme } from '@/lib/theme';
@@ -6,20 +7,24 @@ import { ButtonsBadges } from './screens/ButtonsBadges';
 import { CardForm } from './screens/CardForm';
 import { Controls } from './screens/Controls';
 import { Display } from './screens/Display';
+import { FormControls } from './screens/FormControls';
 
 export default function App() {
   const { colors } = useTheme();
   return (
-    <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text variant="h2">marcn</Text>
-        <ButtonsBadges />
-        <CardForm />
-        <Display />
-        <Controls />
-      </ScrollView>
-      <StatusBar style="auto" />
-    </SafeAreaView>
+    <GestureHandlerRootView style={styles.root}>
+      <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
+        <ScrollView contentContainerStyle={styles.content}>
+          <Text variant="h2">marcn</Text>
+          <ButtonsBadges />
+          <CardForm />
+          <Display />
+          <Controls />
+          <FormControls />
+        </ScrollView>
+        <StatusBar style="auto" />
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 }
 
