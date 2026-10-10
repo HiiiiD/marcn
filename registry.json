@@ -387,6 +387,24 @@
         "@marcn/dialog"
       ],
       "files": [{ "path": "registry/marcn/ui/alert-dialog.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "Long-press tooltip anchored to its trigger on the portal layer; non-modal, no scrim.",
+      "dependencies": ["react-native-reanimated"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/portal",
+        "@marcn/overlay-root",
+        "@marcn/use-anchored-position",
+        "@marcn/use-controllable-state",
+        "@marcn/use-presence",
+        "@marcn/text"
+      ],
+      "files": [{ "path": "registry/marcn/ui/tooltip.tsx", "type": "registry:ui" }]
     }
   ]
 }
