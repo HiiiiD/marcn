@@ -373,6 +373,20 @@
         "@marcn/use-keyboard-inset"
       ],
       "files": [{ "path": "registry/marcn/ui/sheet.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert Dialog",
+      "description": "Modal confirmation dialog: no backdrop dismiss, Cancel/Action buttons, focus starts on Cancel.",
+      "registryDependencies": [
+        "@marcn/render",
+        "@marcn/overlay",
+        "@marcn/overlay-root",
+        "@marcn/button",
+        "@marcn/dialog"
+      ],
+      "files": [{ "path": "registry/marcn/ui/alert-dialog.tsx", "type": "registry:ui" }]
     }
   ]
 }

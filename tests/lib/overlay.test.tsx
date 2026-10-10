@@ -174,3 +174,13 @@ test('string children of Trigger and Close are wrapped in Text', () => {
   expect(screen.getByText('Shut')).toBeOnTheScreen();
   expect(screen.getByText('Open', { includeHiddenElements: true })).toBeOnTheScreen();
 });
+
+test('dismissOnBackdrop=false ignores backdrop taps but still dismisses on back', () => {
+  const back = mockBackHandler();
+  const onOpenChange = jest.fn();
+  setup({ defaultOpen: true, onOpenChange }, { dismissOnBackdrop: false });
+  fireEvent.press(screen.getByTestId('overlay-backdrop'));
+  expect(onOpenChange).not.toHaveBeenCalled();
+  back.press();
+  expect(onOpenChange).toHaveBeenCalledWith(false);
+});
