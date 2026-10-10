@@ -213,6 +213,19 @@
         "@marcn/text"
       ],
       "files": [{ "path": "registry/marcn/ui/toggle.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "toggle-group",
+      "type": "registry:ui",
+      "title": "Toggle Group",
+      "description": "A set of toggles where one or several can be on.",
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/use-controllable-state",
+        "@marcn/toggle"
+      ],
+      "files": [{ "path": "registry/marcn/ui/toggle-group.tsx", "type": "registry:ui" }]
     }
   ]
 }
