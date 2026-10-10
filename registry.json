@@ -438,6 +438,25 @@
         "@marcn/icon"
       ],
       "files": [{ "path": "registry/marcn/ui/dropdown-menu.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "Single-value select: trigger, value, scrollable option list anchored under the trigger.",
+      "dependencies": ["lucide-react-native"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/overlay",
+        "@marcn/overlay-root",
+        "@marcn/menu-item",
+        "@marcn/menu-surface",
+        "@marcn/use-controllable-state",
+        "@marcn/use-presence",
+        "@marcn/icon",
+        "@marcn/text"
+      ],
+      "files": [{ "path": "registry/marcn/ui/select.tsx", "type": "registry:ui" }]
     }
   ]
 }
