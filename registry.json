@@ -339,6 +339,23 @@
         "@marcn/use-keyboard-inset"
       ],
       "files": [{ "path": "registry/marcn/ui/popover.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "sheet",
+      "type": "registry:ui",
+      "title": "Sheet",
+      "description": "Edge-anchored sheet on the portal layer with drag-to-dismiss handle, stacking and keyboard lift.",
+      "dependencies": ["react-native-gesture-handler", "react-native-reanimated"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/dialog",
+        "@marcn/overlay",
+        "@marcn/overlay-root",
+        "@marcn/use-presence",
+        "@marcn/use-keyboard-inset"
+      ],
+      "files": [{ "path": "registry/marcn/ui/sheet.tsx", "type": "registry:ui" }]
     }
   ]
 }
