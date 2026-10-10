@@ -8,7 +8,7 @@ type Measure = (cb: (x: number, y: number, w: number, h: number) => void) => voi
 
 let latest: ReturnType<typeof useAnchoredPosition>;
 
-function Harness({ measure, options }: { measure: Measure; options?: AnchoredOptions }) {
+function Harness({ measure, options }: { measure: Measure; options?: AnchoredOptions & { point?: { x: number; y: number } | null } }) {
   const triggerRef = useRef<View | null>(null);
   latest = useAnchoredPosition(true, triggerRef, options);
   return (
@@ -56,4 +56,22 @@ test('zero measurements never produce NaN', () => {
   layout(0, 0);
   const { left, top } = place();
   expect(Number.isFinite(left) && Number.isFinite(top)).toBe(true);
+});
+
+test('anchors to a point without measuring the trigger', () => {
+  const measure = jest.fn();
+  render(<Harness measure={measure} options={{ point: { x: 50, y: 60 }, align: 'start', sideOffset: 0 }} />);
+  layout(80, 50);
+  expect(measure).not.toHaveBeenCalled();
+  expect(latest.anchor).toEqual({ x: 50, y: 60, width: 0, height: 0 });
+  expect(place()).toMatchObject({ left: 50, top: 60 });
+});
+
+test('a point near the bottom-right edge flips above and clamps inside the window', () => {
+  const { width, height } = Dimensions.get('window');
+  render(<Harness measure={jest.fn()} options={{ point: { x: width - 5, y: height - 5 }, align: 'start', sideOffset: 0 }} />);
+  layout(80, 50);
+  const { left, top } = place();
+  expect(left + 80).toBeLessThanOrEqual(width - 8);
+  expect(top + 50).toBeLessThanOrEqual(height - 5);
 });
