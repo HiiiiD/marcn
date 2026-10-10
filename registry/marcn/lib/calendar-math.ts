@@ -74,3 +74,19 @@ export function nextRange(range: DateRange | undefined, date: Date): DateRange |
 
 export const inRange = (date: Date, range?: DateRange) =>
   !!range?.from && !!range.to && time(date) >= time(range.from) && time(date) <= time(range.to);
+
+export const monthIndex = (d: Date) => d.getFullYear() * 12 + d.getMonth();
+
+export const isMonthOutOfBounds = (date: Date, start?: Date, end?: Date) =>
+  (!!start && monthIndex(date) < monthIndex(start)) || (!!end && monthIndex(date) > monthIndex(end));
+
+export function clampMonth(month: Date, start?: Date, end?: Date) {
+  if (start && monthIndex(month) < monthIndex(start)) return startOfMonth(start);
+  if (end && monthIndex(month) > monthIndex(end)) return startOfMonth(end);
+  return month;
+}
+
+export const sortRange = (a: Date, b: Date): DateRange => (time(b) < time(a) ? { from: b, to: a } : { from: a, to: b });
+
+export const YEARS_PER_PAGE = 12;
+export const yearPageStart = (year: number) => Math.floor(year / YEARS_PER_PAGE) * YEARS_PER_PAGE;

@@ -44,7 +44,7 @@ Components install with a shared `theme.ts` in your `lib` alias. Edit its tokens
 
 ## Components
 
-`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `select`, `calendar`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `calendar-math`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset`, `use-anchored-position`, `menu-item` and `menu-surface` lib items.
+`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `select`, `calendar`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `calendar-math`, `calendar-styles`, `calendar-range-drag`, `calendar-month`, `calendar-picker`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset`, `use-anchored-position`, `menu-item` and `menu-surface` lib items.
 
 Components are designed to be edited in place: once added, the code is yours.
 
@@ -66,7 +66,13 @@ Merging: the element's own props win; `style` becomes `[marcn, element]`; `onX` 
 
 ## Calendar
 
-`calendar` takes `mode="single" | "multiple" | "range"` with `selected`/`defaultSelected`/`onSelect` (`Date`, `Date[]`, `{ from, to }`), controllable `month`/`onMonthChange`, `disabled` matchers (`Date`, `{ before }`, `{ after }`, `{ from, to }`, `{ dayOfWeek }`, a function, or an array of them), `weekStartsOn`, `showOutsideDays` and `fixedWeeks`. Month and weekday names come from `Intl` via the `locale` prop, so your Hermes build must ship Intl (the default in current React Native).
+`calendar` takes `mode="single" | "multiple" | "range"` with `selected`/`defaultSelected`/`onSelect` (`Date`, `Date[]`, `{ from, to }`), controllable `month`/`onMonthChange`, `startMonth`/`endMonth` bounds, `disabled` matchers (`Date`, `{ before }`, `{ after }`, `{ from, to }`, `{ dayOfWeek }`, a function, or an array of them), `weekStartsOn`, `showOutsideDays`, `fixedWeeks`, `numberOfMonths` and `captionLayout="label" | "dropdown"`.
+
+Differences from shadcn/ui on native:
+- `captionLayout="dropdown"` makes the caption tappable and swaps the grid for an inline month picker, with a year picker one tap further. It does not use native selects.
+- `numberOfMonths > 1` stacks the months vertically, steps one month per arrow, and hides outside days.
+- In range mode, after the first tap you can also press and drag across the grid, then release on the end day. While a range start is pending, a drag over the calendar is claimed by the calendar, so it will not scroll a parent `ScrollView`.
+- Month and weekday names come from `Intl` via `locale` (Hermes ships Intl in current React Native). `weekStartsOn` is not derived from the locale.
 
 ## Overlays
 
