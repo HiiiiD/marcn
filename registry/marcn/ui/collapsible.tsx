@@ -17,7 +17,11 @@ export function useCollapsible() {
   return ctx;
 }
 
-const styles = StyleSheet.create({ clip: { overflow: 'hidden' } });
+const styles = StyleSheet.create({
+  clip: { overflow: 'hidden' },
+  // Absolute so the measured height is the content's own, not squeezed by the animated parent height.
+  natural: { position: 'absolute', top: 0, left: 0, right: 0 },
+});
 
 export type CollapsibleProps = ViewProps & {
   open?: boolean;
@@ -71,7 +75,7 @@ export type CollapsibleContentProps = ViewProps & {
 export function CollapsibleContent({ forceMount, render, style, children, ...props }: CollapsibleContentProps) {
   const { open, disabled } = useCollapsible();
   const [mounted, setMounted] = useState(open);
-  const [measured, setMeasured] = useState<number | null>(null);
+  const measured = useSharedValue(0);
   const progress = useSharedValue(open ? 1 : 0);
 
   // Unmount is timer-driven rather than animation-callback-driven so it stays JS-only and testable.
@@ -87,8 +91,8 @@ export function CollapsibleContent({ forceMount, render, style, children, ...pro
   }, [open, progress]);
 
   const animated = useAnimatedStyle(() => {
-    if (measured === null) return progress.value === 1 ? {} : { height: 0 };
-    return { height: progress.value * measured };
+    if (measured.value === 0 && progress.value === 1) return {};
+    return { height: progress.value * measured.value };
   });
 
   if (!(forceMount || open || mounted)) return null;
@@ -101,10 +105,11 @@ export function CollapsibleContent({ forceMount, render, style, children, ...pro
       importantForAccessibility: open ? 'auto' : 'no-hide-descendants',
       ...props,
       style: [styles.clip, animated],
-      // Natural height is measured here: RN children do not shrink inside the clipped, height-limited parent.
-      children: <View style={style} onLayout={(e) => setMeasured(e.nativeEvent.layout.height)}>
+      children: (
+        <View style={[styles.natural, style]} onLayout={(e) => (measured.value = e.nativeEvent.layout.height)}>
           {children}
-        </View>,
+        </View>
+      ),
     } as ViewProps,
     { open, disabled },
   );

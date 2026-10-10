@@ -127,3 +127,14 @@ test('caller style lands on the measured inner view, not the height-limited oute
   expect(outer).not.toHaveStyle({ paddingBottom: 16 });
   expect(screen.getByText('Body').parent?.parent).toHaveStyle({ paddingBottom: 16 });
 });
+
+test('measured view is out of flow so the animated parent height cannot shrink it', () => {
+  render(
+    <Collapsible defaultOpen>
+      <CollapsibleContent testID="content">
+        <Text>Body</Text>
+      </CollapsibleContent>
+    </Collapsible>,
+  );
+  expect(screen.getByText('Body').parent?.parent).toHaveStyle({ position: 'absolute' });
+});
