@@ -89,7 +89,7 @@ test('forceMount keeps closed content mounted but hidden from accessibility', ()
 
 test('trigger render function receives props and state; ref reaches the host', () => {
   const ref = createRef<View>();
-  const renderFn = jest.fn((props: object) => <Pressable testID="custom" {...props} />);
+  const renderFn = jest.fn((props: object, _state?: unknown) => <Pressable testID="custom" {...props} />);
   render(
     <Collapsible defaultOpen>
       <CollapsibleTrigger ref={ref} render={renderFn} />
