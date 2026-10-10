@@ -22,7 +22,7 @@ function useOtp() {
 const createStyles = (t: Theme) =>
   StyleSheet.create({
     root: { flexDirection: 'row', alignItems: 'center', gap: t.spacing[2] },
-    input: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, color: 'transparent', backgroundColor: 'transparent' },
+    input: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, color: 'transparent', backgroundColor: 'transparent', opacity: 0.011 },
     group: { flexDirection: 'row', alignItems: 'center', gap: t.spacing[2] },
     slot: {
       width: 40,
