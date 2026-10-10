@@ -22,7 +22,7 @@
       "type": "registry:ui",
       "title": "Icon",
       "description": "Themed wrapper around lucide-react-native icons.",
-      "dependencies": ["lucide-react-native", "react-native-svg"],
+      "dependencies": ["lucide-react-native@1.53.0", "react-native-svg@15.15.4"],
       "registryDependencies": ["@marcn/theme"],
       "files": [{ "path": "registry/marcn/ui/icon.tsx", "type": "registry:ui" }]
     },
@@ -95,7 +95,7 @@
       "type": "registry:ui",
       "title": "Skeleton",
       "description": "Pulsing placeholder for loading content.",
-      "dependencies": ["react-native-reanimated"],
+      "dependencies": ["react-native-reanimated@4.5.1"],
       "registryDependencies": ["@marcn/theme"],
       "files": [{ "path": "registry/marcn/ui/skeleton.tsx", "type": "registry:ui" }]
     },
@@ -120,7 +120,7 @@
       "type": "registry:ui",
       "title": "Switch",
       "description": "Animated on/off toggle.",
-      "dependencies": ["react-native-reanimated"],
+      "dependencies": ["react-native-reanimated@4.5.1"],
       "registryDependencies": ["@marcn/theme"],
       "files": [{ "path": "registry/marcn/ui/switch.tsx", "type": "registry:ui" }]
     },
@@ -129,7 +129,7 @@
       "type": "registry:ui",
       "title": "Checkbox",
       "description": "Checkbox with checked, unchecked and indeterminate states.",
-      "dependencies": ["lucide-react-native"],
+      "dependencies": ["lucide-react-native@1.53.0"],
       "registryDependencies": ["@marcn/theme", "@marcn/icon"],
       "files": [{ "path": "registry/marcn/ui/checkbox.tsx", "type": "registry:ui" }]
     },
@@ -162,7 +162,7 @@
       "title": "Collapsible",
       "description": "Expandable region with an animated height, trigger and content parts.",
       "dependencies": [
-        "react-native-reanimated"
+        "react-native-reanimated@4.5.1"
       ],
       "registryDependencies": [
         "@marcn/render",
@@ -176,7 +176,7 @@
       "title": "Accordion",
       "description": "Vertically stacked collapsible sections, single or multiple open.",
       "dependencies": [
-        "lucide-react-native"
+        "lucide-react-native@1.53.0"
       ],
       "registryDependencies": [
         "@marcn/theme",
@@ -240,7 +240,7 @@
       "title": "Slider",
       "description": "Single or multi-thumb range slider driven by react-native-gesture-handler.",
       "dependencies": [
-        "react-native-gesture-handler"
+        "react-native-gesture-handler@~2.32.0"
       ],
       "registryDependencies": [
         "@marcn/theme",
@@ -262,7 +262,7 @@
       "type": "registry:lib",
       "title": "Use anchored position",
       "description": "Measures a trigger and places an anchored surface with flip/clamp, keyboard and safe-area awareness.",
-      "dependencies": ["react-native-reanimated", "react-native-safe-area-context"],
+      "dependencies": ["react-native-reanimated@4.5.1", "react-native-safe-area-context@~5.7.0"],
       "registryDependencies": ["@marcn/popover-position", "@marcn/use-keyboard-inset", "@marcn/use-presence"],
       "files": [{ "path": "registry/marcn/lib/use-anchored-position.ts", "type": "registry:lib" }]
     },
@@ -279,7 +279,7 @@
       "type": "registry:lib",
       "title": "Menu surface",
       "description": "Anchored, scrollable popover-style surface for menus and select lists.",
-      "dependencies": ["react-native-reanimated"],
+      "dependencies": ["react-native-reanimated@4.5.1"],
       "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/overlay-root", "@marcn/use-anchored-position"],
       "files": [{ "path": "registry/marcn/lib/menu-surface.tsx", "type": "registry:lib" }]
     },
@@ -295,7 +295,7 @@
       "type": "registry:lib",
       "title": "usePresence",
       "description": "Keeps overlay content mounted through its exit animation; useProgress animates 0 to 1.",
-      "dependencies": ["react-native-reanimated"],
+      "dependencies": ["react-native-reanimated@4.5.1"],
       "files": [{ "path": "registry/marcn/lib/use-presence.ts", "type": "registry:lib" }]
     },
     {
@@ -303,7 +303,7 @@
       "type": "registry:lib",
       "title": "useKeyboardInset",
       "description": "Keyboard height as React state and as an animated shared value.",
-      "dependencies": ["react-native-reanimated", "react-native-safe-area-context"],
+      "dependencies": ["react-native-reanimated@4.5.1", "react-native-safe-area-context@~5.7.0"],
       "files": [{ "path": "registry/marcn/lib/use-keyboard-inset.ts", "type": "registry:lib" }]
     },
     {
@@ -318,7 +318,7 @@
       "type": "registry:lib",
       "title": "Portal",
       "description": "PortalHost (mount once at the app root) and Portal: stacked layers with accessibility containment.",
-      "dependencies": ["react-native-gesture-handler", "react-native-safe-area-context"],
+      "dependencies": ["react-native-gesture-handler@~2.32.0", "react-native-safe-area-context@~5.7.0"],
       "files": [{ "path": "registry/marcn/lib/portal.tsx", "type": "registry:lib" }]
     },
     {
@@ -334,7 +334,7 @@
       "type": "registry:lib",
       "title": "Overlay",
       "description": "Presence, scrim, back handling and focus for a stacked overlay layer.",
-      "dependencies": ["react-native-reanimated"],
+      "dependencies": ["react-native-reanimated@4.5.1"],
       "registryDependencies": ["@marcn/back-stack", "@marcn/overlay-root", "@marcn/portal", "@marcn/use-presence"],
       "files": [{ "path": "registry/marcn/lib/overlay.tsx", "type": "registry:lib" }]
     },
@@ -343,7 +343,7 @@
       "type": "registry:ui",
       "title": "Dialog",
       "description": "Centered modal dialog on the portal layer: stacks, dismisses on back/scrim, avoids the keyboard.",
-      "dependencies": ["lucide-react-native", "react-native-reanimated", "react-native-safe-area-context"],
+      "dependencies": ["lucide-react-native@1.53.0", "react-native-reanimated@4.5.1", "react-native-safe-area-context@~5.7.0"],
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/render",
@@ -361,7 +361,7 @@
       "type": "registry:ui",
       "title": "Popover",
       "description": "Anchored popover on the portal layer with flip/clamp positioning and keyboard awareness.",
-      "dependencies": ["react-native-reanimated"],
+      "dependencies": ["react-native-reanimated@4.5.1"],
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/render",
@@ -377,7 +377,7 @@
       "type": "registry:ui",
       "title": "Sheet",
       "description": "Edge-anchored sheet on the portal layer with snap points, rubber-band drag handle, stacking and keyboard lift.",
-      "dependencies": ["react-native-gesture-handler", "react-native-reanimated", "react-native-safe-area-context"],
+      "dependencies": ["react-native-gesture-handler@~2.32.0", "react-native-reanimated@4.5.1", "react-native-safe-area-context@~5.7.0"],
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/render",
@@ -410,7 +410,7 @@
       "type": "registry:ui",
       "title": "Tooltip",
       "description": "Long-press tooltip anchored to its trigger on the portal layer; non-modal, no scrim.",
-      "dependencies": ["react-native-reanimated"],
+      "dependencies": ["react-native-reanimated@4.5.1"],
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/render",
@@ -428,7 +428,7 @@
       "type": "registry:ui",
       "title": "Dropdown Menu",
       "description": "Anchored action menu with items, checkbox and radio items, labels, separators and shortcuts.",
-      "dependencies": ["lucide-react-native"],
+      "dependencies": ["lucide-react-native@1.53.0"],
       "registryDependencies": [
         "@marcn/overlay",
         "@marcn/overlay-root",
@@ -444,7 +444,7 @@
       "type": "registry:ui",
       "title": "Select",
       "description": "Single-value select: trigger, value, scrollable option list anchored under the trigger.",
-      "dependencies": ["lucide-react-native"],
+      "dependencies": ["lucide-react-native@1.53.0"],
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/overlay",

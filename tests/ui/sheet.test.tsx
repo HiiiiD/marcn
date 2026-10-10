@@ -189,6 +189,32 @@ test('a right sheet pads top, bottom and its edge', () => {
 // The reanimated mock never advances the open progress, so the slide-in term is the whole window height.
 const offset = () => (surface().transform[0].translateY as number) - 1334;
 
+test("'auto' snap point measures the content, then sizes the sheet to it", () => {
+  setup({}, { snapPoints: ['auto'] });
+  expect(surface().height).toBeUndefined();
+  fireEvent(screen.getByTestId('sheet'), 'layout', { nativeEvent: { layout: { width: 375, height: 240 } } });
+  expect(surface().height).toBeUndefined();
+});
+
+test("'auto' follows the content once a larger snap has fixed the sheet's size", () => {
+  const layout = (id: string, height: number) =>
+    fireEvent(screen.getByTestId(id), 'layout', { nativeEvent: { layout: { width: 375, height } } });
+  setup({}, { snapPoints: ['auto', 500] });
+  layout('sheet-body', 100);
+  layout('sheet', 160);
+  expect(surface().height).toBe(500);
+  layout('sheet-body', 300);
+  expect(surface().height).toBe(500);
+  layout('sheet-body', 450);
+  expect(surface().height).toBeUndefined();
+});
+
+test("'auto' alone leaves the surface unsized so it keeps reporting the content's size", () => {
+  setup({}, { snapPoints: ['auto'] });
+  fireEvent(screen.getByTestId('sheet'), 'layout', { nativeEvent: { layout: { width: 375, height: 240 } } });
+  expect(surface().height).toBeUndefined();
+});
+
 test('with several snapPoints the sheet is as tall as the largest, sorted or not', () => {
   setup({}, { snapPoints: [0.8, 0.4] });
   expect(surface().height).toBeCloseTo(0.8 * 1334);

@@ -14,7 +14,8 @@ shadcn-style component registry for React Native. Plain `StyleSheet` (no NativeW
 Two separate Yarn Berry projects (root and `apps/example`, each with its own `yarn.lock`). Run `corepack enable` once.
 
 - `yarn test`, `yarn typecheck`, `yarn registry:validate`, `yarn registry:build`
-- `yarn example:sync` builds the registry, serves it on 127.0.0.1:4000 and installs every item into `apps/example`. Re-run it after changing `registry/`. Revert the CLI's churn in `apps/example/package.json` and `yarn.lock` instead of committing it.
+- `yarn example:sync` builds the registry, serves it on 127.0.0.1:4000 and installs every item into `apps/example`. Re-run it after changing `registry/`, then restart Metro with `--clear`.
+- Npm dependencies in `registry.json` are pinned to the versions `apps/example` uses (Expo SDK 57). Unversioned ones make the CLI install latest, which breaks Reanimated/Worklets. Bump both together.
 
 ## Registry rules (enforced by `scripts/validate-registry.js`)
 
@@ -50,9 +51,11 @@ Components that render a single host element (Button, Text, Badge, Card root) ac
 
 Every time you create, edit or change a component (anything under `registry/`), check it on the Android emulator before calling the work done: run `yarn example:sync`, start the example app in `apps/example`, exercise the component through its screen (add or update the screen when a component has none) and look at the result. Jest mocks layout, animation and gestures, so passing tests do not replace this. Do it as soon as the code changes are finished, then fix what you see and repeat. Report what you checked and anything you could not check.
 
+Put every screenshot and other scratch file from emulator testing (and the Metro log) in `.tmp/` at the repo root, never elsewhere. It is gitignored. Delete `.tmp/` and stop Metro when the verification is finished.
+
 ## Git
 
 - No `Co-Authored-By` or Claude/Anthropic trailer in commit messages.
 - Commit only intended files; untracked tool leftovers such as `apps/example/.claude/` stay out.
 - Keep comments minimal (why-only) and split files over about 300 lines.
-- `lucide-react-native` is capped at `^1.53.0` in both `package.json` files because of the Yarn age gate on 1.54.0.
+- `lucide-react-native` is pinned to `1.53.0` in both `package.json` files and `registry.json` because of the Yarn age gate on 1.54.0.
