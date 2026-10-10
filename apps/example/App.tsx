@@ -13,6 +13,7 @@ import { FormControls } from './screens/FormControls';
 import { InputOtp } from './screens/InputOtp';
 import { Menus } from './screens/Menus';
 import { Overlays } from './screens/Overlays';
+import { SpinnerEmptyItem } from './screens/SpinnerEmptyItem';
 
 export default function App() {
   const { colors } = useTheme();
@@ -24,6 +25,7 @@ export default function App() {
           <ButtonsBadges />
           <CardForm />
           <Display />
+          <SpinnerEmptyItem />
           <Controls />
           <Calendars />
           <FormControls />
