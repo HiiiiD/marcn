@@ -51,7 +51,7 @@ Components that render a single host element (Button, Text, Badge, Card root) ac
 
 Every time you create, edit or change a component (anything under `registry/`), check it on the Android emulator before calling the work done: run `yarn example:sync`, start the example app in `apps/example`, exercise the component through its screen (add or update the screen when a component has none) and look at the result. Jest mocks layout, animation and gestures, so passing tests do not replace this. Do it as soon as the code changes are finished, then fix what you see and repeat. Report what you checked and anything you could not check.
 
-Put every screenshot and other scratch file from emulator testing (and the Metro log) in `.tmp/` at the repo root, never elsewhere. It is gitignored. Delete `.tmp/` and stop Metro when the verification is finished.
+Put every screenshot and other scratch file from emulator testing (and the Metro log) in `.tmp/` at the repo root, never elsewhere. It is gitignored. Delete `.tmp/` when the verification is finished and stop Metro, but leave the emulator running. Stop Metro by killing only the process that is *listening* on 8081 (`Get-NetTCPConnection -LocalPort 8081 -State Listen`); the emulator's `adb reverse` tunnel also shows up on that port, and killing it takes the emulator down.
 
 ## Git
 

@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet, SheetClose, SheetContent, SheetDescription, SheetFlatList, SheetHeader, SheetScrollView, SheetTitle, SheetTrigger,
+} from '@/components/ui/sheet';
 import { Text } from '@/components/ui/text';
 
 const outline = <Button variant="outline" />;
@@ -22,7 +24,7 @@ function Sized({ label, count, listStyle, flat }: { label: string; count: number
   return (
     <Sheet>
       <SheetTrigger render={outline}>{label}</SheetTrigger>
-      <SheetContent>
+      <SheetContent dragBody={false}>
         <Header title={label} />
         {flat ? (
           <FlatList style={listStyle} data={data} keyExtractor={(r) => r} renderItem={({ item }) => <Text style={styles.row}>{item}</Text>} />
@@ -68,7 +70,7 @@ export function SheetScroll() {
     <>
       <Sheet>
         <SheetTrigger render={outline}>Keyboard + SV</SheetTrigger>
-        <SheetContent>
+        <SheetContent dragBody={false}>
           <Header title="Keyboard" />
           <Input placeholder="Type here" />
           <ScrollView style={styles.fill} keyboardShouldPersistTaps="handled">
@@ -77,6 +79,14 @@ export function SheetScroll() {
             ))}
           </ScrollView>
           <Input placeholder="Bottom input" />
+        </SheetContent>
+      </Sheet>
+      <Sheet>
+        <SheetTrigger render={outline}>Drag anywhere</SheetTrigger>
+        <SheetContent snapPoints={[0.4, 0.9]}>
+          <Header title="Drag anywhere" />
+          <Text>No list here: drag from the text, the gaps or the button.</Text>
+          <SheetClose render={outline}>Close</SheetClose>
         </SheetContent>
       </Sheet>
       <Sized label="SV 3 rows" count={3} />
@@ -91,11 +101,11 @@ export function SheetScroll() {
         <SheetTrigger render={outline}>Sheet + ScrollView</SheetTrigger>
         <SheetContent>
           <Header title="ScrollView" />
-          <ScrollView style={styles.fill} testID="sheet-scroll">
+          <SheetScrollView style={styles.fill} testID="sheet-scroll">
             {rows.map((r) => (
               <Text key={r} style={styles.row}>{r}</Text>
             ))}
-          </ScrollView>
+          </SheetScrollView>
           <SheetClose render={outline}>Close</SheetClose>
         </SheetContent>
       </Sheet>
@@ -103,7 +113,7 @@ export function SheetScroll() {
         <SheetTrigger render={outline}>Sheet + FlatList</SheetTrigger>
         <SheetContent>
           <Header title="FlatList" />
-          <FlatList
+          <SheetFlatList
             style={styles.fill}
             data={rows}
             keyExtractor={(r) => r}
@@ -116,20 +126,20 @@ export function SheetScroll() {
         <SheetTrigger render={outline}>Snap + ScrollView</SheetTrigger>
         <SheetContent snapPoints={[0.4, 0.9]}>
           <Header title="Snap + ScrollView" />
-          <ScrollView style={styles.fill}>
+          <SheetScrollView style={styles.fill}>
             <View>
               {rows.map((r) => (
                 <Text key={r} style={styles.row}>{r}</Text>
               ))}
             </View>
-          </ScrollView>
+          </SheetScrollView>
         </SheetContent>
       </Sheet>
       <Sheet>
         <SheetTrigger render={outline}>Auto + 90%</SheetTrigger>
         <SheetContent snapPoints={['auto', 0.9]}>
           <Header title="Auto + 90%" />
-          <FlatList
+          <SheetFlatList
             style={styles.fill}
             data={rows.slice(0, 4)}
             keyExtractor={(r) => r}
@@ -151,7 +161,7 @@ export function SheetScroll() {
         <SheetTrigger render={outline}>Snap + FlatList</SheetTrigger>
         <SheetContent snapPoints={[0.4, 0.9]}>
           <Header title="Snap + FlatList" />
-          <FlatList
+          <SheetFlatList
             style={styles.fill}
             data={rows}
             keyExtractor={(r) => r}
@@ -163,7 +173,7 @@ export function SheetScroll() {
         <SheetTrigger render={outline}>Side + FlatList</SheetTrigger>
         <SheetContent side="right">
           <Header title="Side FlatList" />
-          <FlatList
+          <SheetFlatList
             style={styles.fill}
             data={rows}
             keyExtractor={(r) => r}

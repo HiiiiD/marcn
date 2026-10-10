@@ -314,6 +314,15 @@
       "files": [{ "path": "registry/marcn/lib/sheet-snap.ts", "type": "registry:lib" }]
     },
     {
+      "name": "sheet-scroll",
+      "type": "registry:lib",
+      "title": "Sheet scroll",
+      "description": "SheetScrollView and SheetFlatList: lists that hand a body drag over to the Sheet once scrolled to the top.",
+      "dependencies": ["react-native-gesture-handler@~2.32.0", "react-native-reanimated@4.5.1"],
+      "registryDependencies": ["@marcn/sheet-snap"],
+      "files": [{ "path": "registry/marcn/lib/sheet-scroll.tsx", "type": "registry:lib" }]
+    },
+    {
       "name": "portal",
       "type": "registry:lib",
       "title": "Portal",
@@ -385,6 +394,7 @@
         "@marcn/overlay",
         "@marcn/overlay-root",
         "@marcn/sheet-snap",
+        "@marcn/sheet-scroll",
         "@marcn/use-controllable-state",
         "@marcn/use-presence",
         "@marcn/use-keyboard-inset"

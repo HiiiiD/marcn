@@ -4,7 +4,7 @@ import { State } from 'react-native-gesture-handler';
 import { fireGestureHandler, getByGestureTestId } from 'react-native-gesture-handler/jest-utils';
 import { PortalHost } from '@/registry/marcn/lib/portal';
 import { Dialog, DialogContent, DialogTrigger } from '@/registry/marcn/ui/dialog';
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, type SheetContentProps } from '@/registry/marcn/ui/sheet';
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFlatList, SheetHeader, SheetScrollView, SheetTitle, SheetTrigger, type SheetContentProps } from '@/registry/marcn/ui/sheet';
 import { mockBackHandler } from '../back-handler';
 import { mockInsets } from '../insets';
 
@@ -308,4 +308,59 @@ test('accessibility steps stop at the first and last snap point and never dismis
 test('a single-size sheet has no adjustable handle', () => {
   setup();
   expect(screen.queryByRole('adjustable')).toBeNull();
+});
+
+const dragBody = (translationY: number, velocityY = 0) =>
+  fireGestureHandler(getByGestureTestId('sheet-body-drag'), [
+    { state: State.BEGAN },
+    { state: State.ACTIVE },
+    { state: State.ACTIVE, translationY },
+    { state: State.END, translationY, velocityY },
+  ]);
+
+test('dragging the body down far enough dismisses the sheet like the handle does', () => {
+  const onOpenChange = jest.fn();
+  setup({ onOpenChange });
+  dragBody(700);
+  expect(onOpenChange).toHaveBeenCalledWith(false);
+});
+
+test('a small body drag settles back without dismissing', () => {
+  const onOpenChange = jest.fn();
+  setup({ onOpenChange });
+  dragBody(20);
+  expect(onOpenChange).not.toHaveBeenCalled();
+});
+
+test('SheetScrollView and SheetFlatList render their content inside a sheet and on their own', () => {
+  render(
+    <PortalHost>
+      <Sheet defaultOpen>
+        <SheetTrigger><Text>Open</Text></SheetTrigger>
+        <SheetContent>
+          <SheetScrollView testID="scroll"><Text>in scroll</Text></SheetScrollView>
+          <SheetFlatList data={['a']} renderItem={({ item }) => <Text>{`item ${item}`}</Text>} />
+        </SheetContent>
+      </Sheet>
+    </PortalHost>,
+  );
+  expect(screen.getByText('in scroll')).toBeTruthy();
+  expect(screen.getByText('item a')).toBeTruthy();
+});
+
+test('a list scrolled away from the top keeps a downward body drag from moving the sheet', () => {
+  const onOpenChange = jest.fn();
+  render(
+    <PortalHost>
+      <Sheet defaultOpen onOpenChange={onOpenChange}>
+        <SheetTrigger><Text>Open</Text></SheetTrigger>
+        <SheetContent>
+          <SheetScrollView testID="scroll"><Text>row</Text></SheetScrollView>
+        </SheetContent>
+      </Sheet>
+    </PortalHost>,
+  );
+  fireEvent.scroll(screen.getByTestId('scroll'), { nativeEvent: { contentOffset: { x: 0, y: 200 } } });
+  dragBody(500);
+  expect(onOpenChange).not.toHaveBeenCalled();
 });
