@@ -263,6 +263,22 @@
       "title": "Back stack",
       "description": "Hardware back handling for stacked overlays: only the topmost one is dismissed.",
       "files": [{ "path": "registry/marcn/lib/back-stack.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "use-presence",
+      "type": "registry:lib",
+      "title": "usePresence",
+      "description": "Keeps overlay content mounted through its exit animation; useProgress animates 0 to 1.",
+      "dependencies": ["react-native-reanimated"],
+      "files": [{ "path": "registry/marcn/lib/use-presence.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "use-keyboard-inset",
+      "type": "registry:lib",
+      "title": "useKeyboardInset",
+      "description": "Keyboard height as React state and as an animated shared value.",
+      "dependencies": ["react-native-reanimated"],
+      "files": [{ "path": "registry/marcn/lib/use-keyboard-inset.ts", "type": "registry:lib" }]
     }
   ]
 }
