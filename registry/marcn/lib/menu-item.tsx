@@ -1,6 +1,6 @@
-import { createContext, useContext, type ReactNode, type Ref } from 'react';
+import { Children, createContext, useContext, type ReactNode, type Ref } from 'react';
 import { Pressable, StyleSheet, View, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
-import { asText, useOverlay } from '@/registry/marcn/lib/overlay-root';
+import { useOverlay } from '@/registry/marcn/lib/overlay-root';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
 import { Separator, type SeparatorProps } from '@/registry/marcn/ui/separator';
 import { Text, TextStyleContext, type TextProps } from '@/registry/marcn/ui/text';
@@ -64,7 +64,7 @@ export function MenuItemRow({
         ]}
         {...props}
       >
-        {asText(children as ReactNode)}
+        {Children.map(children as ReactNode, (child) => (typeof child === 'string' || typeof child === 'number' ? <Text>{child}</Text> : child))}
         {!!indicator && <View style={indicatorSide === 'end' ? s.base.indicatorEnd : s.base.indicatorStart}>{indicator}</View>}
       </Pressable>
     </TextStyleContext.Provider>

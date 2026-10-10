@@ -291,3 +291,10 @@ test('checked and unchecked rows reserve the same indicator space', () => {
   expect(left('radio', 'B')).toBe(left('radio', 'A'));
   expect(left('checkbox', 'On')).toBeGreaterThan(8);
 });
+
+test('string children next to other elements are wrapped in Text, not left as raw strings', () => {
+  setup({}, <DropdownMenuItem>Profile<DropdownMenuShortcut>Shift+P</DropdownMenuShortcut></DropdownMenuItem>);
+  open();
+  expect(screen.getByText('Profile')).toBeOnTheScreen();
+  expect(screen.getByText('Shift+P')).toBeOnTheScreen();
+});
