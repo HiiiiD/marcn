@@ -108,6 +108,31 @@
       "files": [{ "path": "registry/marcn/ui/separator.tsx", "type": "registry:ui" }]
     },
     {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "Spinning loader icon for loading states; inherits text color from a parent such as Button.",
+      "dependencies": ["react-native-reanimated@4.5.1", "lucide-react-native@1.53.0"],
+      "registryDependencies": ["@marcn/icon", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/ui/spinner.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "empty",
+      "type": "registry:ui",
+      "title": "Empty",
+      "description": "Empty state with header, media, title, description and content parts.",
+      "registryDependencies": ["@marcn/theme", "@marcn/text", "@marcn/render"],
+      "files": [{ "path": "registry/marcn/ui/empty.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "item",
+      "type": "registry:ui",
+      "title": "Item",
+      "description": "Flexible row for lists: media, content, title, description, actions, header, footer, group and separator.",
+      "registryDependencies": ["@marcn/theme", "@marcn/text", "@marcn/render", "@marcn/separator"],
+      "files": [{ "path": "registry/marcn/ui/item.tsx", "type": "registry:ui" }]
+    },
+    {
       "name": "avatar",
       "type": "registry:ui",
       "title": "Avatar",
@@ -554,6 +579,14 @@
         "@marcn/otp-caret"
       ],
       "files": [{ "path": "registry/marcn/ui/input-otp.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "field",
+      "type": "registry:ui",
+      "title": "Field",
+      "description": "Form field layout: label, description and error around any control, with groups and fieldsets.",
+      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/text", "@marcn/label"],
+      "files": [{ "path": "registry/marcn/ui/field.tsx", "type": "registry:ui" }]
     }
   ]
 }

@@ -44,7 +44,7 @@ Components install with a shared `theme.ts` in your `lib` alias. Edit its tokens
 
 ## Components
 
-`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `select`, `calendar`, `input-otp`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `calendar-math`, `calendar-styles`, `calendar-range-drag`, `calendar-month`, `calendar-picker`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset`, `use-anchored-position`, `menu-item`, `menu-surface`, `otp-state` and `otp-caret` lib items.
+`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `spinner`, `empty`, `item`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `select`, `calendar`, `input-otp`, `field`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `calendar-math`, `calendar-styles`, `calendar-range-drag`, `calendar-month`, `calendar-picker`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset`, `use-anchored-position`, `menu-item`, `menu-surface`, `otp-state` and `otp-caret` lib items.
 
 Components are designed to be edited in place: once added, the code is yours.
 
@@ -99,3 +99,11 @@ Run `corepack enable` once, then `yarn install` (in the repo root and in `apps/e
 ## Input OTP
 
 `input-otp` follows shadcn/ui (`InputOTP`, `InputOTPGroup`, `InputOTPSlot`, `InputOTPSeparator`): `maxLength`, `value`/`defaultValue`/`onChange`, `onComplete`, `pattern` (a single-character RegExp, digits by default). A transparent `TextInput` sits over the slots, so paste and SMS autofill (`oneTimeCode`) work; `inputRef` reaches it and `ref` reaches the container. The caret is always at the end (no mid-code editing) and slots are bordered individually. Every part accepts `render`.
+
+## Field
+
+`field` follows shadcn/ui (`Field`, `FieldGroup`, `FieldSet`, `FieldLegend`, `FieldLabel`, `FieldDescription`, `FieldError`) and only lays things out: `orientation="vertical" | "horizontal"` (use horizontal for checkbox and switch rows) and `invalid`/`disabled`, which tint and dim `FieldLabel`. Controls are not wired automatically; pass `aria-invalid` and `disabled` to the control yourself, or read them with `useField()`. `FieldError` takes `message` or children and renders nothing when empty. `Field` accepts `render`.
+
+## Spinner, Empty, Item
+
+These follow shadcn/ui. `Spinner` is a rotating `Loader2` icon (16px) that takes its color from a parent `TextStyleContext`, so it matches Button text. `Empty` has no border by default, as in shadcn; pass `style={{ borderWidth: 1 }}` for the dashed outline. `Item` is not pressable by itself: use `render={<Pressable onPress={...} />}`. Icons inside `EmptyMedia`/`ItemMedia` need an explicit `size` (24 and 16 in shadcn).

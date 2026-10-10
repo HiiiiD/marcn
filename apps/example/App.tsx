@@ -8,6 +8,7 @@ import { CardForm } from './screens/CardForm';
 import { Calendars } from './screens/Calendars';
 import { Controls } from './screens/Controls';
 import { Display } from './screens/Display';
+import { Fields } from './screens/Fields';
 import { FormControls } from './screens/FormControls';
 import { InputOtp } from './screens/InputOtp';
 import { Menus } from './screens/Menus';
@@ -26,6 +27,7 @@ export default function App() {
           <Controls />
           <Calendars />
           <FormControls />
+          <Fields />
           <Overlays />
           <Menus />
           <InputOtp />
