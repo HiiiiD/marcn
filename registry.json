@@ -287,6 +287,23 @@
       "description": "PortalHost (mount once at the app root) and Portal: stacked layers with accessibility containment.",
       "dependencies": ["react-native-gesture-handler"],
       "files": [{ "path": "registry/marcn/lib/portal.tsx", "type": "registry:lib" }]
+    },
+    {
+      "name": "overlay-root",
+      "type": "registry:lib",
+      "title": "Overlay root",
+      "description": "Open state, trigger ref and Trigger/Close parts shared by Dialog, Popover and Sheet.",
+      "registryDependencies": ["@marcn/render", "@marcn/use-controllable-state"],
+      "files": [{ "path": "registry/marcn/lib/overlay-root.tsx", "type": "registry:lib" }]
+    },
+    {
+      "name": "overlay",
+      "type": "registry:lib",
+      "title": "Overlay",
+      "description": "Presence, scrim, back handling and focus for a stacked overlay layer.",
+      "dependencies": ["react-native-reanimated"],
+      "registryDependencies": ["@marcn/back-stack", "@marcn/overlay-root", "@marcn/portal", "@marcn/use-presence"],
+      "files": [{ "path": "registry/marcn/lib/overlay.tsx", "type": "registry:lib" }]
     }
   ]
 }
