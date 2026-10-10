@@ -60,7 +60,7 @@ export function Comboboxes() {
           <ComboboxValue>
             {(selected) => selected.map((o) => <ComboboxChip key={o.value} value={o.value} />)}
           </ComboboxValue>
-          <ComboboxChipsInput placeholder="Add dessert (try creme)..." />
+          <ComboboxChipsInput placeholder="Add dessert..." />
         </ComboboxChips>
         <ComboboxContent>
           <ComboboxEmpty>No dessert found.</ComboboxEmpty>
