@@ -322,6 +322,23 @@
         "@marcn/use-keyboard-inset"
       ],
       "files": [{ "path": "registry/marcn/ui/dialog.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "Anchored popover on the portal layer with flip/clamp positioning and keyboard awareness.",
+      "dependencies": ["react-native-reanimated"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/overlay",
+        "@marcn/overlay-root",
+        "@marcn/popover-position",
+        "@marcn/use-presence",
+        "@marcn/use-keyboard-inset"
+      ],
+      "files": [{ "path": "registry/marcn/ui/popover.tsx", "type": "registry:ui" }]
     }
   ]
 }
