@@ -1,3 +1,4 @@
+import { FlashList } from '@shopify/flash-list';
 import { useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
 import { Button } from '@/components/ui/button';
@@ -165,6 +166,19 @@ export function SheetScroll() {
             style={styles.fill}
             data={rows}
             keyExtractor={(r) => r}
+            renderItem={({ item }) => <Text style={styles.row}>{item}</Text>}
+          />
+        </SheetContent>
+      </Sheet>
+      <Sheet>
+        <SheetTrigger render={outline}>Snap + FlashList</SheetTrigger>
+        <SheetContent snapPoints={[0.4, 0.9]}>
+          <Header title="Snap + FlashList" />
+          <FlashList
+            style={styles.fill}
+            data={rows}
+            keyExtractor={(r) => r}
+            renderScrollComponent={SheetScrollView}
             renderItem={({ item }) => <Text style={styles.row}>{item}</Text>}
           />
         </SheetContent>
