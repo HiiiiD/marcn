@@ -1,5 +1,5 @@
 import { Keyboard, StyleSheet, Text } from 'react-native';
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, isHiddenFromAccessibility, render, screen } from '@testing-library/react-native';
 import { State } from 'react-native-gesture-handler';
 import { fireGestureHandler, getByGestureTestId } from 'react-native-gesture-handler/jest-utils';
 import { PortalHost } from '@/registry/marcn/lib/portal';
@@ -184,4 +184,73 @@ test('a right sheet pads top, bottom and its edge', () => {
   mockInsets({ top: 40, bottom: 34, right: 20, left: 10 });
   setup({}, { side: 'right' });
   expect(surface()).toMatchObject({ paddingTop: 40, paddingBottom: 34, paddingRight: 20 });
+});
+
+// The reanimated mock never advances the open progress, so the slide-in term is the whole window height.
+const offset = () => (surface().transform[0].translateY as number) - 1334;
+
+test('with several snapPoints the sheet is as tall as the largest, sorted or not', () => {
+  setup({}, { snapPoints: [0.8, 0.4] });
+  expect(surface().height).toBeCloseTo(0.8 * 1334);
+});
+
+test('opens at the first snap point, lowered by the gap to the largest', () => {
+  setup({}, { snapPoints: [0.4, 0.8] });
+  expect(offset()).toBeCloseTo(0.4 * 1334);
+});
+
+test('defaultSnapIndex opens at a larger snap point', () => {
+  setup({}, { snapPoints: [0.4, 0.8], defaultSnapIndex: 1 });
+  expect(offset()).toBe(0);
+});
+
+test('dragging up from the lowest snap moves to the larger one and reports it', () => {
+  const onSnapIndexChange = jest.fn();
+  const onOpenChange = jest.fn();
+  setup({ onOpenChange }, { snapPoints: [0.4, 0.8], onSnapIndexChange });
+  act(() => drag({ translationY: -400 }));
+  expect(onSnapIndexChange).toHaveBeenCalledWith(1);
+  expect(onOpenChange).not.toHaveBeenCalled();
+  expect(offset()).toBe(0);
+});
+
+test('dragging down from the largest snap lands on the lower one without dismissing', () => {
+  const onSnapIndexChange = jest.fn();
+  const onOpenChange = jest.fn();
+  setup({ onOpenChange }, { snapPoints: [0.4, 0.8], defaultSnapIndex: 1, onSnapIndexChange });
+  drag({ translationY: 400 });
+  expect(onSnapIndexChange).toHaveBeenCalledWith(0);
+  expect(onOpenChange).not.toHaveBeenCalled();
+});
+
+test('dragging down far from the lowest snap dismisses', () => {
+  const onOpenChange = jest.fn();
+  setup({ onOpenChange }, { snapPoints: [0.4, 0.8] });
+  drag({ translationY: 400 });
+  expect(onOpenChange).toHaveBeenCalledWith(false);
+});
+
+test('stretching past the largest size neither dismisses nor changes snap, and springs back', () => {
+  const onSnapIndexChange = jest.fn();
+  const onOpenChange = jest.fn();
+  setup({ onOpenChange }, { snapPoints: [0.4, 0.8], defaultSnapIndex: 1, onSnapIndexChange });
+  drag({ translationY: -300 });
+  expect(onSnapIndexChange).not.toHaveBeenCalled();
+  expect(onOpenChange).not.toHaveBeenCalled();
+  expect(offset()).toBe(0);
+});
+
+test('a content-sized sheet can be stretched and springs back to rest', () => {
+  const onOpenChange = jest.fn();
+  setup({ onOpenChange });
+  drag({ translationY: -300 });
+  expect(onOpenChange).not.toHaveBeenCalled();
+  expect(offset()).toBe(0);
+});
+
+test('the stretch filler sits behind the open edge, hidden from screen readers', () => {
+  setup();
+  const filler = screen.getByTestId('sheet-stretch', { includeHiddenElements: true });
+  expect(StyleSheet.flatten(filler.props.style)).toMatchObject({ top: '100%' });
+  expect(isHiddenFromAccessibility(filler)).toBe(true);
 });

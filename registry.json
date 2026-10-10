@@ -281,6 +281,13 @@
       "files": [{ "path": "registry/marcn/lib/use-keyboard-inset.ts", "type": "registry:lib" }]
     },
     {
+      "name": "sheet-snap",
+      "type": "registry:lib",
+      "title": "Sheet snap",
+      "description": "Pure drag math for Sheet: rubber-band stretch, snap-point and dismiss resolution.",
+      "files": [{ "path": "registry/marcn/lib/sheet-snap.ts", "type": "registry:lib" }]
+    },
+    {
       "name": "portal",
       "type": "registry:lib",
       "title": "Portal",
@@ -344,7 +351,7 @@
       "name": "sheet",
       "type": "registry:ui",
       "title": "Sheet",
-      "description": "Edge-anchored sheet on the portal layer with drag-to-dismiss handle, stacking and keyboard lift.",
+      "description": "Edge-anchored sheet on the portal layer with snap points, rubber-band drag handle, stacking and keyboard lift.",
       "dependencies": ["react-native-gesture-handler", "react-native-reanimated", "react-native-safe-area-context"],
       "registryDependencies": [
         "@marcn/theme",
@@ -352,6 +359,8 @@
         "@marcn/dialog",
         "@marcn/overlay",
         "@marcn/overlay-root",
+        "@marcn/sheet-snap",
+        "@marcn/use-controllable-state",
         "@marcn/use-presence",
         "@marcn/use-keyboard-inset"
       ],

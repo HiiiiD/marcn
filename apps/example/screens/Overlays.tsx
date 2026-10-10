@@ -73,6 +73,15 @@ export function Overlays() {
           </SheetContent>
         </Sheet>
         <Sheet>
+          <SheetTrigger render={outline}>Sheet (snap points)</SheetTrigger>
+          <SheetContent snapPoints={[0.3, 0.6, 0.9]}>
+            <SheetHeader>
+              <SheetTitle>Snap points</SheetTitle>
+              <SheetDescription>Drag the handle: it snaps to 30%, 60% and 90%, stretches past the top and springs back.</SheetDescription>
+            </SheetHeader>
+          </SheetContent>
+        </Sheet>
+        <Sheet>
           <SheetTrigger render={outline}>Sheet (right)</SheetTrigger>
           <SheetContent side="right">
             <SheetHeader>
