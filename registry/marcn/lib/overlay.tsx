@@ -91,7 +91,12 @@ function OverlayLayer({ open, scrim, dismissable, onClose, initialFocusRef, chil
       <Animated.View style={[styles.fill, scrim && styles.scrim, scrimStyle, { pointerEvents: open ? 'auto' : 'none' }]}>
         <Pressable testID="overlay-backdrop" style={styles.fill} accessible={false} onPress={dismiss} />
       </Animated.View>
-      <View ref={rootRef} testID="overlay-content" style={styles.content} onAccessibilityEscape={dismiss}>
+      <View
+        ref={rootRef}
+        testID="overlay-content"
+        style={[styles.content, { pointerEvents: open ? 'box-none' : 'none' }]}
+        onAccessibilityEscape={dismiss}
+      >
         {children}
       </View>
     </View>

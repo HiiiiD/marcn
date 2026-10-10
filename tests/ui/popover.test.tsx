@@ -1,5 +1,5 @@
 import { createRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Keyboard, StyleSheet, Text, View } from 'react-native';
 import { act, fireEvent, isHiddenFromAccessibility, render, screen } from '@testing-library/react-native';
 import { PortalHost } from '@/registry/marcn/lib/portal';
 import { Popover, PopoverContent, PopoverTrigger, type PopoverContentProps } from '@/registry/marcn/ui/popover';
@@ -26,7 +26,10 @@ const layout = (width = 80, height = 50) =>
 const place = () => StyleSheet.flatten(screen.getByTestId('pop').props.style);
 const appHidden = () => isHiddenFromAccessibility(screen.getByText('App', { includeHiddenElements: true }));
 
-afterEach(() => jest.useRealTimers());
+afterEach(() => {
+  jest.useRealTimers();
+  jest.restoreAllMocks();
+});
 
 test('opens from the trigger', () => {
   setup();
@@ -98,4 +101,39 @@ test('forwards ref to the surface', () => {
   setup({ ref });
   fireEvent.press(screen.getByText('Open'));
   expect(ref.current).not.toBeNull();
+});
+
+test('stays invisible until placed even after the surface re-renders', () => {
+  setup({});
+  fireEvent.press(screen.getByText('Open'));
+  layout();
+  layout(81, 50);
+  expect(place().opacity).toBe(0);
+});
+
+test('plain string content is wrapped in Text', () => {
+  render(
+    <PortalHost>
+      <Popover defaultOpen>
+        <PopoverContent>Hello</PopoverContent>
+      </Popover>
+    </PortalHost>,
+  );
+  expect(screen.getByText('Hello')).toBeOnTheScreen();
+});
+
+test('re-measures the anchor once the keyboard lift has settled', () => {
+  jest.useFakeTimers();
+  const handlers: Record<string, (e: unknown) => void> = {};
+  jest.spyOn(Keyboard, 'addListener').mockImplementation(((event: string, cb: (e: unknown) => void) => {
+    handlers[event] = cb;
+    return { remove: jest.fn() };
+  }) as never);
+  const measure = jest.fn((cb: (x: number, y: number, w: number, h: number) => void) => cb(100, 100, 100, 40));
+  setup({}, measure as never);
+  fireEvent.press(screen.getByText('Open'));
+  const before = measure.mock.calls.length;
+  act(() => handlers.keyboardWillChangeFrame({ endCoordinates: { screenY: 500, height: 300 } } as never));
+  act(() => { jest.advanceTimersByTime(300); });
+  expect(measure.mock.calls.length).toBeGreaterThan(before + 1);
 });

@@ -149,3 +149,16 @@ test('parts throw outside a Dialog', () => {
   jest.spyOn(console, 'error').mockImplementation(() => {});
   expect(() => render(<DialogTitle>x</DialogTitle>)).toThrow(/within a Dialog, Popover or Sheet/);
 });
+
+test('plain string content and trigger are wrapped in Text', () => {
+  render(
+    <PortalHost>
+      <Dialog defaultOpen>
+        <DialogTrigger>Trigger</DialogTrigger>
+        <DialogContent>Hello</DialogContent>
+      </Dialog>
+    </PortalHost>,
+  );
+  expect(screen.getByText('Hello')).toBeOnTheScreen();
+  expect(screen.getByText('Trigger', { includeHiddenElements: true })).toBeOnTheScreen();
+});

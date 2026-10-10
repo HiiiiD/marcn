@@ -1,5 +1,5 @@
 import { createRef, useState } from 'react';
-import { AccessibilityInfo, Text, type View } from 'react-native';
+import { AccessibilityInfo, StyleSheet, Text, type View } from 'react-native';
 import { act, fireEvent, isHiddenFromAccessibility, render, screen } from '@testing-library/react-native';
 import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
 import { OverlayClose, OverlayRoot, OverlayTrigger, useOverlay, type OverlayRootProps } from '@/registry/marcn/lib/overlay-root';
@@ -152,4 +152,25 @@ test('moves accessibility focus in on open and back to the trigger after close',
   act(() => { jest.advanceTimersByTime(200); });
   act(() => { jest.advanceTimersByTime(1); });
   expect(focus).toHaveBeenLastCalledWith(triggerRef.current, 'focus');
+});
+
+test('content stops taking taps once closing begins', () => {
+  jest.useFakeTimers();
+  setup({ defaultOpen: true });
+  expect(StyleSheet.flatten(screen.getByTestId('overlay-content').props.style).pointerEvents).toBe('box-none');
+  fireEvent.press(screen.getByText('Done'));
+  expect(StyleSheet.flatten(screen.getByTestId('overlay-content').props.style).pointerEvents).toBe('none');
+});
+
+test('string children of Trigger and Close are wrapped in Text', () => {
+  render(
+    <PortalHost>
+      <OverlayRoot defaultOpen>
+        <OverlayTrigger>Open</OverlayTrigger>
+        <Overlay><OverlayClose>Shut</OverlayClose></Overlay>
+      </OverlayRoot>
+    </PortalHost>,
+  );
+  expect(screen.getByText('Shut')).toBeOnTheScreen();
+  expect(screen.getByText('Open', { includeHiddenElements: true })).toBeOnTheScreen();
 });

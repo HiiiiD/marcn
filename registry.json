@@ -293,7 +293,7 @@
       "type": "registry:lib",
       "title": "Overlay root",
       "description": "Open state, trigger ref and Trigger/Close parts shared by Dialog, Popover and Sheet.",
-      "registryDependencies": ["@marcn/render", "@marcn/use-controllable-state"],
+      "registryDependencies": ["@marcn/render", "@marcn/use-controllable-state", "@marcn/text"],
       "files": [{ "path": "registry/marcn/lib/overlay-root.tsx", "type": "registry:lib" }]
     },
     {

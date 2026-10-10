@@ -4,7 +4,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { X } from 'lucide-react-native';
 import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
 import {
-  OverlayClose, OverlayRoot, OverlayTrigger, useOverlay, type OverlayRootProps,
+  asText, OverlayClose, OverlayRoot, OverlayTrigger, useOverlay, type OverlayRootProps,
 } from '@/registry/marcn/lib/overlay-root';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
@@ -96,7 +96,7 @@ function DialogSurface({ showCloseButton = true, style, render, children, ...pro
         children: (
           <>
             <ScrollView style={s.scroll} contentContainerStyle={s.body} keyboardShouldPersistTaps="handled">
-              {children}
+              {asText(children)}
             </ScrollView>
             {showCloseButton && (
               <DialogClose accessibilityLabel="Close" hitSlop={8} style={s.close}>

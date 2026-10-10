@@ -3,7 +3,7 @@ import { StyleSheet, useWindowDimensions, View, type LayoutChangeEvent, type Vie
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
-import { OverlayClose, OverlayRoot, OverlayTrigger, useOverlay } from '@/registry/marcn/lib/overlay-root';
+import { asText, OverlayClose, OverlayRoot, OverlayTrigger, useOverlay } from '@/registry/marcn/lib/overlay-root';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
 import { useKeyboardInset } from '@/registry/marcn/lib/use-keyboard-inset';
@@ -108,7 +108,7 @@ function SheetSurface({
     const offset = dir * ((1 - progress.value) * extent.value + drag.value);
     return {
       transform: vertical ? [{ translateY: offset }] : [{ translateX: offset }],
-      ...(side === 'bottom' ? { bottom: inset.value } : null),
+      ...(side === 'bottom' ? { bottom: inset.value, maxHeight: (height - inset.value) * 0.9 } : null),
     };
   });
 
@@ -124,7 +124,7 @@ function SheetSurface({
   ) : null;
   const body = (
     <View key="body" style={s.body}>
-      {children}
+      {asText(children)}
     </View>
   );
   const handleFirst = side === 'bottom' || side === 'right';

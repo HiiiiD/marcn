@@ -39,3 +39,11 @@ test('removes both listeners on unmount', () => {
   renderHook(() => useKeyboardInset()).unmount();
   expect(remove).toHaveBeenCalledTimes(2);
 });
+
+test('starts at the current height when the keyboard is already up', () => {
+  jest.spyOn(Keyboard, 'isVisible').mockReturnValue(true);
+  jest.spyOn(Keyboard, 'metrics').mockReturnValue({ screenX: 0, screenY: 500, width: 400, height: 300 });
+  const hook = renderHook(() => useKeyboardInset());
+  expect(hook.result.current.height).toBe(300);
+  expect(hook.result.current.inset.value).toBe(300);
+});

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState, type Ref } from 'react';
 import { StyleSheet, useWindowDimensions, type LayoutChangeEvent, type View, type ViewProps } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
-import { OverlayRoot, OverlayTrigger, useOverlay, type OverlayRootProps } from '@/registry/marcn/lib/overlay-root';
+import { asText, OverlayRoot, OverlayTrigger, useOverlay, type OverlayRootProps } from '@/registry/marcn/lib/overlay-root';
 import { computePosition, type Align, type Rect, type Side, type Size } from '@/registry/marcn/lib/popover-position';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
@@ -25,7 +25,7 @@ const createStyles = (t: Theme) =>
       shadowOffset: { width: 0, height: 2 },
       elevation: 4,
     },
-    unplaced: { left: 0, top: 0, opacity: 0 },
+    unplaced: { left: 0, top: 0 },
   });
 
 export const Popover = OverlayRoot;
@@ -69,6 +69,7 @@ function PopoverSurface({
   style,
   render,
   onLayout,
+  children,
   ...props
 }: SurfaceProps) {
   const s = useStyles(createStyles);
@@ -87,6 +88,12 @@ function PopoverSurface({
   }, [triggerRef]);
 
   useEffect(measure, [measure, window.width, window.height, keyboard]);
+  // The host (a Dialog, say) is still animating its own keyboard lift, so measure again once it settles.
+  useEffect(() => {
+    if (keyboard === 0) return;
+    const timer = setTimeout(measure, 250);
+    return () => clearTimeout(timer);
+  }, [measure, keyboard]);
 
   const handleLayout = (e: LayoutChangeEvent) => {
     const { width, height } = e.nativeEvent.layout;
@@ -102,10 +109,16 @@ function PopoverSurface({
         })
       : null;
 
-  const fade = useAnimatedStyle(() => ({ opacity: progress.value }));
+  const placed = useSharedValue(position ? 1 : 0);
+  useEffect(() => {
+    placed.value = position ? 1 : 0;
+  }, [placed, position]);
+  // Gated in the worklet: the UI thread would otherwise override a static opacity.
+  const fade = useAnimatedStyle(() => ({ opacity: placed.value ? progress.value : 0 }));
 
   return renderElement(Animated.View, render, {
     ...props,
+    children: asText(children),
     onLayout: handleLayout,
     style: [s.surface, fade, position ? { left: position.x, top: position.y } : s.unplaced, style],
   } as ViewProps);

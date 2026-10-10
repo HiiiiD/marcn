@@ -1,4 +1,4 @@
-import { StyleSheet, Text } from 'react-native';
+import { Keyboard, StyleSheet, Text } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { State } from 'react-native-gesture-handler';
 import { fireGestureHandler, getByGestureTestId } from 'react-native-gesture-handler/jest-utils';
@@ -138,4 +138,22 @@ test('a Dialog opened from a Sheet sits above it; back closes only the dialog', 
   act(() => { jest.advanceTimersByTime(200); });
   expect(screen.queryByText('dialog-body')).toBeNull();
   expect(screen.getByText('sheet-body')).toBeOnTheScreen();
+});
+
+test('with the keyboard already up, a bottom sheet limits its height to the space above it', () => {
+  jest.spyOn(Keyboard, 'isVisible').mockReturnValue(true);
+  jest.spyOn(Keyboard, 'metrics').mockReturnValue({ screenX: 0, screenY: 1034, width: 750, height: 300 });
+  setup();
+  expect(surface().maxHeight).toBeCloseTo((1334 - 300) * 0.9);
+});
+
+test('plain string content is wrapped in Text', () => {
+  render(
+    <PortalHost>
+      <Sheet defaultOpen>
+        <SheetContent>Hello</SheetContent>
+      </Sheet>
+    </PortalHost>,
+  );
+  expect(screen.getByText('Hello')).toBeOnTheScreen();
 });

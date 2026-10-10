@@ -1,5 +1,6 @@
 import { createContext, useContext, useId, useMemo, useRef, type ReactNode, type Ref, type RefObject } from 'react';
 import { Pressable, type PressableProps, type View } from 'react-native';
+import { Text } from '@/registry/marcn/ui/text';
 import { mergeRefs, renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useControllableState } from '@/registry/marcn/lib/use-controllable-state';
 
@@ -21,6 +22,10 @@ export function useOverlay() {
 
 export type OverlayState = { open: boolean };
 
+export function asText(children: ReactNode) {
+  return typeof children === 'string' || typeof children === 'number' ? <Text>{children}</Text> : children;
+}
+
 export type OverlayRootProps = {
   open?: boolean;
   defaultOpen?: boolean;
@@ -41,7 +46,7 @@ export function OverlayRoot({ open: openProp, defaultOpen = false, onOpenChange,
 
 export type OverlayTriggerProps = PressableProps & { render?: RenderProp<PressableProps, OverlayState>; ref?: Ref<View> };
 
-export function OverlayTrigger({ render, onPress, ref, ...props }: OverlayTriggerProps) {
+export function OverlayTrigger({ render, onPress, ref, children, ...props }: OverlayTriggerProps) {
   const ctx = useOverlay();
   return renderElement(
     Pressable,
@@ -50,6 +55,7 @@ export function OverlayTrigger({ render, onPress, ref, ...props }: OverlayTrigge
       accessibilityRole: 'button',
       accessibilityState: { expanded: ctx.open },
       ...props,
+      children: asText(children as ReactNode),
       ref: mergeRefs(ref, ctx.triggerRef),
       onPress: (e) => {
         onPress?.(e);
@@ -62,7 +68,7 @@ export function OverlayTrigger({ render, onPress, ref, ...props }: OverlayTrigge
 
 export type OverlayCloseProps = PressableProps & { render?: RenderProp<PressableProps, OverlayState>; ref?: Ref<View> };
 
-export function OverlayClose({ render, onPress, ...props }: OverlayCloseProps) {
+export function OverlayClose({ render, onPress, children, ...props }: OverlayCloseProps) {
   const ctx = useOverlay();
   return renderElement(
     Pressable,
@@ -70,6 +76,7 @@ export function OverlayClose({ render, onPress, ...props }: OverlayCloseProps) {
     {
       accessibilityRole: 'button',
       ...props,
+      children: asText(children as ReactNode),
       onPress: (e) => {
         onPress?.(e);
         ctx.setOpen(false);

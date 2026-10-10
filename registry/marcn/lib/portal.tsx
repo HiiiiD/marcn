@@ -48,7 +48,7 @@ export function PortalHost({ children, ...props }: ViewProps) {
         </View>
         <View style={styles.layer}>
           {entries.map((e, i) => (
-            <View key={e.id} style={styles.layer} accessibilityViewIsModal={i === topModal} {...(i < topModal ? HIDDEN : undefined)}>
+            <View key={e.id} style={styles.layer} accessibilityViewIsModal={topModal >= 0 && i === entries.length - 1} {...(i < topModal ? HIDDEN : undefined)}>
               {e.node}
             </View>
           ))}

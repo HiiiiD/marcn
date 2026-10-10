@@ -77,3 +77,14 @@ test('app is visible again once the modal layer is gone', () => {
   view.rerender(ui(false));
   expect(hidden('App')).toBe(false);
 });
+
+test('a non-modal layer above a modal one stays reachable for screen readers', () => {
+  render(
+    <PortalHost>
+      <Text>App</Text>
+      <Portal><Text>dialog</Text></Portal>
+      <Portal modal={false}><Text>pop</Text></Portal>
+    </PortalHost>,
+  );
+  expect(hidden('pop')).toBe(false);
+});

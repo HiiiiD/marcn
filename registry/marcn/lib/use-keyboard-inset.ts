@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react';
 import { Dimensions, Keyboard, Platform, type KeyboardEvent } from 'react-native';
 import { useSharedValue, withTiming } from 'react-native-reanimated';
 
+// A keyboard already up when the overlay opens (focused field underneath) fires no event, so read it.
+const currentHeight = () => (Keyboard.isVisible() ? Keyboard.metrics()?.height ?? 0 : 0);
+
 export function useKeyboardInset() {
-  const inset = useSharedValue(0);
-  const [height, setHeight] = useState(0);
+  const [height, setHeight] = useState(currentHeight);
+  const inset = useSharedValue(height);
 
   useEffect(() => {
     const ios = Platform.OS === 'ios';
