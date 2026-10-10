@@ -23,10 +23,28 @@ type PromiseMessages<T> = { loading: ReactNode; success: Resolvable<T>; error: R
 function promise<T>(source: Promise<T> | (() => Promise<T>), messages: PromiseMessages<T>, options?: ToastOptions) {
   const id = options?.id ?? nextToastId();
   upsertToast({ ...options, id, type: 'loading', title: messages.loading });
-  const run = typeof source === 'function' ? source() : source;
+
+  // A throwing message function must still end the loading state, or the spinner never resolves.
+  const settle = <V,>(type: 'success' | 'error', message: Resolvable<V>, value: V) => {
+    let title: ReactNode;
+    try {
+      title = resolve(message, value);
+    } catch (e) {
+      type = 'error';
+      title = e instanceof Error ? e.message : String(e);
+    }
+    upsertToast({ ...options, id, type, title });
+  };
+
+  let run: Promise<T>;
+  try {
+    run = typeof source === 'function' ? source() : source;
+  } catch (e) {
+    run = Promise.reject(e);
+  }
   run.then(
-    (value) => upsertToast({ ...options, id, type: 'success', title: resolve(messages.success, value) }),
-    (reason: unknown) => upsertToast({ ...options, id, type: 'error', title: resolve(messages.error, reason) }),
+    (value) => settle('success', messages.success, value),
+    (reason: unknown) => settle('error', messages.error, reason),
   );
   return id;
 }

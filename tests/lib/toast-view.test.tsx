@@ -65,6 +65,19 @@ test('a per-toast duration overrides the default; Infinity persists', () => {
   expect(getToasts()[0].dismissed).toBe(false);
 });
 
+test('loading ignores an explicit duration', () => {
+  show({ type: 'loading', title: 'x', duration: 100 });
+  act(() => { jest.advanceTimersByTime(60000); });
+  expect(getToasts()[0].dismissed).toBe(false);
+});
+
+test('releases its touch when it unmounts so the stack cannot stay paused', () => {
+  const onTouch = jest.fn();
+  const { id, unmount } = show({ type: 'default', title: 'x' }, { onTouch });
+  unmount();
+  expect(onTouch).toHaveBeenCalledWith(id, false);
+});
+
 test('paused toasts do not expire', () => {
   show({ type: 'default', title: 'x' }, { paused: true });
   act(() => { jest.advanceTimersByTime(60000); });
@@ -121,7 +134,7 @@ test('tapping the toast calls onTap', () => {
 
 test('non-interactive layouts let touches pass through', () => {
   const { id } = show({ type: 'default', title: 'x' }, { layout: { ...layout, interactive: false } });
-  expect(StyleSheet.flatten(screen.getByTestId(`toast-${id}`).props.style)).toMatchObject({ pointerEvents: 'none' });
+  expect(StyleSheet.flatten(screen.getByTestId(`toast-${id}`, { includeHiddenElements: true }).props.style)).toMatchObject({ pointerEvents: "none" });
 });
 
 test('unmounting with a live timer leaves no pending timers', () => {

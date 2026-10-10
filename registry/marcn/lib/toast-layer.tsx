@@ -24,7 +24,7 @@ export type ToastLayerProps = {
 export function ToastLayer({ toasts, position, visibleToasts, duration }: ToastLayerProps) {
   const insets = useSafeAreaInsets();
   const [expanded, setExpanded] = useState(false);
-  const [touching, setTouching] = useState(0);
+  const [touching, setTouching] = useState<readonly ToastId[]>([]);
   const [heights, setHeights] = useState<Record<string, number>>({});
 
   const live = useMemo(() => toasts.filter((t) => !t.dismissed).reverse(), [toasts]);
@@ -36,7 +36,7 @@ export function ToastLayer({ toasts, position, visibleToasts, duration }: ToastL
 
   // An expanded stack pauses every timer, so it must not stay expanded forever.
   useEffect(() => {
-    if (!expanded || touching > 0) return;
+    if (!expanded || touching.length > 0) return;
     const timer = setTimeout(() => setExpanded(false), IDLE_COLLAPSE_MS);
     return () => clearTimeout(timer);
   }, [expanded, touching]);
@@ -44,7 +44,12 @@ export function ToastLayer({ toasts, position, visibleToasts, duration }: ToastL
   const onMeasure = useCallback((id: ToastId, height: number) => {
     setHeights((prev) => (prev[String(id)] === height ? prev : { ...prev, [String(id)]: height }));
   }, []);
-  const onTouch = useCallback((on: boolean) => setTouching((n) => Math.max(0, n + (on ? 1 : -1))), []);
+  const onTouch = useCallback((id: ToastId, on: boolean) => {
+    setTouching((prev) => {
+      if (prev.includes(id) === on) return prev;
+      return on ? [...prev, id] : prev.filter((i) => i !== id);
+    });
+  }, []);
   const onTap = useCallback(() => setExpanded((e) => liveCount > 1 && !e), [liveCount]);
 
   const measured = live.map((t) => heights[String(t.id)]);
@@ -60,7 +65,7 @@ export function ToastLayer({ toasts, position, visibleToasts, duration }: ToastL
             layout={stackLayout({ index: Math.max(live.indexOf(t), 0), expanded, heights: measured, visible: visibleToasts, position })}
             position={position}
             duration={duration}
-            paused={expanded || touching > 0}
+            paused={expanded || touching.length > 0}
             onMeasure={onMeasure}
             onTouch={onTouch}
             onTap={onTap}

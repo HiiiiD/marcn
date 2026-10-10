@@ -20,7 +20,7 @@ beforeEach(() => {
 afterEach(() => jest.useRealTimers());
 
 const flush = (ms = 0) => act(() => { jest.advanceTimersByTime(ms); });
-const node = (index: number) => screen.getByTestId(`toast-${getToasts()[index].id}`);
+const node = (index: number) => screen.getByTestId(`toast-${getToasts()[index].id}`, { includeHiddenElements: true });
 const pointer = (index: number) => StyleSheet.flatten(node(index).props.style).pointerEvents;
 
 test('renders nothing until a toast is fired, then shows it', () => {
@@ -129,6 +129,47 @@ test('toast.promise accepts a function returning the promise', async () => {
   await act(async () => { toast.promise(fn, { loading: 'L', success: 'S', error: 'E' }); });
   expect(fn).toHaveBeenCalledTimes(1);
   expect(getToasts()[0].title).toBe('S');
+});
+
+test('promise: a synchronously throwing source ends in the error state', () => {
+  mount();
+  act(() => {
+    toast.promise(() => { throw new Error('sync boom'); }, { loading: 'L', success: 'S', error: (e) => `Failed: ${(e as Error).message}` });
+  });
+  return act(async () => {}).then(() => {
+    expect(getToasts()).toHaveLength(1);
+    expect(getToasts()[0]).toMatchObject({ type: 'error', title: 'Failed: sync boom' });
+  });
+});
+
+test('promise: a throwing success message ends in the error state instead of a stuck spinner', async () => {
+  mount();
+  const promise = Promise.resolve(1);
+  act(() => {
+    toast.promise(promise, { loading: 'L', success: () => { throw new Error('bad message'); }, error: 'E' });
+  });
+  await act(async () => { await promise; });
+  expect(getToasts()[0]).toMatchObject({ type: 'error', title: 'bad message' });
+});
+
+test('promise: the loading toast never auto-closes, even with a duration option', async () => {
+  mount();
+  let resolve!: (v: string) => void;
+  const promise = new Promise<string>((r) => { resolve = r; });
+  act(() => { toast.promise(promise, { loading: 'Saving', success: 'Saved', error: 'E' }, { duration: 1000 }); });
+  flush(5000);
+  expect(getToasts()[0].dismissed).toBe(false);
+  await act(async () => { resolve('x'); });
+  expect(getToasts()[0].type).toBe('success');
+});
+
+test('toasts behind the front one are hidden from accessibility until expanded', () => {
+  mount();
+  act(() => { toast('one'); toast('two'); });
+  expect(node(0)).toHaveProp('accessibilityElementsHidden', true);
+  expect(node(1)).toHaveProp('accessibilityElementsHidden', false);
+  fireEvent.press(screen.getByText('two'));
+  expect(node(0)).toHaveProp('accessibilityElementsHidden', false);
 });
 
 test('only the front toast is touchable when collapsed; tapping expands, tapping again collapses', () => {

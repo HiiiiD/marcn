@@ -52,7 +52,7 @@ export type ToastViewProps = {
   duration: number;
   paused: boolean;
   onMeasure: (id: ToastId, height: number) => void;
-  onTouch: (touching: boolean) => void;
+  onTouch: (id: ToastId, touching: boolean) => void;
   onTap: () => void;
 };
 
@@ -83,18 +83,22 @@ export function ToastView({ toast, layout, position, duration, paused, onMeasure
   }, [dismissed, id]);
 
   useToastTimer({
-    duration: toast.duration ?? (toast.type === 'loading' ? Infinity : duration),
+    duration: toast.type === 'loading' ? Infinity : (toast.duration ?? duration),
     paused: paused || dismissed,
     rev: toast.rev,
     onExpire: () => dismissToast(id, 'auto'),
   });
 
+  // The finalize event is lost if the view unmounts mid-touch; a stuck touch would pause every timer.
+  useEffect(() => () => onTouch(id, false), [id, onTouch]);
+
+  const inert = dismissed || !layout.interactive;
   const pan = Gesture.Pan()
     .runOnJS(true)
     .enabled(toast.dismissible !== false && !dismissed && layout.interactive)
     .activeOffsetX([-10, 10])
     .activeOffsetY([-10, 10])
-    .onBegin(() => onTouch(true))
+    .onBegin(() => onTouch(id, true))
     .onUpdate((e) => {
       offsetX.value = e.translationX;
       offsetY.value = dampenDrag(e.translationY, position);
@@ -104,7 +108,7 @@ export function ToastView({ toast, layout, position, duration, paused, onMeasure
       offsetX.value = withSpring(0);
       offsetY.value = withSpring(0);
     })
-    .onFinalize(() => onTouch(false));
+    .onFinalize(() => onTouch(id, false));
 
   const animated = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -118,13 +122,15 @@ export function ToastView({ toast, layout, position, duration, paused, onMeasure
         testID={`toast-${id}`}
         accessibilityRole="alert"
         accessibilityLiveRegion={toast.type === 'error' ? 'assertive' : 'polite'}
+        accessibilityElementsHidden={inert}
+        importantForAccessibility={inert ? 'no-hide-descendants' : 'auto'}
         onLayout={(e: LayoutChangeEvent) => onMeasure(id, e.nativeEvent.layout.height)}
         style={[
           s.root,
           {
             [position]: 0,
             zIndex: layout.zIndex,
-            pointerEvents: layout.interactive && !dismissed ? 'auto' : 'none',
+            pointerEvents: inert ? 'none' : 'auto',
             transformOrigin: position === 'top' ? '50% 0%' : '50% 100%',
           },
           animated,
