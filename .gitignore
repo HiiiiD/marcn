@@ -11,3 +11,5 @@ apps/example/lib
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+.tmp/

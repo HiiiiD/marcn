@@ -1,4 +1,4 @@
-import { dragPosition, rubberBand, settle } from '@/registry/marcn/lib/sheet-snap';
+import { bodyDrag, dragPosition, rubberBand, settle } from '@/registry/marcn/lib/sheet-snap';
 
 test('rubberBand grows with distance but never reaches the limit', () => {
   expect(rubberBand(0)).toBe(0);
@@ -39,4 +39,26 @@ test('picks the nearest snap, projecting the release velocity', () => {
 
 test('releasing while stretched past the top returns to the largest snap', () => {
   expect(settle({ ...two, position: -80, velocity: -500 })).toEqual({ index: 1 });
+});
+
+const body = { anchor: 0, scrolled: 0, startedAtTop: true, hasScroll: true };
+
+test('a body drag without a list inside follows the finger freely', () => {
+  expect(bodyDrag({ ...body, hasScroll: false, translation: -40 })).toEqual({ anchor: 0, drag: -40 });
+});
+
+test('a body drag leaves the gesture to a scrolled list and re-anchors', () => {
+  expect(bodyDrag({ ...body, scrolled: 120, translation: 30 })).toEqual({ anchor: 30, drag: null });
+});
+
+test('once the list is back at its start a downward drag moves the sheet from where the list gave up', () => {
+  expect(bodyDrag({ ...body, anchor: 30, translation: 90 })).toEqual({ anchor: 30, drag: 60 });
+});
+
+test('an upward drag at the top snap never stretches the sheet and re-anchors for the list', () => {
+  expect(bodyDrag({ ...body, anchor: 20, translation: -10 })).toEqual({ anchor: -10, drag: 0 });
+});
+
+test('a drag that starts below the top snap moves the sheet both ways', () => {
+  expect(bodyDrag({ ...body, startedAtTop: false, translation: -50 })).toEqual({ anchor: 0, drag: -50 });
 });

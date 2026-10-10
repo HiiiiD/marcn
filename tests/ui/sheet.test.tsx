@@ -4,7 +4,7 @@ import { State } from 'react-native-gesture-handler';
 import { fireGestureHandler, getByGestureTestId } from 'react-native-gesture-handler/jest-utils';
 import { PortalHost } from '@/registry/marcn/lib/portal';
 import { Dialog, DialogContent, DialogTrigger } from '@/registry/marcn/ui/dialog';
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, type SheetContentProps } from '@/registry/marcn/ui/sheet';
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFlatList, SheetHeader, SheetScrollView, SheetTitle, SheetTrigger, type SheetContentProps } from '@/registry/marcn/ui/sheet';
 import { mockBackHandler } from '../back-handler';
 import { mockInsets } from '../insets';
 
@@ -189,6 +189,32 @@ test('a right sheet pads top, bottom and its edge', () => {
 // The reanimated mock never advances the open progress, so the slide-in term is the whole window height.
 const offset = () => (surface().transform[0].translateY as number) - 1334;
 
+test("'auto' snap point measures the content, then sizes the sheet to it", () => {
+  setup({}, { snapPoints: ['auto'] });
+  expect(surface().height).toBeUndefined();
+  fireEvent(screen.getByTestId('sheet'), 'layout', { nativeEvent: { layout: { width: 375, height: 240 } } });
+  expect(surface().height).toBeUndefined();
+});
+
+test("'auto' follows the content once a larger snap has fixed the sheet's size", () => {
+  const layout = (id: string, height: number) =>
+    fireEvent(screen.getByTestId(id), 'layout', { nativeEvent: { layout: { width: 375, height } } });
+  setup({}, { snapPoints: ['auto', 500] });
+  layout('sheet-body', 100);
+  layout('sheet', 160);
+  expect(surface().height).toBe(500);
+  layout('sheet-body', 300);
+  expect(surface().height).toBe(500);
+  layout('sheet-body', 450);
+  expect(surface().height).toBeUndefined();
+});
+
+test("'auto' alone leaves the surface unsized so it keeps reporting the content's size", () => {
+  setup({}, { snapPoints: ['auto'] });
+  fireEvent(screen.getByTestId('sheet'), 'layout', { nativeEvent: { layout: { width: 375, height: 240 } } });
+  expect(surface().height).toBeUndefined();
+});
+
 test('with several snapPoints the sheet is as tall as the largest, sorted or not', () => {
   setup({}, { snapPoints: [0.8, 0.4] });
   expect(surface().height).toBeCloseTo(0.8 * 1334);
@@ -282,4 +308,59 @@ test('accessibility steps stop at the first and last snap point and never dismis
 test('a single-size sheet has no adjustable handle', () => {
   setup();
   expect(screen.queryByRole('adjustable')).toBeNull();
+});
+
+const dragBody = (translationY: number, velocityY = 0) =>
+  fireGestureHandler(getByGestureTestId('sheet-body-drag'), [
+    { state: State.BEGAN },
+    { state: State.ACTIVE },
+    { state: State.ACTIVE, translationY },
+    { state: State.END, translationY, velocityY },
+  ]);
+
+test('dragging the body down far enough dismisses the sheet like the handle does', () => {
+  const onOpenChange = jest.fn();
+  setup({ onOpenChange });
+  dragBody(700);
+  expect(onOpenChange).toHaveBeenCalledWith(false);
+});
+
+test('a small body drag settles back without dismissing', () => {
+  const onOpenChange = jest.fn();
+  setup({ onOpenChange });
+  dragBody(20);
+  expect(onOpenChange).not.toHaveBeenCalled();
+});
+
+test('SheetScrollView and SheetFlatList render their content inside a sheet and on their own', () => {
+  render(
+    <PortalHost>
+      <Sheet defaultOpen>
+        <SheetTrigger><Text>Open</Text></SheetTrigger>
+        <SheetContent>
+          <SheetScrollView testID="scroll"><Text>in scroll</Text></SheetScrollView>
+          <SheetFlatList data={['a']} renderItem={({ item }) => <Text>{`item ${item}`}</Text>} />
+        </SheetContent>
+      </Sheet>
+    </PortalHost>,
+  );
+  expect(screen.getByText('in scroll')).toBeTruthy();
+  expect(screen.getByText('item a')).toBeTruthy();
+});
+
+test('a list scrolled away from the top keeps a downward body drag from moving the sheet', () => {
+  const onOpenChange = jest.fn();
+  render(
+    <PortalHost>
+      <Sheet defaultOpen onOpenChange={onOpenChange}>
+        <SheetTrigger><Text>Open</Text></SheetTrigger>
+        <SheetContent>
+          <SheetScrollView testID="scroll"><Text>row</Text></SheetScrollView>
+        </SheetContent>
+      </Sheet>
+    </PortalHost>,
+  );
+  fireEvent.scroll(screen.getByTestId('scroll'), { nativeEvent: { contentOffset: { x: 0, y: 200 } } });
+  dragBody(500);
+  expect(onOpenChange).not.toHaveBeenCalled();
 });

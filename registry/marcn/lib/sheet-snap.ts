@@ -23,3 +23,15 @@ export function settle({ position, velocity, hidden, lowestSize }: Release): { d
   });
   return { index };
 }
+
+type BodyDrag = { translation: number; anchor: number; scrolled: number; startedAtTop: boolean; hasScroll: boolean };
+
+// A drag that starts on the sheet body. With a list inside, the list keeps the gesture until it is scrolled back to its start;
+// the sheet only follows once the finger moves toward dismissal past `anchor`. `drag` is null while the list owns the gesture.
+export function bodyDrag({ translation, anchor, scrolled, startedAtTop, hasScroll }: BodyDrag): { anchor: number; drag: number | null } {
+  if (!hasScroll) return { anchor, drag: translation };
+  if (!startedAtTop) return { anchor, drag: translation - anchor };
+  if (scrolled > 0) return { anchor: translation, drag: null };
+  const drag = translation - anchor;
+  return drag < 0 ? { anchor: translation, drag: 0 } : { anchor, drag };
+}

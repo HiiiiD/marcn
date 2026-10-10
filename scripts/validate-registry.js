@@ -26,7 +26,7 @@ function validateRegistry(registry, root = process.cwd()) {
       if (!names.has(dep)) errors.push(`${item.name}: unknown registry dependency "${d}"`);
       deps.add(dep);
     }
-    const npmDeps = new Set(item.dependencies ?? []);
+    const npmDeps = new Set((item.dependencies ?? []).map((d) => d.replace(/(?<=.)@.*/, '')));
 
     for (const file of item.files) {
       const abs = path.join(root, file.path);

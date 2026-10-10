@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type Ref } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type Ref } from 'react';
 import { StyleSheet, useWindowDimensions, View, type AccessibilityActionEvent, type LayoutChangeEvent, type ViewProps } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
@@ -6,12 +6,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
 import { asText, OverlayClose, OverlayRoot, OverlayTrigger, useOverlay } from '@/registry/marcn/lib/overlay-root';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
+import { SheetDragContext, useBodyDrag } from '@/registry/marcn/lib/sheet-scroll';
 import { dragPosition, RUBBER_LIMIT, settle } from '@/registry/marcn/lib/sheet-snap';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
 import { useControllableState } from '@/registry/marcn/lib/use-controllable-state';
 import { useKeyboardInset } from '@/registry/marcn/lib/use-keyboard-inset';
 import { useProgress } from '@/registry/marcn/lib/use-presence';
 
+export { SheetFlatList, SheetScrollView } from '@/registry/marcn/lib/sheet-scroll';
 export { DialogHeader as SheetHeader, DialogFooter as SheetFooter, DialogTitle as SheetTitle, DialogDescription as SheetDescription } from '@/registry/marcn/ui/dialog';
 
 // Drawn behind the open edge so a stretched sheet never reveals a gap.
@@ -31,6 +33,7 @@ const createStyles = (t: Theme) =>
     left: { top: 0, bottom: 0, left: 0, width: '75%', maxWidth: 384, flexDirection: 'row', borderRightWidth: 1 },
     right: { top: 0, bottom: 0, right: 0, width: '75%', maxWidth: 384, flexDirection: 'row', borderLeftWidth: 1 },
     body: { flexShrink: 1, flexGrow: 1, padding: t.spacing[4], gap: t.spacing[4] },
+    bodyFit: { flexGrow: 0 },
     handleHit: { alignItems: 'center', justifyContent: 'center', padding: t.spacing[3] },
     handleBar: { borderRadius: t.radius.full, backgroundColor: t.colors.border },
     handleBarHorizontal: { width: 40, height: 4 },
@@ -51,11 +54,13 @@ export type SheetSide = 'top' | 'bottom' | 'left' | 'right';
 type SurfaceProps = ViewProps & {
   side?: SheetSide;
   showHandle?: boolean;
-  /** Visible sizes: fractions of the window (<= 1) or pixels. The handle snaps between them. */
-  snapPoints?: number[];
+  /** Visible sizes: fractions of the window (<= 1), pixels, or `'auto'` to fit the content (measured once on open). The handle snaps between them. */
+  snapPoints?: (number | 'auto')[];
   snapIndex?: number;
   defaultSnapIndex?: number;
   onSnapIndexChange?: (index: number) => void;
+  /** Drag the sheet from anywhere on its body. Lists inside must be `SheetScrollView`/`SheetFlatList`; set `false` to use other scrollables. */
+  dragBody?: boolean;
   render?: RenderProp<ViewProps>;
   ref?: Ref<View>;
 };
@@ -80,6 +85,7 @@ function SheetSurface({
   snapIndex,
   defaultSnapIndex = 0,
   onSnapIndexChange,
+  dragBody = true,
   style,
   render,
   children,
@@ -97,12 +103,24 @@ function SheetSurface({
   const dir = side === 'top' || side === 'left' ? -1 : 1;
   const extent = useSharedValue(vertical ? height : width);
 
+  // 'auto' tracks the content: while the surface is unsized its own layout is the content size; once a larger
+  // snap fixes its size, only the body (which no longer grows) still reports the content, as a delta from the last unsized pair.
+  const hasAuto = !!snapPoints?.includes('auto');
+  const [fit, setFit] = useState<number | null>(null);
+  const measuring = hasAuto && fit === null;
+  const measured = useRef({ fit: 0, body: 0 });
+
   const limit = vertical ? (height - insets.top) * 0.9 : width;
   const snapKey = snapPoints?.join();
   const sizes = useMemo(
-    () => snapPoints?.map((p) => Math.min(p <= 1 ? p * (vertical ? height : width) : p, limit)).sort((a, b) => a - b),
+    () =>
+      measuring
+        ? undefined
+        : snapPoints
+            ?.map((p) => Math.min(p === 'auto' ? fit! : p <= 1 ? p * (vertical ? height : width) : p, limit))
+            .sort((a, b) => a - b),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [snapKey, vertical, height, width, limit],
+    [snapKey, measuring, fit, vertical, height, width, limit],
   );
   const largest = sizes ? sizes[sizes.length - 1] : 0;
   // Each snap's distance below the largest: the sheet is as tall as the largest and slides down to show a smaller one.
@@ -126,6 +144,20 @@ function SheetSurface({
     position.value = withTiming(hidden[index], { duration: 150 });
   }, [index, hidden, position]);
 
+  const release = useCallback(
+    (current: number, velocity: number) => {
+      const result = settle({ position: current, velocity, hidden, lowestSize: sizes ? sizes[0] : extent.value });
+      if ('dismiss' in result) {
+        setOpen(false);
+        return;
+      }
+      landed.current = result.index;
+      setIndex(result.index);
+      position.value = withSpring(hidden[result.index]);
+    },
+    [hidden, sizes, extent, position, setOpen, setIndex],
+  );
+
   const pan = useMemo(
     () =>
       Gesture.Pan()
@@ -138,22 +170,15 @@ function SheetSurface({
           position.value = dragPosition(start.value + dir * (vertical ? e.translationY : e.translationX));
         })
         .onEnd((e) => {
-          const result = settle({
-            position: dragPosition(start.value + dir * (vertical ? e.translationY : e.translationX)),
-            velocity: dir * (vertical ? e.velocityY : e.velocityX),
-            hidden,
-            lowestSize: sizes ? sizes[0] : extent.value,
-          });
-          if ('dismiss' in result) {
-            setOpen(false);
-            return;
-          }
-          landed.current = result.index;
-          setIndex(result.index);
-          position.value = withSpring(hidden[result.index]);
+          release(
+            dragPosition(start.value + dir * (vertical ? e.translationY : e.translationX)),
+            dir * (vertical ? e.velocityY : e.velocityX),
+          );
         }),
-    [dir, vertical, position, start, extent, hidden, sizes, setOpen, setIndex],
+    [dir, vertical, position, start, release],
   );
+
+  const { pan: bodyPan, drag } = useBodyDrag({ enabled: dragBody, dir, vertical, position, start, release });
 
   const animated = useAnimatedStyle(() => {
     const offset = dir * ((1 - progress.value) * extent.value + position.value);
@@ -175,7 +200,8 @@ function SheetSurface({
     : side === 'right' ? { paddingTop: insets.top, paddingBottom: insets.bottom, paddingRight: insets.right }
     : null;
 
-  const sized = sizes ? largest : null;
+  // Left unsized while 'auto' is the largest snap, so the surface keeps reporting the content's size.
+  const sized = sizes && !(hasAuto && fit !== null && Math.min(fit, limit) >= largest) ? largest : null;
 
   const steps = hidden.length > 1;
   const step = (by: number) => {
@@ -201,9 +227,21 @@ function SheetSurface({
     </GestureDetector>
   ) : null;
   const body = (
-    <View key="body" style={s.body}>
-      {asText(children)}
-    </View>
+    <SheetDragContext.Provider key="body" value={drag}>
+      <GestureDetector gesture={bodyPan}>
+        <View
+          testID="sheet-body"
+          style={[s.body, hasAuto && s.bodyFit]}
+          onLayout={(e) => {
+            const size = vertical ? e.nativeEvent.layout.height : e.nativeEvent.layout.width;
+            if (sized === null) measured.current.body = size;
+            else if (hasAuto) setFit(Math.max(0, Math.ceil(measured.current.fit + size - measured.current.body)));
+          }}
+        >
+          {asText(children)}
+        </View>
+      </GestureDetector>
+    </SheetDragContext.Provider>
   );
   const filler = (
     <View
@@ -220,7 +258,12 @@ function SheetSurface({
   return renderElement(Animated.View, render, {
     ...props,
     onLayout: (e: LayoutChangeEvent) => {
-      extent.value = vertical ? e.nativeEvent.layout.height : e.nativeEvent.layout.width;
+      const size = vertical ? e.nativeEvent.layout.height : e.nativeEvent.layout.width;
+      extent.value = size;
+      if (hasAuto && sized === null) {
+        measured.current.fit = size;
+        setFit(Math.ceil(size));
+      }
       onLayout?.(e);
     },
     style: [s.surface, s[side], sized === null ? null : vertical ? { height: sized } : { width: sized }, edge, animated, style],

@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Text } from '@/components/ui/text';
 import { Section } from './Section';
+import { SheetScroll } from './SheetScroll';
 
 const outline = <Button variant="outline" />;
 
@@ -81,6 +82,7 @@ export function Overlays() {
             </SheetHeader>
           </SheetContent>
         </Sheet>
+        <SheetScroll />
         <Sheet>
           <SheetTrigger render={outline}>Sheet (right)</SheetTrigger>
           <SheetContent side="right">
