@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Button } from '@/components/ui/button';
 import {
   Combobox, ComboboxChip, ComboboxChips, ComboboxChipsInput, ComboboxCollection, ComboboxContent, ComboboxEmpty, ComboboxGroup,
-  ComboboxInput, ComboboxItem, ComboboxLabel, ComboboxList, ComboboxSeparator, ComboboxValue, type ComboboxOptionGroup,
+  ComboboxInput, ComboboxItem, ComboboxLabel, ComboboxList, ComboboxSeparator, ComboboxTrigger, ComboboxValue, type ComboboxOptionGroup,
 } from '@/components/ui/combobox';
 import { Text } from '@/components/ui/text';
 import { Section } from './Section';
@@ -54,6 +54,17 @@ export function Comboboxes() {
         <Text variant="muted">{`Value: ${framework ?? 'none'}`}</Text>
         <Button size="sm" variant="outline" onPress={() => setFramework('remix')}>Set Remix</Button>
       </View>
+
+      <Combobox items={frameworks}>
+        <ComboboxTrigger>
+          <ComboboxValue placeholder="Search in the popup..." />
+        </ComboboxTrigger>
+        <ComboboxContent>
+          <ComboboxInput placeholder="Search framework..." />
+          <ComboboxEmpty>No framework found.</ComboboxEmpty>
+          <ComboboxList />
+        </ComboboxContent>
+      </Combobox>
 
       <Combobox items={desserts} multiple defaultValue={['Tiramisù']}>
         <ComboboxChips style={styles.field}>

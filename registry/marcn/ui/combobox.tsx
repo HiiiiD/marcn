@@ -76,6 +76,7 @@ export type ComboboxContextValue = {
   anchorRef: RefObject<View | null>;
   inputRef: RefObject<TextInput | null>;
   anchorTick: number;
+  setSearchInPopup: (on: boolean) => void;
   bumpAnchor: () => void;
   isSelected: (value: string) => boolean;
   isDisabled: (value: string) => boolean;
@@ -88,6 +89,9 @@ export type ComboboxContextValue = {
 };
 
 export const ComboboxContext = createContext<ComboboxContextValue | null>(null);
+// Where a ComboboxInput sits decides its role: in the popup it is a search box, elsewhere it is the anchor.
+const PopupContext = createContext(false);
+const FieldContext = createContext(false);
 
 export function useCombobox() {
   const ctx = useContext(ComboboxContext);
@@ -140,7 +144,9 @@ export function useComboboxState({
     onChange: onValueChange as ((next: AnyValue) => void) | undefined,
   });
   const values = toValues(value);
-  const text = textOf(values);
+  // A trigger-button combobox keeps its search box empty: the choice shows on the trigger, not in the input.
+  const [searchInPopup, setSearchInPopup] = useState(false);
+  const text = searchInPopup ? '' : textOf(values);
   const [inputValue, setInputValue] = useControllableState({
     value: inputProp,
     defaultValue: defaultInputValue ?? textOf(toValues(valueProp !== undefined ? valueProp : defaultValue)),
@@ -203,7 +209,7 @@ export function useComboboxState({
         if (disabled) return;
         setEdited(true);
         setInputValue(next);
-        if (!multiple && !next && values.length) setValue(null);
+        if (!multiple && !next && values.length && !searchInPopup) setValue(null);
         setOpen(true);
       },
       multiple,
@@ -211,6 +217,7 @@ export function useComboboxState({
       anchorRef,
       inputRef,
       anchorTick,
+      setSearchInPopup,
       bumpAnchor,
       isSelected: (v) => values.includes(v),
       isDisabled: (v) => !!byValue.get(v)?.disabled,
@@ -236,7 +243,7 @@ export function useComboboxState({
         select(first.value);
       },
     };
-  }, [open, setOpen, value, setValue, rows, filtered, byValue, find, labelOf, inputValue, query, edited, anchorTick, bumpAnchor, setInputValue, multiple, disabled]);
+  }, [open, setOpen, value, setValue, rows, filtered, byValue, find, labelOf, inputValue, query, edited, anchorTick, bumpAnchor, setInputValue, searchInPopup, multiple, disabled]);
 }
 
 const PAD = 8;
@@ -269,7 +276,9 @@ export function ComboboxContent({ dismissable = true, ...props }: ComboboxConten
   return (
     <Portal modal={false}>
       <ComboboxContext.Provider value={combobox}>
-        <ComboboxPopup dismissable={dismissable} {...props} />
+        <PopupContext.Provider value>
+          <ComboboxPopup dismissable={dismissable} {...props} />
+        </PopupContext.Provider>
       </ComboboxContext.Provider>
     </Portal>
   );
@@ -331,6 +340,8 @@ const createFieldStyles = (t: Theme) =>
     input: { flex: 1, height: 36, paddingVertical: 0, paddingHorizontal: t.spacing[3], fontSize: t.fontSize.base, color: t.colors.foreground },
     button: { width: 28, height: 28, marginRight: t.spacing[1], borderRadius: t.radius.sm, alignItems: 'center', justifyContent: 'center' },
     pressed: { backgroundColor: t.colors.accent },
+    inPopup: { margin: t.spacing[1] },
+    trigger: { justifyContent: 'space-between', paddingLeft: t.spacing[3], paddingRight: t.spacing[2], gap: t.spacing[2] },
   });
 
 export type ComboboxFieldProps = { disabled?: boolean; 'aria-invalid'?: boolean };
@@ -387,21 +398,23 @@ export type ComboboxInputProps = TextInputProps &
   };
 
 export function ComboboxInput({
-  showTrigger = true, showClear, containerStyle, style, onBlur, 'aria-invalid': invalid, disabled, ref, ...rest
+  showTrigger, showClear, containerStyle, style, onBlur, 'aria-invalid': invalid, disabled, ref, ...rest
 }: ComboboxInputProps) {
   const s = useStyles(createFieldStyles);
   const combobox = useCombobox();
+  const inPopup = useContext(PopupContext);
   const [focused, setFocused] = useState(false);
   const { off, props } = useComboboxInputProps({ ...rest, disabled, ref, onFocus: (e) => { setFocused(true); rest.onFocus?.(e); } });
   const hasContent = combobox.selected.length > 0 || combobox.inputValue !== '';
   return (
     <View
-      ref={combobox.anchorRef}
+      ref={inPopup ? undefined : combobox.anchorRef}
       testID="combobox-anchor"
-      onLayout={combobox.bumpAnchor}
-      style={[s.field, focused && s.focused, invalid === true && s.invalid, off && s.disabled, containerStyle]}
+      onLayout={inPopup ? undefined : combobox.bumpAnchor}
+      style={[s.field, inPopup && s.inPopup, focused && s.focused, invalid === true && s.invalid, off && s.disabled, containerStyle]}
     >
       <TextInput
+        autoFocus={inPopup}
         {...props}
         onBlur={(e) => {
           setFocused(false);
@@ -409,39 +422,77 @@ export function ComboboxInput({
         }}
         style={[s.input, style]}
       />
-      {showClear && hasContent ? <ComboboxClear disabled={off} /> : null}
-      {showTrigger ? <ComboboxTrigger disabled={off} /> : null}
+      <FieldContext.Provider value>
+        {showClear && hasContent ? <ComboboxClear disabled={off} /> : null}
+        {(showTrigger ?? !inPopup) ? <ComboboxTrigger disabled={off} /> : null}
+      </FieldContext.Provider>
     </View>
   );
 }
 
-export type ComboboxTriggerProps = Omit<PressableProps, 'children'>;
+export type ComboboxTriggerProps = Omit<PressableProps, 'children' | 'style'> & {
+  style?: StyleProp<ViewStyle>;
+  children?: ReactNode;
+  ref?: Ref<View>;
+};
 
-export function ComboboxTrigger({ disabled, onPress, ...props }: ComboboxTriggerProps) {
+export function ComboboxTrigger({ disabled, onPress, style, children, ref, ...props }: ComboboxTriggerProps) {
   const s = useStyles(createFieldStyles);
   const { colors } = useTheme();
   const combobox = useCombobox();
+  const inField = useContext(FieldContext);
+  const { setSearchInPopup } = combobox;
   const off = disabled || combobox.disabled;
+  const toggle = () => {
+    if (combobox.open) return combobox.setOpen(false);
+    combobox.setOpen(true);
+    if (inField) combobox.inputRef.current?.focus();
+  };
+
+  useEffect(() => {
+    if (inField) return;
+    setSearchInPopup(true);
+    return () => setSearchInPopup(false);
+  }, [inField, setSearchInPopup]);
+
+  const chevron = <Icon icon={ChevronDown} color={colors.mutedForeground} />;
+  if (inField) {
+    return (
+      <Pressable
+        ref={ref}
+        accessibilityRole="button"
+        accessibilityLabel="Show options"
+        accessibilityState={{ expanded: combobox.open, disabled: !!off }}
+        disabled={off}
+        hitSlop={6}
+        style={({ pressed }) => [s.button, pressed && s.pressed, style]}
+        {...props}
+        onPress={(e) => {
+          onPress?.(e);
+          toggle();
+        }}
+      >
+        {chevron}
+      </Pressable>
+    );
+  }
+  // Without an input to anchor to, the trigger is the anchor and the search box lives in the popup.
   return (
     <Pressable
-      accessibilityRole="button"
-      accessibilityLabel="Show options"
+      ref={mergeRefs(ref, combobox.anchorRef)}
+      onLayout={combobox.bumpAnchor}
+      accessibilityRole="combobox"
       accessibilityState={{ expanded: combobox.open, disabled: !!off }}
       disabled={off}
-      hitSlop={6}
-      style={({ pressed }) => [s.button, pressed && s.pressed]}
+      style={[s.field, s.trigger, combobox.open && s.focused, off && s.disabled, style]}
       {...props}
       onPress={(e) => {
         onPress?.(e);
-        if (combobox.open) {
-          combobox.setOpen(false);
-          return;
-        }
-        combobox.setOpen(true);
-        combobox.inputRef.current?.focus();
+        toggle();
       }}
     >
-      <Icon icon={ChevronDown} color={colors.mutedForeground} />
+      {children}
+      {chevron}
     </Pressable>
   );
 }
