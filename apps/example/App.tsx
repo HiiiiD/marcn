@@ -8,6 +8,7 @@ import { ButtonsBadges } from './screens/ButtonsBadges';
 import { CardForm } from './screens/CardForm';
 import { Calendars } from './screens/Calendars';
 import { DatePickers } from './screens/DatePickers';
+import { Comboboxes } from './screens/Comboboxes';
 import { ContextMenus } from './screens/ContextMenus';
 import { Controls } from './screens/Controls';
 import { Display } from './screens/Display';
@@ -38,6 +39,7 @@ export default function App() {
           <Overlays />
           <Menus />
           <ContextMenus />
+          <Comboboxes />
           <InputOtp />
           <Toasts />
         </ScrollView>
