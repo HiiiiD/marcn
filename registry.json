@@ -233,6 +233,22 @@
       "title": "Slider math",
       "description": "Pure value/position helpers used by Slider.",
       "files": [{ "path": "registry/marcn/lib/slider-math.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "Single or multi-thumb range slider driven by react-native-gesture-handler.",
+      "dependencies": [
+        "react-native-gesture-handler"
+      ],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/use-controllable-state",
+        "@marcn/slider-math"
+      ],
+      "files": [{ "path": "registry/marcn/ui/slider.tsx", "type": "registry:ui" }]
     }
   ]
 }
