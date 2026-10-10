@@ -8,7 +8,7 @@ type Measure = (cb: (x: number, y: number, w: number, h: number) => void) => voi
 
 let latest: ReturnType<typeof useAnchoredPosition>;
 
-function Harness({ measure, options }: { measure: Measure; options?: AnchoredOptions & { point?: { x: number; y: number } | null } }) {
+function Harness({ measure, options }: { measure: Measure; options?: AnchoredOptions & { point?: { x: number; y: number } | null; fit?: boolean } }) {
   const triggerRef = useRef<View | null>(null);
   latest = useAnchoredPosition(true, triggerRef, options);
   return (
@@ -74,4 +74,22 @@ test('a point near the bottom-right edge flips above and clamps inside the windo
   const { left, top } = place();
   expect(left + 80).toBeLessThanOrEqual(width - 8);
   expect(top + 50).toBeLessThanOrEqual(height - 5);
+});
+
+describe('fit', () => {
+  const H = Dimensions.get('window').height;
+
+  test('with room below it opens downward and caps the height to that room', () => {
+    render(<Harness measure={(cb) => cb(100, 100, 100, 40)} options={{ fit: true }} />);
+    layout(80, 50);
+    expect(place().top).toBe(144);
+    expect(latest.maxHeight).toBe(H - 140 - 4 - 8);
+  });
+
+  test('without room below it opens upward and caps the height to the room above', () => {
+    render(<Harness measure={(cb) => cb(100, H - 100, 100, 40)} options={{ fit: true }} />);
+    layout(80, 120);
+    expect(place().top).toBe(H - 100 - 4 - 120);
+    expect(latest.maxHeight).toBe(H - 100 - 4 - 8);
+  });
 });

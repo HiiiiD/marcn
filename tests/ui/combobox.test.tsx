@@ -1,12 +1,12 @@
 import { createRef } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { PortalHost } from '@/registry/marcn/lib/portal';
 import { Dialog, DialogContent } from '@/registry/marcn/ui/dialog';
 import {
-  Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList, ComboboxTrigger, ComboboxValue,
-  type ComboboxProps,
+  Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList, type ComboboxProps,
 } from '@/registry/marcn/ui/combobox';
+import { mockBackHandler } from '../back-handler';
 
 type Measure = (cb: (x: number, y: number, w: number, h: number) => void) => void;
 
@@ -17,24 +17,18 @@ const fruits = [
   { value: 'date', label: 'Date' },
 ];
 
-function setup(props: Partial<ComboboxProps> = {}, measure?: Measure) {
-  const ref = createRef<View>();
+function setup(props: Partial<ComboboxProps> = {}, inputProps: Partial<Parameters<typeof ComboboxInput>[0]> = {}) {
   render(
     <PortalHost>
       <Combobox {...({ items: fruits, ...props } as ComboboxProps)}>
-        <ComboboxTrigger ref={ref} testID="trigger">
-          <ComboboxValue placeholder="Pick a fruit" />
-        </ComboboxTrigger>
+        <ComboboxInput placeholder="Pick a fruit" {...inputProps} />
         <ComboboxContent testID="popup">
-          <ComboboxInput placeholder="Search fruit..." />
           <ComboboxEmpty>No fruit found.</ComboboxEmpty>
           <ComboboxList testID="list" />
         </ComboboxContent>
       </Combobox>
     </PortalHost>,
   );
-  if (measure) ref.current!.measureInWindow = measure as never;
-  return ref;
 }
 
 beforeEach(() => jest.useFakeTimers());
@@ -43,226 +37,245 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-const open = () => fireEvent.press(screen.getByTestId('trigger'));
+const input = () => screen.getByPlaceholderText('Pick a fruit');
+const focus = () => fireEvent(input(), 'focus');
+const type = (text: string) => fireEvent.changeText(input(), text);
+const submit = () => fireEvent(input(), 'submitEditing');
 const settle = () => act(() => { jest.advanceTimersByTime(200); });
-const search = () => screen.getByPlaceholderText('Search fruit...');
-const type = (text: string) => fireEvent.changeText(search(), text);
-const submit = () => fireEvent(search(), 'submitEditing');
+const options = () => screen.queryAllByRole('option');
 const onlyOption = (label: string) => {
-  expect(screen.getAllByRole('option')).toHaveLength(1);
+  expect(options()).toHaveLength(1);
   expect(screen.getByRole('option')).toHaveTextContent(label);
 };
 
-test('shows the placeholder and a collapsed combobox', () => {
+test('renders an inline input as a collapsed combobox with a chevron', () => {
   setup();
-  expect(screen.getByText('Pick a fruit')).toBeOnTheScreen();
   expect(screen.getByRole('combobox')).toBeCollapsed();
+  expect(input().props.value).toBe('');
+  expect(screen.getByRole('button', { name: 'Show options' })).toBeOnTheScreen();
+  expect(options()).toHaveLength(0);
 });
 
-test('opens a focused search input and every option; the selected one is marked', () => {
+test('showTrigger={false} hides the chevron', () => {
+  setup({}, { showTrigger: false });
+  expect(screen.queryByRole('button', { name: 'Show options' })).toBeNull();
+});
+
+test('focusing the input opens every option; the selected one is marked', () => {
   setup({ defaultValue: 'banana' });
-  open();
+  expect(input().props.value).toBe('Banana');
+  focus();
   expect(screen.getByRole('combobox', { includeHiddenElements: true })).toBeExpanded();
-  expect(search().props.autoFocus).toBe(true);
-  expect(screen.getAllByRole('option')).toHaveLength(4);
+  expect(options()).toHaveLength(4);
   expect(screen.getByRole('option', { selected: true })).toHaveTextContent('Banana');
 });
 
-test('typing filters the options', () => {
+test('pressing the focused input opens the popup again after back hid it', () => {
   setup();
-  open();
+  focus();
+  fireEvent.press(screen.getByTestId('combobox-backdrop-top'));
+  settle();
+  expect(options()).toHaveLength(0);
+  fireEvent(input(), 'pressIn');
+  expect(options()).toHaveLength(4);
+});
+
+test('typing opens the popup and filters the options', () => {
+  setup();
   type('an');
   onlyOption('Banana');
+  expect(input().props.value).toBe('an');
+});
+
+test('typed text is matched ignoring case and accents', () => {
+  setup({ items: ['Crème brûlée', 'Tiramisù'] });
+  type('CREME');
+  onlyOption('Crème brûlée');
+});
+
+test('with a value selected, opening lists everything and typing filters', () => {
+  setup({ defaultValue: 'apple' });
+  focus();
+  expect(options()).toHaveLength(4);
+  type('dat');
+  onlyOption('Date');
 });
 
 test('no match shows the empty state and hides the list', () => {
   setup();
-  open();
+  focus();
   expect(screen.queryByText('No fruit found.')).toBeNull();
   type('kiwi');
   expect(screen.getByText('No fruit found.')).toBeOnTheScreen();
   expect(screen.queryByTestId('list')).toBeNull();
 });
 
-test('choosing an option sets the value, notifies and closes', () => {
+test('choosing an option fills the input, notifies and closes', () => {
   const onValueChange = jest.fn();
   setup({ onValueChange });
-  open();
+  type('ap');
   fireEvent.press(screen.getByText('Apple'));
   expect(onValueChange).toHaveBeenCalledWith('apple');
   settle();
-  expect(screen.queryByRole('option')).toBeNull();
-  expect(screen.getByText('Apple')).toBeOnTheScreen();
+  expect(options()).toHaveLength(0);
+  expect(input().props.value).toBe('Apple');
 });
 
-test('pressing the selected option clears the value', () => {
+test('pressing the selected option keeps it and closes', () => {
   const onValueChange = jest.fn();
   setup({ defaultValue: 'apple', onValueChange });
-  open();
+  focus();
   fireEvent.press(screen.getByRole('option', { selected: true }));
-  expect(onValueChange).toHaveBeenCalledWith(null);
+  expect(onValueChange).not.toHaveBeenCalled();
   settle();
-  expect(screen.getByText('Pick a fruit')).toBeOnTheScreen();
+  expect(options()).toHaveLength(0);
+  expect(input().props.value).toBe('Apple');
 });
 
-test('multiple: options toggle, the popup stays open and the value lists the labels', () => {
+test('emptying the text clears the value', () => {
   const onValueChange = jest.fn();
-  setup({ multiple: true, onValueChange });
-  open();
-  fireEvent.press(screen.getByText('Date'));
-  fireEvent.press(screen.getByRole('option', { name: 'Apple' }));
-  expect(onValueChange).toHaveBeenLastCalledWith(['date', 'apple']);
-  expect(screen.getAllByRole('option', { selected: true })).toHaveLength(2);
-  fireEvent.press(screen.getByRole('option', { name: 'Date' }));
-  expect(onValueChange).toHaveBeenLastCalledWith(['apple']);
-  settle();
-  expect(screen.getAllByRole('option')).toHaveLength(4);
-  expect(screen.getAllByText('Apple', { includeHiddenElements: true })).toHaveLength(2);
-});
-
-test('multiple: the value joins labels in selection order', () => {
-  setup({ multiple: true, defaultValue: ['date', 'apple'] });
-  expect(screen.getByText('Date, Apple')).toBeOnTheScreen();
+  setup({ defaultValue: 'apple', onValueChange });
+  type('');
+  expect(onValueChange).toHaveBeenCalledWith(null);
 });
 
 test('controlled: notifies but only follows the value prop', () => {
   const onValueChange = jest.fn();
   setup({ value: 'apple', onValueChange });
-  open();
+  focus();
   fireEvent.press(screen.getByText('Banana'));
   expect(onValueChange).toHaveBeenCalledWith('banana');
   settle();
-  expect(screen.getByText('Apple')).toBeOnTheScreen();
+  expect(input().props.value).toBe('Apple');
 });
 
 test('a value missing from the items shows the raw value', () => {
   setup({ value: 'kiwi' });
-  expect(screen.getByText('kiwi')).toBeOnTheScreen();
+  expect(input().props.value).toBe('kiwi');
 });
 
 test('Enter selects the first enabled match', () => {
   const onValueChange = jest.fn();
   setup({ onValueChange });
-  open();
   type('e');
   submit();
   expect(onValueChange).toHaveBeenCalledWith('apple');
   settle();
-  expect(screen.queryByRole('option')).toBeNull();
+  expect(options()).toHaveLength(0);
 });
 
-test('Enter skips disabled matches', () => {
+test('Enter skips disabled matches and does nothing without a match', () => {
   const onValueChange = jest.fn();
   setup({ onValueChange });
-  open();
   type('ch');
   submit();
-  expect(onValueChange).not.toHaveBeenCalled();
-  type('r');
-  submit();
-  expect(onValueChange).not.toHaveBeenCalledWith('cherry');
-});
-
-test('Enter on an already-selected first match keeps it and closes', () => {
-  const onValueChange = jest.fn();
-  setup({ defaultValue: 'apple', onValueChange });
-  open();
-  type('app');
-  submit();
-  expect(onValueChange).not.toHaveBeenCalled();
-  settle();
-  expect(screen.queryByRole('option')).toBeNull();
-  expect(screen.getByText('Apple')).toBeOnTheScreen();
-});
-
-test('Enter with no match does nothing', () => {
-  const onValueChange = jest.fn();
-  setup({ onValueChange });
-  open();
   type('zzz');
   submit();
   expect(onValueChange).not.toHaveBeenCalled();
   expect(screen.getByText('No fruit found.')).toBeOnTheScreen();
 });
 
-test('Enter keeps the search focused so a missed query can be corrected', () => {
+test('Enter on an already-selected first match keeps it and closes', () => {
+  const onValueChange = jest.fn();
+  setup({ defaultValue: 'apple', onValueChange });
+  type('app');
+  submit();
+  expect(onValueChange).not.toHaveBeenCalled();
+  settle();
+  expect(options()).toHaveLength(0);
+  expect(input().props.value).toBe('Apple');
+});
+
+test('Enter keeps the input focused so a missed query can be corrected', () => {
   setup();
-  open();
-  expect(search().props.submitBehavior).toBe('submit');
-  expect(search().props.returnKeyType).toBe('search');
+  expect(input().props.submitBehavior).toBe('submit');
+  expect(input().props.returnKeyType).toBe('search');
 });
 
 test('a disabled option never selects', () => {
   const onValueChange = jest.fn();
   setup({ onValueChange });
-  open();
+  focus();
   fireEvent.press(screen.getByText('Cherry'));
   expect(onValueChange).not.toHaveBeenCalled();
   expect(screen.getByRole('option', { name: 'Cherry' })).toBeDisabled();
 });
 
-test('a disabled combobox never opens', () => {
+test('a disabled combobox is not editable and never opens', () => {
   setup({ disabled: true });
-  open();
-  expect(screen.queryByRole('option')).toBeNull();
+  focus();
+  type('a');
+  expect(options()).toHaveLength(0);
+  expect(input().props.editable).toBe(false);
   expect(screen.getByRole('combobox')).toBeDisabled();
 });
 
-test('backdrop dismisses without changing the value', () => {
+test('tapping outside dismisses without changing the value and restores the label', () => {
   const onValueChange = jest.fn();
-  setup({ onValueChange });
-  open();
-  fireEvent.press(screen.getByTestId('overlay-backdrop'));
-  settle();
-  expect(screen.queryByRole('option')).toBeNull();
-  expect(onValueChange).not.toHaveBeenCalled();
-});
-
-test('reopening starts with an empty query', () => {
-  setup();
-  open();
+  setup({ onValueChange, defaultValue: 'apple' });
   type('ban');
-  fireEvent.press(screen.getByTestId('overlay-backdrop'));
+  fireEvent.press(screen.getByTestId('combobox-backdrop-bottom'));
   settle();
-  open();
-  expect(search().props.value).toBe('');
-  expect(screen.getAllByRole('option')).toHaveLength(4);
+  expect(options()).toHaveLength(0);
+  expect(onValueChange).not.toHaveBeenCalled();
+  expect(input().props.value).toBe('Apple');
 });
 
-test('onInputValueChange reports the query', () => {
+test('Android back closes the popup', () => {
+  const back = mockBackHandler();
+  setup();
+  focus();
+  act(() => { back.press(); });
+  settle();
+  expect(options()).toHaveLength(0);
+});
+
+test('reopening after closing starts from the full list', () => {
+  setup();
+  type('ban');
+  fireEvent.press(screen.getByTestId('combobox-backdrop-bottom'));
+  settle();
+  expect(input().props.value).toBe('');
+  focus();
+  expect(options()).toHaveLength(4);
+});
+
+test('onInputValueChange reports typing', () => {
   const onInputValueChange = jest.fn();
   setup({ onInputValueChange });
-  open();
   type('ch');
   expect(onInputValueChange).toHaveBeenCalledWith('ch');
 });
 
 test('filter={null} leaves filtering to the caller', () => {
   setup({ filter: null });
-  open();
   type('zzz');
-  expect(screen.getAllByRole('option')).toHaveLength(4);
+  expect(options()).toHaveLength(4);
   expect(screen.queryByText('No fruit found.')).toBeNull();
 });
 
 test('a custom filter replaces the default', () => {
   setup({ filter: (o, q) => o.value.startsWith(q) });
-  open();
   type('d');
   onlyOption('Date');
+});
+
+test('keywords match', () => {
+  setup({ items: [{ value: 'us', label: 'United States', keywords: ['USA'] }, 'Italy'] });
+  type('usa');
+  onlyOption('United States');
 });
 
 test('string items are both value and label', () => {
   render(
     <PortalHost>
       <Combobox items={['Red', 'Green']} defaultOpen>
-        <ComboboxContent>
-          <ComboboxList />
-        </ComboboxContent>
+        <ComboboxInput placeholder="Color" />
+        <ComboboxContent><ComboboxList /></ComboboxContent>
       </Combobox>
     </PortalHost>,
   );
-  expect(screen.getAllByRole('option')).toHaveLength(2);
+  expect(options()).toHaveLength(2);
 });
 
 test('the list render function receives the item with its extra fields', () => {
@@ -270,6 +283,7 @@ test('the list render function receives the item with its extra fields', () => {
   render(
     <PortalHost>
       <Combobox items={people} defaultOpen>
+        <ComboboxInput placeholder="Who" />
         <ComboboxContent>
           <ComboboxList<(typeof people)[number]>>
             {(item) => (
@@ -285,37 +299,69 @@ test('the list render function receives the item with its extra fields', () => {
   expect(screen.getByText('Ada Lovelace · Engineer')).toBeOnTheScreen();
 });
 
-test('a value render function gets the selected options', () => {
+test('a data-disabled option stays disabled in a custom render function', () => {
+  const onValueChange = jest.fn();
   render(
     <PortalHost>
-      <Combobox items={fruits} multiple defaultValue={['apple', 'date']}>
-        <ComboboxTrigger>
-          <ComboboxValue>{(selected) => <Text>{`${selected.length} picked: ${selected[1].label}`}</Text>}</ComboboxValue>
-        </ComboboxTrigger>
+      <Combobox items={fruits} defaultOpen onValueChange={onValueChange}>
+        <ComboboxInput placeholder="Fruit" />
+        <ComboboxContent>
+          <ComboboxList>{(item) => <ComboboxItem value={item.value}><Text>{item.label}</Text></ComboboxItem>}</ComboboxList>
+        </ComboboxContent>
       </Combobox>
     </PortalHost>,
   );
-  expect(screen.getByText('2 picked: Date')).toBeOnTheScreen();
+  expect(screen.getByRole('option', { name: 'Cherry' })).toBeDisabled();
+  fireEvent.press(screen.getByText('Cherry'));
+  expect(onValueChange).not.toHaveBeenCalled();
 });
 
 test('the list keeps taps working while the keyboard is open', () => {
   setup();
-  open();
+  focus();
   expect(screen.UNSAFE_getByType(ScrollView).props.keyboardShouldPersistTaps).toBe('handled');
 });
 
-test('the popup is at least as wide as the trigger and below it', () => {
-  setup({}, (cb) => cb(100, 100, 260, 36));
-  open();
-  fireEvent(screen.getByTestId('popup'), 'layout', { nativeEvent: { layout: { x: 0, y: 0, width: 260, height: 120 } } });
-  expect(StyleSheet.flatten(screen.getByTestId('popup').props.style)).toMatchObject({ width: 260, left: 100, top: 140 });
-});
+describe('placement', () => {
+  const measure = ((cb) => cb(100, 100, 260, 36)) as Measure;
+  const open = () => {
+    jest.spyOn(View.prototype as unknown as { measureInWindow: Measure }, 'measureInWindow').mockImplementation(measure);
+    focus();
+    fireEvent(screen.getByTestId('popup'), 'layout', { nativeEvent: { layout: { x: 0, y: 0, width: 260, height: 120 } } });
+  };
 
-test('the popup never gets narrower than 200', () => {
-  setup({}, (cb) => cb(10, 10, 80, 36));
-  open();
-  fireEvent(screen.getByTestId('popup'), 'layout', { nativeEvent: { layout: { x: 0, y: 0, width: 200, height: 120 } } });
-  expect(StyleSheet.flatten(screen.getByTestId('popup').props.style).width).toBe(200);
+  test('the popup is as wide as the input and below it', () => {
+    setup();
+    open();
+    expect(StyleSheet.flatten(screen.getByTestId('popup').props.style)).toMatchObject({ width: 260, left: 100, top: 140 });
+  });
+
+  test('with the keyboard up and no room below, the popup opens above the input', () => {
+    jest.spyOn(Keyboard, 'isVisible').mockReturnValue(true);
+    jest.spyOn(Keyboard, 'metrics').mockReturnValue({ height: 400, screenX: 0, screenY: 0, width: 750 });
+    render(
+      <PortalHost>
+        <Combobox items={fruits}>
+          <ComboboxInput placeholder="Pick a fruit" />
+          <ComboboxContent testID="popup"><ComboboxList /></ComboboxContent>
+        </Combobox>
+      </PortalHost>,
+    );
+    jest.spyOn(View.prototype as unknown as { measureInWindow: Measure }, 'measureInWindow').mockImplementation((cb) => cb(100, 800, 260, 36));
+    focus();
+    fireEvent(screen.getByTestId('popup'), 'layout', { nativeEvent: { layout: { x: 0, y: 0, width: 260, height: 120 } } });
+    expect(StyleSheet.flatten(screen.getByTestId('popup').props.style).top).toBe(800 - 4 - 120);
+  });
+
+  test('the backdrop leaves the input uncovered so it stays tappable', () => {
+    setup();
+    open();
+    const style = (id: string) => StyleSheet.flatten(screen.getByTestId(`combobox-backdrop-${id}`).props.style);
+    expect(style('top')).toMatchObject({ top: 0, height: 100 });
+    expect(style('bottom')).toMatchObject({ top: 136, bottom: 0 });
+    expect(style('left')).toMatchObject({ left: 0, width: 100, top: 100, height: 36 });
+    expect(style('right')).toMatchObject({ left: 360, right: 0, top: 100, height: 36 });
+  });
 });
 
 test('a long list opens with the selected option scrolled into view', () => {
@@ -327,14 +373,14 @@ test('a long list opens with the selected option scrolled into view', () => {
   render(
     <PortalHost>
       <Combobox items={items} defaultValue="n150">
-        <ComboboxTrigger testID="trigger"><ComboboxValue /></ComboboxTrigger>
+        <ComboboxInput placeholder="Pick a fruit" />
         <ComboboxContent>
           <ComboboxList>{(item) => <ComboboxItem value={item.value} ref={item.value === 'n150' ? ref : undefined} />}</ComboboxList>
         </ComboboxContent>
       </Combobox>
     </PortalHost>,
   );
-  open();
+  focus();
   ref.current!.measureLayout = ((_: unknown, cb: (x: number, y: number) => void) => cb(0, 5400)) as never;
   fireEvent(screen.getByRole('option', { selected: true }), 'layout', { nativeEvent: { layout: { x: 0, y: 5400, width: 100, height: 36 } } });
   expect(scrollTo).toHaveBeenCalledWith({ y: 5392, animated: false });
@@ -347,57 +393,60 @@ test('works inside a Dialog: choosing closes only the popup', () => {
         <DialogContent>
           <Text>Dialog body</Text>
           <Combobox items={fruits}>
-            <ComboboxTrigger testID="trigger"><ComboboxValue placeholder="Pick" /></ComboboxTrigger>
+            <ComboboxInput placeholder="Pick a fruit" />
             <ComboboxContent><ComboboxList /></ComboboxContent>
           </Combobox>
         </DialogContent>
       </Dialog>
     </PortalHost>,
   );
-  open();
+  focus();
   fireEvent.press(screen.getByText('Banana'));
   settle();
-  expect(screen.queryByRole('option')).toBeNull();
+  expect(options()).toHaveLength(0);
   expect(screen.getByText('Dialog body')).toBeOnTheScreen();
-  expect(screen.getByText('Banana')).toBeOnTheScreen();
+  expect(input().props.value).toBe('Banana');
 });
 
-test('a data-disabled option stays disabled in a custom render function', () => {
-  const onValueChange = jest.fn();
-  render(
-    <PortalHost>
-      <Combobox items={fruits} defaultOpen onValueChange={onValueChange}>
-        <ComboboxContent>
-          <ComboboxList>{(item) => <ComboboxItem value={item.value}><Text>{item.label}</Text></ComboboxItem>}</ComboboxList>
-        </ComboboxContent>
-      </Combobox>
-    </PortalHost>,
-  );
-  expect(screen.getByRole('option', { name: 'Cherry' })).toBeDisabled();
-  fireEvent.press(screen.getByText('Cherry'));
-  expect(onValueChange).not.toHaveBeenCalled();
+describe('trigger and clear', () => {
+  test('the chevron opens the list and a second press closes it', () => {
+    setup();
+    fireEvent.press(screen.getByRole('button', { name: 'Show options' }));
+    expect(options()).toHaveLength(4);
+    fireEvent.press(screen.getByRole('button', { name: 'Show options' }));
+    settle();
+    expect(options()).toHaveLength(0);
+  });
+
+  test('showClear appears only with something to clear and resets the value', () => {
+    const onValueChange = jest.fn();
+    setup({ onValueChange }, { showClear: true });
+    expect(screen.queryByRole('button', { name: 'Clear' })).toBeNull();
+    type('ban');
+    expect(screen.getByRole('button', { name: 'Clear' })).toBeOnTheScreen();
+    fireEvent.press(screen.getByRole('button', { name: 'Clear' }));
+    expect(input().props.value).toBe('');
+    expect(options()).toHaveLength(4);
+  });
+
+  test('clearing a selected value notifies null', () => {
+    const onValueChange = jest.fn();
+    setup({ onValueChange, defaultValue: 'apple' }, { showClear: true });
+    fireEvent.press(screen.getByRole('button', { name: 'Clear' }));
+    expect(onValueChange).toHaveBeenCalledWith(null);
+    expect(input().props.value).toBe('');
+  });
 });
 
 test('selected labels survive the items changing (server-side filtering)', () => {
   const ui = (items: { value: string; label: string }[]) => (
     <PortalHost>
-      <Combobox items={items} multiple defaultValue={['u1']} filter={null}>
-        <ComboboxTrigger><ComboboxValue /></ComboboxTrigger>
+      <Combobox items={items} defaultValue="u1" filter={null}>
+        <ComboboxInput placeholder="Pick a fruit" />
       </Combobox>
     </PortalHost>
   );
   render(ui([{ value: 'u1', label: 'Ada' }]));
   screen.rerender(ui([{ value: 'u2', label: 'Grace' }]));
-  expect(screen.getByText('Ada')).toBeOnTheScreen();
-});
-
-test('inline items may carry extra fields', () => {
-  render(
-    <PortalHost>
-      <Combobox items={[{ value: 'ada', label: 'Ada', role: 'Engineer' }]} defaultOpen>
-        <ComboboxContent><ComboboxList /></ComboboxContent>
-      </Combobox>
-    </PortalHost>,
-  );
-  expect(screen.getByText('Ada')).toBeOnTheScreen();
+  expect(input().props.value).toBe('Ada');
 });

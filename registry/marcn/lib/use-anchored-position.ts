@@ -17,7 +17,10 @@ export type AnchoredOptions = {
 
 export type AnchorPoint = { x: number; y: number };
 
-export type PositionOptions = AnchoredOptions & { point?: AnchorPoint | null };
+// `fit` picks top or bottom by available room and caps maxHeight to it, so the surface never covers its anchor.
+export type PositionOptions = AnchoredOptions & { point?: AnchorPoint | null; fit?: boolean };
+
+const FIT_MIN_ROOM = 180;
 
 // Splits the position props off a component's props, applying that component's own defaults.
 export function splitAnchored<P extends AnchoredOptions>(props: P, defaults: AnchoredOptions = {}) {
@@ -38,7 +41,7 @@ const UNPLACED = { left: 0, top: 0 };
 const sameRect = (a: Rect | null, b: Rect) => !!a && a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
 
 export function useAnchoredPosition(open: boolean, triggerRef: RefObject<View | null>, options: PositionOptions = {}) {
-  const { side = 'bottom', align = 'center', sideOffset = 4, alignOffset = 0, avoidCollisions = true, collisionPadding = 8, point } = options;
+  const { side = 'bottom', align = 'center', sideOffset = 4, alignOffset = 0, avoidCollisions = true, collisionPadding = 8, point, fit = false } = options;
   const progress = useProgress(open);
   const window = useWindowDimensions();
   const { height: keyboard } = useKeyboardInset();
@@ -80,10 +83,15 @@ export function useAnchoredPosition(open: boolean, triggerRef: RefObject<View | 
   // Place inside the area the system bars and keyboard leave free, then shift back to window coordinates.
   const bottom = Math.max(keyboard, insets.bottom);
   const free = { width: window.width - insets.left - insets.right, height: window.height - insets.top - bottom };
+  const room = anchor && {
+    bottom: free.height - (anchor.y - insets.top + anchor.height) - sideOffset - collisionPadding,
+    top: anchor.y - insets.top - sideOffset - collisionPadding,
+  };
+  const fitSide: Side = room && fit ? (room.bottom >= FIT_MIN_ROOM || room.bottom >= room.top ? 'bottom' : 'top') : side;
   const computed =
     anchor && size
       ? computePosition({ ...anchor, x: anchor.x - insets.left, y: anchor.y - insets.top }, size, free, {
-          side, align, sideOffset, alignOffset, avoidCollisions, collisionPadding,
+          side: fitSide, align, sideOffset, alignOffset, avoidCollisions, collisionPadding,
         })
       : null;
   const position = computed && { ...computed, x: computed.x + insets.left, y: computed.y + insets.top };
@@ -98,7 +106,7 @@ export function useAnchoredPosition(open: boolean, triggerRef: RefObject<View | 
 
   return {
     anchor,
-    maxHeight: Math.max(0, free.height - collisionPadding * 2),
+    maxHeight: Math.max(0, room && fit ? room[fitSide as 'top' | 'bottom'] : free.height - collisionPadding * 2),
     onLayout,
     style: [fade, position ? { left: position.x, top: position.y } : UNPLACED] as StyleProp<ViewStyle>,
   };

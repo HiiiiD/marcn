@@ -1,4 +1,6 @@
-import { defaultFilter, filterOptions, toOption, type ComboboxOption } from '@/registry/marcn/lib/combobox-filter';
+import {
+  defaultFilter, filterOptions, flattenItems, isGroup, toOption, toRows, type ComboboxOption,
+} from '@/registry/marcn/lib/combobox-filter';
 
 const opt = (label: string, extra: Partial<ComboboxOption> = {}): ComboboxOption => ({ value: label.toLowerCase(), label, ...extra });
 
@@ -59,5 +61,36 @@ describe('filterOptions', () => {
 
   test('null disables filtering', () => {
     expect(filterOptions(options, 'zzz', null)).toEqual(options);
+  });
+});
+
+describe('groups', () => {
+  const items = [
+    { value: 'Fruits', items: ['Apple', { value: 'b', label: 'Banana', disabled: true }] },
+    'Loose',
+    { value: 'Veg', items: ['Carrot'] },
+  ];
+
+  test('flattenItems returns every leaf option in order', () => {
+    expect(flattenItems(items).map((o) => o.label)).toEqual(['Apple', 'Banana', 'Loose', 'Carrot']);
+  });
+
+  test('toRows keeps groups and loose items, normalizing the leaves', () => {
+    const rows = toRows(items, '');
+    expect(rows).toHaveLength(3);
+    const [fruits] = rows;
+    expect(isGroup(fruits) && fruits.items[1]).toEqual({ value: 'b', label: 'Banana', disabled: true });
+    expect(isGroup(rows[1])).toBe(false);
+  });
+
+  test('toRows filters inside groups and drops the empty ones', () => {
+    const rows = toRows(items, 'an');
+    expect(rows).toHaveLength(1);
+    expect(isGroup(rows[0]) && rows[0].value).toBe('Fruits');
+    expect(isGroup(rows[0]) && rows[0].items.map((o) => o.label)).toEqual(['Banana']);
+  });
+
+  test('toRows with a null filter keeps everything', () => {
+    expect(toRows(items, 'zzz', null)).toHaveLength(3);
   });
 });

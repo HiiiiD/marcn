@@ -1,23 +1,31 @@
-import { createContext, useCallback, useContext, useLayoutEffect, useMemo, useRef } from 'react';
-import { Keyboard } from 'react-native';
+import { createContext, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { Keyboard, type TextInput, type View } from 'react-native';
 import {
-  defaultFilter, filterOptions, toOption, type ComboboxFilter, type ComboboxItemInput, type ComboboxOption,
+  defaultFilter, flattenItems, isGroup, toRows,
+  type ComboboxFilter, type ComboboxGroupInput, type ComboboxItemInput, type ComboboxOption, type ComboboxRow,
 } from '@/registry/marcn/lib/combobox-filter';
 import { useControllableState } from '@/registry/marcn/lib/use-controllable-state';
 
 export type ComboboxContextValue = {
   open: boolean;
   setOpen: (open: boolean) => void;
+  rows: ComboboxRow[];
   filtered: ComboboxOption[];
   selected: ComboboxOption[];
+  inputValue: string;
   query: string;
-  setQuery: (query: string) => void;
+  typeText: (text: string) => void;
   multiple: boolean;
   disabled?: boolean;
+  anchorRef: RefObject<View | null>;
+  inputRef: RefObject<TextInput | null>;
   isSelected: (value: string) => boolean;
   isDisabled: (value: string) => boolean;
   labelOf: (value: string) => string;
   select: (value: string) => void;
+  remove: (value: string) => void;
+  removeLast: () => void;
+  clear: () => void;
   submit: () => void;
 };
 
@@ -30,14 +38,14 @@ export function useCombobox() {
 }
 
 export type ComboboxStateOptions = {
-  items: readonly ComboboxItemInput[];
+  items: readonly (ComboboxItemInput | ComboboxGroupInput)[];
   multiple?: boolean;
   value?: string | string[] | null;
   defaultValue?: string | string[] | null;
   onValueChange?: (value: never) => void;
   inputValue?: string;
   defaultInputValue?: string;
-  onInputValueChange?: (query: string) => void;
+  onInputValueChange?: (text: string) => void;
   filter?: ComboboxFilter | null;
   disabled?: boolean;
   open?: boolean;
@@ -47,31 +55,16 @@ export type ComboboxStateOptions = {
 
 type AnyValue = string | string[] | null;
 
+const toValues = (value: AnyValue | undefined) => (Array.isArray(value) ? value : value ? [value] : []);
+
 export function useComboboxState({
-  items, multiple = false, value: valueProp, defaultValue, onValueChange, inputValue, defaultInputValue = '', onInputValueChange,
+  items, multiple = false, value: valueProp, defaultValue, onValueChange, inputValue: inputProp, defaultInputValue, onInputValueChange,
   filter = defaultFilter, disabled, open: openProp, defaultOpen = false, onOpenChange,
 }: ComboboxStateOptions): ComboboxContextValue {
-  const [open, setOpenState] = useControllableState({ value: openProp, defaultValue: defaultOpen, onChange: onOpenChange });
-  const [value, setValue] = useControllableState<AnyValue>({
-    value: valueProp,
-    defaultValue: defaultValue ?? (multiple ? [] : null),
-    onChange: onValueChange as ((next: AnyValue) => void) | undefined,
-  });
-  const [query, setQuery] = useControllableState({ value: inputValue, defaultValue: defaultInputValue, onChange: onInputValueChange });
+  const anchorRef = useRef<View>(null);
+  const inputRef = useRef<TextInput>(null);
 
-  const setOpen = useCallback((next: boolean) => {
-    if (!(next && disabled)) setOpenState(next);
-  }, [disabled, setOpenState]);
-
-  // Cleared on open rather than close, so the list does not jump back to everything while it fades out.
-  const wasOpen = useRef(open);
-  useLayoutEffect(() => {
-    if (open && !wasOpen.current) setQuery('');
-    if (!open && wasOpen.current) Keyboard.dismiss();
-    wasOpen.current = open;
-  }, [open, setQuery]);
-
-  const options = useMemo(() => items.map(toOption), [items]);
+  const options = useMemo(() => flattenItems(items), [items]);
   // Remembers options that left `items` (server-side filtering), so selected labels survive a refetch.
   const known = useRef(new Map<string, ComboboxOption>());
   const byValue = useMemo(() => {
@@ -79,38 +72,102 @@ export function useComboboxState({
     return new Map(options.map((o) => [o.value, o]));
   }, [options]);
   const find = useCallback((v: string) => byValue.get(v) ?? known.current.get(v), [byValue]);
-  const filtered = useMemo(() => filterOptions(options, query, filter), [options, query, filter]);
+  const labelOf = useCallback((v: string) => find(v)?.label ?? v, [find]);
+  const textOf = (values: string[]) => (multiple || !values.length ? '' : labelOf(values[0]));
+
+  const [open, setOpenState] = useControllableState({ value: openProp, defaultValue: defaultOpen, onChange: onOpenChange });
+  const [value, setValue] = useControllableState<AnyValue>({
+    value: valueProp,
+    defaultValue: defaultValue ?? (multiple ? [] : null),
+    onChange: onValueChange as ((next: AnyValue) => void) | undefined,
+  });
+  const values = toValues(value);
+  const text = textOf(values);
+  const [inputValue, setInputValue] = useControllableState({
+    value: inputProp,
+    defaultValue: defaultInputValue ?? textOf(toValues(valueProp !== undefined ? valueProp : defaultValue)),
+    onChange: onInputValueChange,
+  });
+  // Only text the user typed filters: opening with a selected label showing in the input lists everything.
+  const [edited, setEdited] = useState(false);
+  const query = edited ? inputValue : '';
+
+  const setOpen = useCallback((next: boolean) => {
+    if (!(next && disabled)) setOpenState(next);
+  }, [disabled, setOpenState]);
+
+  const latestInput = useRef(inputValue);
+  latestInput.current = inputValue;
+  const wasOpen = useRef(open);
+  const lastText = useRef(text);
+  useLayoutEffect(() => {
+    const closing = !open && wasOpen.current;
+    const textChanged = lastText.current !== text;
+    wasOpen.current = open;
+    lastText.current = text;
+    if (closing) {
+      setEdited(false);
+      Keyboard.dismiss();
+    }
+    if ((closing || (textChanged && !open)) && latestInput.current !== text) setInputValue(text);
+  }, [open, text, setInputValue]);
+
+  const rows = useMemo(() => toRows(items, query, filter), [items, query, filter]);
+  const filtered = useMemo(() => rows.flatMap((r) => (isGroup(r) ? r.items : [r])), [rows]);
 
   return useMemo<ComboboxContextValue>(() => {
-    const values = Array.isArray(value) ? value : value ? [value] : [];
     const select = (next: string) => {
       if (disabled || byValue.get(next)?.disabled) return;
       if (multiple) {
         setValue(values.includes(next) ? values.filter((v) => v !== next) : [...values, next]);
+        setInputValue('');
+        setEdited(false);
         return;
       }
-      setValue(values[0] === next ? null : next);
+      if (values[0] !== next) setValue(next);
       setOpen(false);
+    };
+    const remove = (v: string) => {
+      if (!disabled) setValue(values.filter((x) => x !== v));
     };
     return {
       open,
       setOpen,
+      rows,
       filtered,
       selected: values.map((v) => find(v) ?? { value: v, label: v }),
+      inputValue,
       query,
-      setQuery,
+      typeText: (next) => {
+        if (disabled) return;
+        setEdited(true);
+        setInputValue(next);
+        if (!multiple && !next && values.length) setValue(null);
+        setOpen(true);
+      },
       multiple,
       disabled,
+      anchorRef,
+      inputRef,
       isSelected: (v) => values.includes(v),
       isDisabled: (v) => !!byValue.get(v)?.disabled,
-      labelOf: (v) => find(v)?.label ?? v,
+      labelOf,
       select,
+      remove,
+      removeLast: () => {
+        if (values.length) remove(values[values.length - 1]);
+      },
+      clear: () => {
+        if (disabled) return;
+        if (values.length) setValue(multiple ? [] : null);
+        setInputValue('');
+        setEdited(false);
+      },
       submit: () => {
         const first = filtered.find((o) => !o.disabled);
         if (!first) return;
-        if (!multiple && values[0] === first.value) setOpen(false);
-        else select(first.value);
+        select(first.value);
       },
     };
-  }, [open, setOpen, value, setValue, filtered, byValue, find, query, setQuery, multiple, disabled]);
+  }, [open, setOpen, value, setValue, rows, filtered, byValue, find, labelOf, inputValue, query, setInputValue, multiple, disabled]);
 }

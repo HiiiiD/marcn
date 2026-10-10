@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList, ComboboxTrigger, ComboboxValue,
+  Combobox, ComboboxChip, ComboboxChips, ComboboxChipsInput, ComboboxCollection, ComboboxContent, ComboboxEmpty, ComboboxGroup,
+  ComboboxInput, ComboboxItem, ComboboxLabel, ComboboxList, ComboboxSeparator, ComboboxValue, type ComboboxOptionGroup,
 } from '@/components/ui/combobox';
 import { Text } from '@/components/ui/text';
 import { Section } from './Section';
@@ -27,6 +27,11 @@ const countries = [
   'Turkey', 'Ukraine', 'United Kingdom', 'United States', 'Uruguay', 'Vietnam',
 ].map((label) => ({ value: label.toLowerCase().replace(/ /g, '-'), label, keywords: label === 'United States' ? ['USA'] : undefined }));
 
+const produce = [
+  { value: 'Fruits', items: ['Apple', 'Banana', 'Cherry', 'Mango'] },
+  { value: 'Vegetables', items: ['Carrot', 'Leek', 'Pepper', 'Spinach'] },
+];
+
 const people = [
   { value: 'ada', label: 'Ada Lovelace', role: 'Mathematician' },
   { value: 'grace', label: 'Grace Hopper', role: 'Rear admiral' },
@@ -39,11 +44,8 @@ export function Comboboxes() {
   return (
     <Section title="Combobox">
       <Combobox items={frameworks} value={framework} onValueChange={setFramework}>
-        <ComboboxTrigger style={styles.trigger}>
-          <ComboboxValue placeholder="Select framework..." />
-        </ComboboxTrigger>
+        <ComboboxInput placeholder="Select framework..." showClear containerStyle={styles.field} />
         <ComboboxContent>
-          <ComboboxInput placeholder="Search framework..." />
           <ComboboxEmpty>No framework found.</ComboboxEmpty>
           <ComboboxList />
         </ComboboxContent>
@@ -51,47 +53,48 @@ export function Comboboxes() {
       <View style={styles.row}>
         <Text variant="muted">{`Value: ${framework ?? 'none'}`}</Text>
         <Button size="sm" variant="outline" onPress={() => setFramework('remix')}>Set Remix</Button>
-        <Button size="sm" variant="outline" onPress={() => setFramework(null)}>Clear</Button>
       </View>
 
       <Combobox items={desserts} multiple defaultValue={['Tiramisù']}>
-        <ComboboxTrigger style={styles.multi}>
+        <ComboboxChips style={styles.field}>
           <ComboboxValue>
-            {(selected) =>
-              selected.length === 0 ? (
-                <Text variant="muted">Pick desserts...</Text>
-              ) : (
-                <View style={styles.chips}>
-                  {selected.map((o) => <Badge key={o.value} variant="secondary">{o.label}</Badge>)}
-                </View>
-              )
-            }
+            {(selected) => selected.map((o) => <ComboboxChip key={o.value} value={o.value} />)}
           </ComboboxValue>
-        </ComboboxTrigger>
+          <ComboboxChipsInput placeholder="Add dessert (try creme)..." />
+        </ComboboxChips>
         <ComboboxContent>
-          <ComboboxInput placeholder="Search desserts (try creme)..." />
           <ComboboxEmpty>No dessert found.</ComboboxEmpty>
           <ComboboxList />
         </ComboboxContent>
       </Combobox>
 
       <Combobox items={countries} defaultValue="italy">
-        <ComboboxTrigger size="sm" style={styles.trigger}>
-          <ComboboxValue placeholder="Country" />
-        </ComboboxTrigger>
+        <ComboboxInput placeholder="Country (try usa)..." showClear containerStyle={styles.field} />
         <ComboboxContent>
-          <ComboboxInput placeholder="Search country (try usa)..." />
           <ComboboxEmpty>No country found.</ComboboxEmpty>
           <ComboboxList />
         </ComboboxContent>
       </Combobox>
 
-      <Combobox items={people}>
-        <ComboboxTrigger style={styles.trigger}>
-          <ComboboxValue placeholder="Assign to..." />
-        </ComboboxTrigger>
+      <Combobox items={produce}>
+        <ComboboxInput placeholder="Produce (groups)..." containerStyle={styles.field} />
         <ComboboxContent>
-          <ComboboxInput placeholder="Search people..." />
+          <ComboboxEmpty>Nothing found.</ComboboxEmpty>
+          <ComboboxList<ComboboxOptionGroup>>
+            {(group, index) => (
+              <ComboboxGroup items={group.items}>
+                {index > 0 ? <ComboboxSeparator /> : null}
+                <ComboboxLabel>{group.value}</ComboboxLabel>
+                <ComboboxCollection />
+              </ComboboxGroup>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
+
+      <Combobox items={people}>
+        <ComboboxInput placeholder="Assign to..." containerStyle={styles.field} />
+        <ComboboxContent>
           <ComboboxEmpty>Nobody found.</ComboboxEmpty>
           <ComboboxList<(typeof people)[number]>>
             {(person) => (
@@ -106,19 +109,15 @@ export function Comboboxes() {
         </ComboboxContent>
       </Combobox>
 
-      <Combobox items={frameworks} disabled>
-        <ComboboxTrigger style={styles.trigger}>
-          <ComboboxValue placeholder="Disabled" />
-        </ComboboxTrigger>
+      <Combobox items={frameworks} disabled defaultValue="next">
+        <ComboboxInput placeholder="Disabled" containerStyle={styles.field} />
       </Combobox>
     </Section>
   );
 }
 
 const styles = StyleSheet.create({
-  trigger: { width: 220 },
-  multi: { width: 260, minHeight: 36, height: 'auto', paddingVertical: 6 },
+  field: { width: 280 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 4, flexShrink: 1 },
   name: { fontSize: 14 },
 });
