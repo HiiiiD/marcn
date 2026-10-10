@@ -304,6 +304,24 @@
       "dependencies": ["react-native-reanimated"],
       "registryDependencies": ["@marcn/back-stack", "@marcn/overlay-root", "@marcn/portal", "@marcn/use-presence"],
       "files": [{ "path": "registry/marcn/lib/overlay.tsx", "type": "registry:lib" }]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "Centered modal dialog on the portal layer: stacks, dismisses on back/scrim, avoids the keyboard.",
+      "dependencies": ["lucide-react-native", "react-native-reanimated"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/text",
+        "@marcn/icon",
+        "@marcn/overlay",
+        "@marcn/overlay-root",
+        "@marcn/use-presence",
+        "@marcn/use-keyboard-inset"
+      ],
+      "files": [{ "path": "registry/marcn/ui/dialog.tsx", "type": "registry:ui" }]
     }
   ]
 }
