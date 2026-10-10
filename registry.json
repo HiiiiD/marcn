@@ -226,6 +226,13 @@
         "@marcn/toggle"
       ],
       "files": [{ "path": "registry/marcn/ui/toggle-group.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "slider-math",
+      "type": "registry:lib",
+      "title": "Slider math",
+      "description": "Pure value/position helpers used by Slider.",
+      "files": [{ "path": "registry/marcn/lib/slider-math.ts", "type": "registry:lib" }]
     }
   ]
 }
