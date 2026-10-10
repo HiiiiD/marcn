@@ -254,3 +254,32 @@ test('the stretch filler sits behind the open edge, hidden from screen readers',
   expect(StyleSheet.flatten(filler.props.style)).toMatchObject({ top: '100%' });
   expect(isHiddenFromAccessibility(filler)).toBe(true);
 });
+
+test('with several snap points the handle is an adjustable that steps through them', () => {
+  const onSnapIndexChange = jest.fn();
+  setup({}, { snapPoints: [0.3, 0.6, 0.9], onSnapIndexChange });
+  const handle = screen.getByRole('adjustable');
+  expect(handle.props.accessibilityActions.map((a: { name: string }) => a.name)).toEqual(['increment', 'decrement']);
+  expect(handle.props.accessibilityValue).toEqual({ text: '1 of 3' });
+  act(() => fireEvent(handle, 'accessibilityAction', { nativeEvent: { actionName: 'increment' } }));
+  expect(onSnapIndexChange).toHaveBeenLastCalledWith(1);
+  expect(screen.getByRole('adjustable').props.accessibilityValue).toEqual({ text: '2 of 3' });
+  act(() => fireEvent(screen.getByRole('adjustable'), 'accessibilityAction', { nativeEvent: { actionName: 'decrement' } }));
+  expect(onSnapIndexChange).toHaveBeenLastCalledWith(0);
+});
+
+test('accessibility steps stop at the first and last snap point and never dismiss', () => {
+  const onSnapIndexChange = jest.fn();
+  const onOpenChange = jest.fn();
+  setup({ onOpenChange }, { snapPoints: [0.4, 0.8], onSnapIndexChange });
+  act(() => fireEvent(screen.getByRole('adjustable'), 'accessibilityAction', { nativeEvent: { actionName: 'decrement' } }));
+  act(() => fireEvent(screen.getByRole('adjustable'), 'accessibilityAction', { nativeEvent: { actionName: 'increment' } }));
+  act(() => fireEvent(screen.getByRole('adjustable'), 'accessibilityAction', { nativeEvent: { actionName: 'increment' } }));
+  expect(onSnapIndexChange).toHaveBeenCalledTimes(1);
+  expect(onOpenChange).not.toHaveBeenCalled();
+});
+
+test('a single-size sheet has no adjustable handle', () => {
+  setup();
+  expect(screen.queryByRole('adjustable')).toBeNull();
+});

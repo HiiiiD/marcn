@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, type Ref } from 'react';
-import { StyleSheet, useWindowDimensions, View, type LayoutChangeEvent, type ViewProps } from 'react-native';
+import { StyleSheet, useWindowDimensions, View, type AccessibilityActionEvent, type LayoutChangeEvent, type ViewProps } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -177,9 +177,25 @@ function SheetSurface({
 
   const sized = sizes ? largest : null;
 
+  const steps = hidden.length > 1;
+  const step = (by: number) => {
+    const next = Math.min(Math.max(index + by, 0), hidden.length - 1);
+    if (next !== index) setIndex(next);
+  };
+  const stepProps = steps
+    ? {
+        accessible: true,
+        accessibilityRole: 'adjustable' as const,
+        accessibilityLabel: 'Sheet size',
+        accessibilityValue: { text: `${index + 1} of ${hidden.length}` },
+        accessibilityActions: [{ name: 'increment' as const }, { name: 'decrement' as const }],
+        onAccessibilityAction: (e: AccessibilityActionEvent) => step(e.nativeEvent.actionName === 'increment' ? 1 : -1),
+      }
+    : null;
+
   const handle = showHandle ? (
     <GestureDetector key="handle" gesture={pan}>
-      <View style={s.handleHit}>
+      <View style={s.handleHit} {...stepProps}>
         <View style={[s.handleBar, vertical ? s.handleBarHorizontal : s.handleBarVertical]} />
       </View>
     </GestureDetector>
