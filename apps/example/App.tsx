@@ -7,6 +7,7 @@ import { useTheme } from '@/lib/theme';
 import { ButtonsBadges } from './screens/ButtonsBadges';
 import { CardForm } from './screens/CardForm';
 import { Calendars } from './screens/Calendars';
+import { DatePickers } from './screens/DatePickers';
 import { ContextMenus } from './screens/ContextMenus';
 import { Controls } from './screens/Controls';
 import { Display } from './screens/Display';
@@ -31,6 +32,7 @@ export default function App() {
           <SpinnerEmptyItem />
           <Controls />
           <Calendars />
+          <DatePickers />
           <FormControls />
           <Fields />
           <Overlays />

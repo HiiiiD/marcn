@@ -580,6 +580,24 @@
       "files": [{ "path": "registry/marcn/ui/calendar.tsx", "type": "registry:ui" }]
     },
     {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "title": "Date Picker",
+      "description": "Outline button showing the picked date (or a placeholder) that opens a Calendar in a Popover. Single date or range; closes once the selection is complete.",
+      "dependencies": ["lucide-react-native@1.53.0"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/use-anchored-position",
+        "@marcn/use-controllable-state",
+        "@marcn/button",
+        "@marcn/calendar",
+        "@marcn/icon",
+        "@marcn/popover",
+        "@marcn/text"
+      ],
+      "files": [{ "path": "registry/marcn/ui/date-picker.tsx", "type": "registry:ui" }]
+    },
+    {
       "name": "select",
       "type": "registry:ui",
       "title": "Select",

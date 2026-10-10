@@ -44,7 +44,7 @@ Components install with a shared `theme.ts` in your `lib` alias. Edit its tokens
 
 ## Components
 
-`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `spinner`, `empty`, `item`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `context-menu`, `select`, `calendar`, `input-otp`, `field`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `calendar-math`, `calendar-styles`, `calendar-range-drag`, `calendar-month`, `calendar-picker`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset`, `use-anchored-position`, `menu-item`, `menu-surface`, `menu-parts`, `otp-state` and `otp-caret` lib items.
+`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `spinner`, `empty`, `item`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `context-menu`, `select`, `calendar`, `date-picker`, `input-otp`, `field`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `calendar-math`, `calendar-styles`, `calendar-range-drag`, `calendar-month`, `calendar-picker`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset`, `use-anchored-position`, `menu-item`, `menu-surface`, `menu-parts`, `otp-state` and `otp-caret` lib items.
 
 Components are designed to be edited in place: once added, the code is yours.
 
@@ -73,6 +73,21 @@ Differences from shadcn/ui on native:
 - `numberOfMonths > 1` stacks the months vertically, steps one month per arrow, and hides outside days.
 - In range mode, after the first tap you can also press and drag across the grid (any direction, across months), then release on the end day. While a range start is pending the calendar claims every touch on its grid, so it will not scroll a parent `ScrollView` and taps are resolved by hit-testing; the arrows and the rest of the screen are unaffected, and the claim ends once the range is complete.
 - Month and weekday names come from `Intl` via `locale` (Hermes ships Intl in current React Native). `weekStartsOn` is not derived from the locale.
+
+## Date Picker
+
+`date-picker` is the shadcn/ui Date Picker recipe as one component: an outline `Button` (calendar icon plus the formatted date, or `placeholder`) that opens a `Calendar` in a `Popover`, so it needs `PortalHost` like the other overlays.
+
+```tsx
+<DatePicker selected={date} onSelect={setDate} />
+<DatePicker mode="range" selected={range} onSelect={setRange} numberOfMonths={2} />
+```
+
+- `mode="single"` (default) or `"range"` with `selected`/`defaultSelected`/`onSelect`; the other Calendar props (`locale`, `disabled`, `startMonth`/`endMonth`, `captionLayout`, ...) are forwarded. `mode="multiple"` is not supported.
+- The label uses `Intl` with `locale` (`dateStyle: 'long'`, ranges as `Jan 20, 2024 – Feb 09, 2024`); pass `formatDate` to override.
+- The popover closes when a date is picked, or when a range has both ends; set `closeOnSelect={false}` to keep it open. `open`/`defaultOpen`/`onOpenChange` control it, `side`/`align`/`sideOffset`/`alignOffset` place it, `contentStyle` styles it.
+- `style`, `ref` and `testID` go to the trigger. Use `triggerDisabled` to disable it (`disabled` is the Calendar's day matcher).
+- The calendar opens on the selected month each time.
 
 ## Overlays
 
