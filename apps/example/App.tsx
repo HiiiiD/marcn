@@ -9,6 +9,7 @@ import { Calendars } from './screens/Calendars';
 import { Controls } from './screens/Controls';
 import { Display } from './screens/Display';
 import { FormControls } from './screens/FormControls';
+import { InputOtp } from './screens/InputOtp';
 import { Menus } from './screens/Menus';
 import { Overlays } from './screens/Overlays';
 
@@ -27,6 +28,7 @@ export default function App() {
           <FormControls />
           <Overlays />
           <Menus />
+          <InputOtp />
         </ScrollView>
         <StatusBar style="auto" />
       </SafeAreaView>
