@@ -617,6 +617,42 @@
       "files": [{ "path": "registry/marcn/ui/select.tsx", "type": "registry:ui" }]
     },
     {
+      "name": "combobox-filter",
+      "type": "registry:lib",
+      "title": "Combobox filter",
+      "description": "Item normalizing and case/diacritic-insensitive search for Combobox.",
+      "files": [{ "path": "registry/marcn/lib/combobox-filter.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "combobox-state",
+      "type": "registry:lib",
+      "title": "Combobox state",
+      "description": "Context and state hook for Combobox: open, value, query, filtering and selection.",
+      "registryDependencies": ["@marcn/combobox-filter", "@marcn/use-controllable-state"],
+      "files": [{ "path": "registry/marcn/lib/combobox-state.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "combobox",
+      "type": "registry:ui",
+      "title": "Combobox",
+      "description": "Searchable select: trigger, anchored popup with a search input, filtered options, empty state, single or multiple.",
+      "dependencies": ["lucide-react-native@1.53.0", "react-native-reanimated@4.5.1"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/combobox-filter",
+        "@marcn/combobox-state",
+        "@marcn/menu-item",
+        "@marcn/overlay",
+        "@marcn/overlay-root",
+        "@marcn/render",
+        "@marcn/use-anchored-position",
+        "@marcn/icon",
+        "@marcn/input",
+        "@marcn/text"
+      ],
+      "files": [{ "path": "registry/marcn/ui/combobox.tsx", "type": "registry:ui" }]
+    },
+    {
       "name": "otp-state",
       "type": "registry:lib",
       "title": "OTP state",
