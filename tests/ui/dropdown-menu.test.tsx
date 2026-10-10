@@ -5,7 +5,8 @@ import { PortalHost } from '@/registry/marcn/lib/portal';
 import { Dialog, DialogContent } from '@/registry/marcn/ui/dialog';
 import {
   DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger,
+  DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub,
+  DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger,
   type DropdownMenuContentProps,
 } from '@/registry/marcn/ui/dropdown-menu';
 import { mockBackHandler } from '../back-handler';
@@ -215,4 +216,59 @@ test('opened from inside a Dialog it closes only itself', () => {
   act(() => { jest.advanceTimersByTime(300); });
   expect(screen.queryByText('Profile')).toBeNull();
   expect(screen.getByText('Dialog body')).toBeOnTheScreen();
+});
+
+function subMenu(onSelect = jest.fn()) {
+  setup(
+    {},
+    <>
+      <DropdownMenuItem>Top item</DropdownMenuItem>
+      <DropdownMenuSub>
+        <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
+        <DropdownMenuSubContent>
+          <DropdownMenuItem onSelect={onSelect}>Nested</DropdownMenuItem>
+        </DropdownMenuSubContent>
+      </DropdownMenuSub>
+    </>,
+  );
+  open();
+  return onSelect;
+}
+
+test('sub-trigger opens the sub-menu without closing the parent', () => {
+  subMenu();
+  expect(screen.queryByText('Nested')).toBeNull();
+  fireEvent.press(screen.getByText('More'));
+  expect(screen.getByText('Nested')).toBeOnTheScreen();
+  expect(screen.getByText('Top item', { includeHiddenElements: true })).toBeOnTheScreen();
+});
+
+test('selecting a nested item closes the whole menu', () => {
+  jest.useFakeTimers();
+  const onSelect = subMenu();
+  fireEvent.press(screen.getByText('More'));
+  fireEvent.press(screen.getByText('Nested'));
+  expect(onSelect).toHaveBeenCalledTimes(1);
+  act(() => { jest.advanceTimersByTime(300); });
+  expect(screen.queryByText('Nested')).toBeNull();
+  expect(screen.queryByText('Top item')).toBeNull();
+});
+
+test('back closes only the sub-menu', () => {
+  jest.useFakeTimers();
+  const back = mockBackHandler();
+  subMenu();
+  fireEvent.press(screen.getByText('More'));
+  act(() => { back.press(); });
+  act(() => { jest.advanceTimersByTime(300); });
+  expect(screen.queryByText('Nested')).toBeNull();
+  expect(screen.getByText('Top item', { includeHiddenElements: true })).toBeOnTheScreen();
+});
+
+test('the sub-trigger reports expanded state', () => {
+  subMenu();
+  const expanded = () => screen.queryByRole('menuitem', { expanded: true, includeHiddenElements: true });
+  expect(expanded()).toBeNull();
+  fireEvent.press(screen.getByText('More'));
+  expect(expanded()).toHaveTextContent('More');
 });

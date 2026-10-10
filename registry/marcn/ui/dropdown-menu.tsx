@@ -1,12 +1,12 @@
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react';
 import { View, type ViewProps } from 'react-native';
-import { Check, Circle } from 'lucide-react-native';
+import { Check, ChevronRight, Circle } from 'lucide-react-native';
 import {
-  MenuItemRow, MenuLabel, MenuSeparator, MenuShortcut, useMenuClose, type MenuItemRowProps,
+  MenuCloseContext, MenuItemRow, MenuLabel, MenuSeparator, MenuShortcut, useMenuClose, type MenuItemRowProps,
 } from '@/registry/marcn/lib/menu-item';
 import { MenuSurface, type MenuSurfaceProps } from '@/registry/marcn/lib/menu-surface';
 import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
-import { OverlayRoot, OverlayTrigger, type OverlayRootProps } from '@/registry/marcn/lib/overlay-root';
+import { OverlayRoot, OverlayTrigger, useOverlay, type OverlayRootProps } from '@/registry/marcn/lib/overlay-root';
 import { useControllableState } from '@/registry/marcn/lib/use-controllable-state';
 import { Icon } from '@/registry/marcn/ui/icon';
 
@@ -126,5 +126,52 @@ export function DropdownMenuRadioItem({ value, onSelect, ...props }: DropdownMen
       onPress={select}
       {...props}
     />
+  );
+}
+
+function SubClose({ closeParent, children }: { closeParent: () => void; children: ReactNode }) {
+  const { setOpen } = useOverlay();
+  const close = useCallback(() => {
+    setOpen(false);
+    closeParent();
+  }, [setOpen, closeParent]);
+  return <MenuCloseContext.Provider value={close}>{children}</MenuCloseContext.Provider>;
+}
+
+// closeParent is read above the sub's OverlayRoot so it resolves the parent menu, not the sub.
+export function DropdownMenuSub({ children, ...root }: OverlayRootProps) {
+  const closeParent = useMenuClose();
+  return (
+    <OverlayRoot {...root}>
+      <SubClose closeParent={closeParent}>{children}</SubClose>
+    </OverlayRoot>
+  );
+}
+
+export type DropdownMenuSubTriggerProps = Omit<MenuItemRowProps, 'onPress' | 'indicator' | 'indicatorSide'>;
+
+export function DropdownMenuSubTrigger(props: DropdownMenuSubTriggerProps) {
+  const { open, setOpen, triggerRef } = useOverlay();
+  return (
+    <MenuItemRow
+      ref={triggerRef}
+      accessibilityRole="menuitem"
+      accessibilityState={{ expanded: open }}
+      indicator={<Icon icon={ChevronRight} />}
+      indicatorSide="end"
+      onPress={() => setOpen(true)}
+      {...props}
+    />
+  );
+}
+
+export function DropdownMenuSubContent({ dismissable, initialFocusRef, ...props }: DropdownMenuContentProps) {
+  const close = useContext(MenuCloseContext);
+  return (
+    <Overlay modal scrim={false} dismissable={dismissable} initialFocusRef={initialFocusRef}>
+      <MenuCloseContext.Provider value={close}>
+        <MenuSurface role="menu" side="right" align="start" sideOffset={0} {...props} />
+      </MenuCloseContext.Provider>
+    </Overlay>
   );
 }
