@@ -61,7 +61,7 @@ export function DialogDescription(props: TextProps) {
   return <Text variant="muted" nativeID={descriptionId} {...props} />;
 }
 
-type SurfaceProps = ViewProps & {
+export type SurfaceProps = ViewProps & {
   showCloseButton?: boolean;
   render?: RenderProp<ViewProps>;
   ref?: Ref<View>;
@@ -80,7 +80,7 @@ export function DialogContent({ dismissable, initialFocusRef, ...props }: Dialog
   );
 }
 
-function DialogSurface({ showCloseButton = true, style, render, children, ...props }: SurfaceProps) {
+export function DialogSurface({ showCloseButton = true, style, render, children, ...props }: SurfaceProps) {
   const s = useStyles(createStyles);
   const { open, titleId } = useOverlay();
   const progress = useProgress(open);

@@ -44,7 +44,7 @@ Components install with a shared `theme.ts` in your `lib` alias. Edit its tokens
 
 ## Components
 
-`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence` and `use-keyboard-inset` lib items.
+`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `select`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset`, `use-anchored-position`, `menu-item` and `menu-surface` lib items.
 
 Components are designed to be edited in place: once added, the code is yours.
 
@@ -75,6 +75,12 @@ Merging: the element's own props win; `style` becomes `[marcn, element]`; `onX` 
     }
 
 Without a host, overlays render nothing and log a dev warning. Overlays follow the shadcn/ui prop names (`open`/`defaultOpen`/`onOpenChange`). Differences on native: no react-native-web support and no Tab-key focus trap. Screen-reader focus is contained to the topmost modal layer, moves into the overlay on open and back to the trigger on close; Android back and the iOS accessibility escape gesture dismiss the topmost layer. `Popover` is non-modal by default (`modal` adds a scrim and contains focus), positions with `side`/`align`/offsets and flips or clamps near screen edges (`collisionPadding`). `Sheet` supports `side` and `snapPoints` (fractions of the window or pixels; `snapIndex`/`defaultSnapIndex`/`onSnapIndexChange` pick the current one). Dragging its handle snaps between them, stretches with a spring-back past the largest, and dismisses when pulled down from the smallest. With several snap points the handle is an `adjustable` for screen readers (increment/decrement steps between them). Dialog and Sheet lift above the keyboard; Popover repositions around it. Compose `SheetClose` for a close button; Dialog has a built-in corner close (`showCloseButton`).
+
+## Menus, Select, Tooltip and Alert Dialog
+
+`dropdown-menu`, `select`, `tooltip` and `alert-dialog` use the same `PortalHost` as the other overlays. `DropdownMenu` and `Select` open an anchored, scrollable list under the trigger (flipping or clamping near screen edges). Items follow shadcn names: `DropdownMenuItem` (`variant="destructive"`, `onSelect` with `event.preventDefault()` to keep the menu open), `DropdownMenuCheckboxItem`, `DropdownMenuRadioGroup`/`DropdownMenuRadioItem`, `DropdownMenuLabel`, `DropdownMenuSeparator`, `DropdownMenuShortcut`. Sub-menus (`DropdownMenuSub`, `DropdownMenuSubTrigger`, `DropdownMenuSubContent`) open as a second layer; selecting a nested item closes the whole menu. `Select` takes `value`/`defaultValue`/`onValueChange`; give `SelectItem` a string child (or `label`) so `SelectValue` can show it while the list is closed.
+
+Differences on native: `Tooltip` opens on long press (there is no hover) and closes `duration` ms (default 2000) after release; `AlertDialog` ignores backdrop taps, focuses `Cancel` first, and closes on Android back; `Select` is a popover-style list rather than item-aligned and does not scroll to the selected item; there is no typeahead or keyboard navigation.
 
 ## Development
 

@@ -8,6 +8,7 @@ import { CardForm } from './screens/CardForm';
 import { Controls } from './screens/Controls';
 import { Display } from './screens/Display';
 import { FormControls } from './screens/FormControls';
+import { Menus } from './screens/Menus';
 import { Overlays } from './screens/Overlays';
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
           <Controls />
           <FormControls />
           <Overlays />
+          <Menus />
         </ScrollView>
         <StatusBar style="auto" />
       </SafeAreaView>

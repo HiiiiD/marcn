@@ -49,11 +49,21 @@ export function PortalHost({ children, ...props }: ViewProps) {
             {children}
           </View>
           <View style={styles.layer}>
-            {entries.map((e, i) => (
-              <View key={e.id} style={styles.layer} accessibilityViewIsModal={topModal >= 0 && i === entries.length - 1} {...(i < topModal ? HIDDEN : undefined)}>
-                {e.node}
-              </View>
-            ))}
+            {entries.map((e, i) => {
+              if (i > topModal && topModal >= 0) return null;
+              // Layers above the top modal one (a tooltip) live inside it: as siblings they would be hidden by its modality.
+              const above = i === topModal ? entries.slice(i + 1) : [];
+              return (
+                <View key={e.id} style={styles.layer} accessibilityViewIsModal={i === topModal} {...(i < topModal ? HIDDEN : undefined)}>
+                  {e.node}
+                  {above.map((a) => (
+                    <View key={a.id} style={styles.layer}>
+                      {a.node}
+                    </View>
+                  ))}
+                </View>
+              );
+            })}
           </View>
         </SafeAreaProvider>
       </GestureHandlerRootView>

@@ -258,6 +258,32 @@
       "files": [{ "path": "registry/marcn/lib/popover-position.ts", "type": "registry:lib" }]
     },
     {
+      "name": "use-anchored-position",
+      "type": "registry:lib",
+      "title": "Use anchored position",
+      "description": "Measures a trigger and places an anchored surface with flip/clamp, keyboard and safe-area awareness.",
+      "dependencies": ["react-native-reanimated", "react-native-safe-area-context"],
+      "registryDependencies": ["@marcn/popover-position", "@marcn/use-keyboard-inset", "@marcn/use-presence"],
+      "files": [{ "path": "registry/marcn/lib/use-anchored-position.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "menu-item",
+      "type": "registry:lib",
+      "title": "Menu item",
+      "description": "Shared menu row, label, shortcut, separator and close context for Dropdown Menu and Select.",
+      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/overlay-root", "@marcn/separator", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/lib/menu-item.tsx", "type": "registry:lib" }]
+    },
+    {
+      "name": "menu-surface",
+      "type": "registry:lib",
+      "title": "Menu surface",
+      "description": "Anchored, scrollable popover-style surface for menus and select lists.",
+      "dependencies": ["react-native-reanimated"],
+      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/overlay-root", "@marcn/use-anchored-position"],
+      "files": [{ "path": "registry/marcn/lib/menu-surface.tsx", "type": "registry:lib" }]
+    },
+    {
       "name": "back-stack",
       "type": "registry:lib",
       "title": "Back stack",
@@ -335,15 +361,14 @@
       "type": "registry:ui",
       "title": "Popover",
       "description": "Anchored popover on the portal layer with flip/clamp positioning and keyboard awareness.",
-      "dependencies": ["react-native-reanimated", "react-native-safe-area-context"],
+      "dependencies": ["react-native-reanimated"],
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/render",
         "@marcn/overlay",
         "@marcn/overlay-root",
         "@marcn/popover-position",
-        "@marcn/use-presence",
-        "@marcn/use-keyboard-inset"
+        "@marcn/use-anchored-position"
       ],
       "files": [{ "path": "registry/marcn/ui/popover.tsx", "type": "registry:ui" }]
     },
@@ -365,6 +390,73 @@
         "@marcn/use-keyboard-inset"
       ],
       "files": [{ "path": "registry/marcn/ui/sheet.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert Dialog",
+      "description": "Modal confirmation dialog: no backdrop dismiss, Cancel/Action buttons, focus starts on Cancel.",
+      "registryDependencies": [
+        "@marcn/render",
+        "@marcn/overlay",
+        "@marcn/overlay-root",
+        "@marcn/button",
+        "@marcn/dialog"
+      ],
+      "files": [{ "path": "registry/marcn/ui/alert-dialog.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "Long-press tooltip anchored to its trigger on the portal layer; non-modal, no scrim.",
+      "dependencies": ["react-native-reanimated"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/portal",
+        "@marcn/overlay-root",
+        "@marcn/use-anchored-position",
+        "@marcn/use-controllable-state",
+        "@marcn/use-presence",
+        "@marcn/text"
+      ],
+      "files": [{ "path": "registry/marcn/ui/tooltip.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "registry:ui",
+      "title": "Dropdown Menu",
+      "description": "Anchored action menu with items, checkbox and radio items, labels, separators and shortcuts.",
+      "dependencies": ["lucide-react-native"],
+      "registryDependencies": [
+        "@marcn/overlay",
+        "@marcn/overlay-root",
+        "@marcn/menu-item",
+        "@marcn/menu-surface",
+        "@marcn/use-controllable-state",
+        "@marcn/icon"
+      ],
+      "files": [{ "path": "registry/marcn/ui/dropdown-menu.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "Single-value select: trigger, value, scrollable option list anchored under the trigger.",
+      "dependencies": ["lucide-react-native"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/overlay",
+        "@marcn/overlay-root",
+        "@marcn/menu-item",
+        "@marcn/menu-surface",
+        "@marcn/render",
+        "@marcn/use-controllable-state",
+        "@marcn/icon",
+        "@marcn/text"
+      ],
+      "files": [{ "path": "registry/marcn/ui/select.tsx", "type": "registry:ui" }]
     }
   ]
 }

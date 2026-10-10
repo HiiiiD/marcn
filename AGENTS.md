@@ -46,6 +46,10 @@ Components that render a single host element (Button, Text, Badge, Card root) ac
 - RNTL v13: `getByRole` only matches accessible elements; pass `{ includeHiddenElements: true }` for views hidden from accessibility.
 - Type `jest.fn` mocks with a parameter if you read `mock.calls[0][0]` (TypeScript 6).
 
+## Emulator verification
+
+Every time you create, edit or change a component (anything under `registry/`), check it on the Android emulator before calling the work done: run `yarn example:sync`, start the example app in `apps/example`, exercise the component through its screen (add or update the screen when a component has none) and look at the result. Jest mocks layout, animation and gestures, so passing tests do not replace this. Do it as soon as the code changes are finished, then fix what you see and repeat. Report what you checked and anything you could not check.
+
 ## Git
 
 - No `Co-Authored-By` or Claude/Anthropic trailer in commit messages.

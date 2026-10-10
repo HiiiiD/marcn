@@ -88,3 +88,16 @@ test('a non-modal layer above a modal one stays reachable for screen readers', (
   );
   expect(hidden('pop')).toBe(false);
 });
+
+test('a non-modal layer above a modal one does not take the modality away from it', () => {
+  render(
+    <PortalHost>
+      <Text>App</Text>
+      <Portal><Text>dialog</Text></Portal>
+      <Portal modal={false}><Text>pop</Text></Portal>
+    </PortalHost>,
+  );
+  expect(hidden('dialog')).toBe(false);
+  expect(hidden('pop')).toBe(false);
+  expect(hidden('App')).toBe(true);
+});
