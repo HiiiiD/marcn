@@ -159,3 +159,11 @@ test('works inside a Dialog: choosing closes only the list', () => {
   expect(screen.getByText('Dialog body')).toBeOnTheScreen();
   expect(screen.getByText('Alpha')).toBeOnTheScreen();
 });
+
+test('selected and unselected options reserve the same indicator space', () => {
+  setup({ defaultValue: 'apple' });
+  open();
+  const right = (label: string) => StyleSheet.flatten(screen.getByRole('option', { name: label }).props.style).paddingRight;
+  expect(right('Banana')).toBe(right('Apple'));
+  expect(right('Apple')).toBeGreaterThan(8);
+});

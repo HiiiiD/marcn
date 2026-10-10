@@ -47,7 +47,8 @@ export function MenuItemRow({
   variant = 'default', inset, indicator, indicatorSide = 'start', disabled, accessibilityState, style, children, ...props
 }: MenuItemRowProps) {
   const s = useStyles(createStyles);
-  const hasIndicator = !!indicator;
+  // `null` still reserves the slot, so toggling a checkbox/radio/option does not shift the row's text.
+  const hasIndicator = indicator !== undefined;
   return (
     <TextStyleContext.Provider value={s.text[variant]}>
       <Pressable
@@ -64,7 +65,7 @@ export function MenuItemRow({
         {...props}
       >
         {asText(children as ReactNode)}
-        {hasIndicator && <View style={indicatorSide === 'end' ? s.base.indicatorEnd : s.base.indicatorStart}>{indicator}</View>}
+        {!!indicator && <View style={indicatorSide === 'end' ? s.base.indicatorEnd : s.base.indicatorStart}>{indicator}</View>}
       </Pressable>
     </TextStyleContext.Provider>
   );

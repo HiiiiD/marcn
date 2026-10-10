@@ -272,3 +272,22 @@ test('the sub-trigger reports expanded state', () => {
   fireEvent.press(screen.getByText('More'));
   expect(expanded()).toHaveTextContent('More');
 });
+
+test('checked and unchecked rows reserve the same indicator space', () => {
+  setup(
+    {},
+    <>
+      <DropdownMenuCheckboxItem checked>On</DropdownMenuCheckboxItem>
+      <DropdownMenuCheckboxItem>Off</DropdownMenuCheckboxItem>
+      <DropdownMenuRadioGroup defaultValue="a">
+        <DropdownMenuRadioItem value="a" onSelect={(e) => e.preventDefault()}>A</DropdownMenuRadioItem>
+        <DropdownMenuRadioItem value="b" onSelect={(e) => e.preventDefault()}>B</DropdownMenuRadioItem>
+      </DropdownMenuRadioGroup>
+    </>,
+  );
+  open();
+  const left = (role: 'checkbox' | 'radio', label: string) => StyleSheet.flatten(screen.getByRole(role, { name: label }).props.style).paddingLeft;
+  expect(left('checkbox', 'Off')).toBe(left('checkbox', 'On'));
+  expect(left('radio', 'B')).toBe(left('radio', 'A'));
+  expect(left('checkbox', 'On')).toBeGreaterThan(8);
+});
