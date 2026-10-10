@@ -1,5 +1,5 @@
 export type ComboboxOption = { value: string; label: string; disabled?: boolean; keywords?: readonly string[] };
-export type ComboboxItemInput = string | (Omit<ComboboxOption, 'label'> & { label?: string });
+export type ComboboxItemInput = string | (Omit<ComboboxOption, 'label'> & { label?: string } & Record<string, unknown>);
 export type ComboboxFilter = (option: ComboboxOption, query: string) => boolean;
 
 export function toOption(item: ComboboxItemInput): ComboboxOption {

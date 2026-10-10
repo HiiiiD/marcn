@@ -67,3 +67,11 @@ test('labelOf falls back to the raw value', () => {
   expect(result.current.labelOf('c')).toBe('Cherry');
   expect(result.current.labelOf('zzz')).toBe('zzz');
 });
+
+test('select ignores data-disabled options', () => {
+  const onValueChange = jest.fn();
+  const { result } = setup({ onValueChange });
+  act(() => result.current.select('c'));
+  expect(onValueChange).not.toHaveBeenCalled();
+  expect(result.current.isDisabled('c')).toBe(true);
+});

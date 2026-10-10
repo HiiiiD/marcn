@@ -222,7 +222,7 @@ export function ComboboxList<T extends ComboboxOption = ComboboxOption>({
         <ScrollContext.Provider value={scrollIntoView}>
           {filtered.map((item, index) => (
             <Fragment key={item.value}>
-              {children ? children(item as T, index) : <ComboboxItem value={item.value} disabled={item.disabled} />}
+              {children ? children(item as T, index) : <ComboboxItem value={item.value} />}
             </Fragment>
           ))}
         </ScrollContext.Provider>
@@ -233,7 +233,7 @@ export function ComboboxList<T extends ComboboxOption = ComboboxOption>({
 
 export type ComboboxItemProps = Omit<MenuItemRowProps, 'onPress' | 'indicator' | 'indicatorSide' | 'variant'> & { value: string };
 
-export function ComboboxItem({ value, children, ref, onLayout, accessibilityState, ...props }: ComboboxItemProps) {
+export function ComboboxItem({ value, disabled, children, ref, onLayout, accessibilityState, ...props }: ComboboxItemProps) {
   const combobox = useCombobox();
   const scrollIntoView = useContext(ScrollContext);
   const rowRef = useRef<View>(null);
@@ -256,6 +256,7 @@ export function ComboboxItem({ value, children, ref, onLayout, accessibilityStat
         }
       }}
       onPress={() => combobox.select(value)}
+      disabled={disabled ?? combobox.isDisabled(value)}
       {...props}
     >
       {children ?? combobox.labelOf(value)}

@@ -15,6 +15,7 @@ export type ComboboxContextValue = {
   multiple: boolean;
   disabled?: boolean;
   isSelected: (value: string) => boolean;
+  isDisabled: (value: string) => boolean;
   labelOf: (value: string) => string;
   select: (value: string) => void;
   submit: () => void;
@@ -71,13 +72,19 @@ export function useComboboxState({
   }, [open, setQuery]);
 
   const options = useMemo(() => items.map(toOption), [items]);
-  const byValue = useMemo(() => new Map(options.map((o) => [o.value, o])), [options]);
+  // Remembers options that left `items` (server-side filtering), so selected labels survive a refetch.
+  const known = useRef(new Map<string, ComboboxOption>());
+  const byValue = useMemo(() => {
+    for (const o of options) known.current.set(o.value, o);
+    return new Map(options.map((o) => [o.value, o]));
+  }, [options]);
+  const find = useCallback((v: string) => byValue.get(v) ?? known.current.get(v), [byValue]);
   const filtered = useMemo(() => filterOptions(options, query, filter), [options, query, filter]);
 
   return useMemo<ComboboxContextValue>(() => {
     const values = Array.isArray(value) ? value : value ? [value] : [];
     const select = (next: string) => {
-      if (disabled) return;
+      if (disabled || byValue.get(next)?.disabled) return;
       if (multiple) {
         setValue(values.includes(next) ? values.filter((v) => v !== next) : [...values, next]);
         return;
@@ -89,13 +96,14 @@ export function useComboboxState({
       open,
       setOpen,
       filtered,
-      selected: values.map((v) => byValue.get(v) ?? { value: v, label: v }),
+      selected: values.map((v) => find(v) ?? { value: v, label: v }),
       query,
       setQuery,
       multiple,
       disabled,
       isSelected: (v) => values.includes(v),
-      labelOf: (v) => byValue.get(v)?.label ?? v,
+      isDisabled: (v) => !!byValue.get(v)?.disabled,
+      labelOf: (v) => find(v)?.label ?? v,
       select,
       submit: () => {
         const first = filtered.find((o) => !o.disabled);
@@ -104,5 +112,5 @@ export function useComboboxState({
         else select(first.value);
       },
     };
-  }, [open, setOpen, value, setValue, filtered, byValue, query, setQuery, multiple, disabled]);
+  }, [open, setOpen, value, setValue, filtered, byValue, find, query, setQuery, multiple, disabled]);
 }

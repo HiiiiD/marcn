@@ -361,3 +361,43 @@ test('works inside a Dialog: choosing closes only the popup', () => {
   expect(screen.getByText('Dialog body')).toBeOnTheScreen();
   expect(screen.getByText('Banana')).toBeOnTheScreen();
 });
+
+test('a data-disabled option stays disabled in a custom render function', () => {
+  const onValueChange = jest.fn();
+  render(
+    <PortalHost>
+      <Combobox items={fruits} defaultOpen onValueChange={onValueChange}>
+        <ComboboxContent>
+          <ComboboxList>{(item) => <ComboboxItem value={item.value}><Text>{item.label}</Text></ComboboxItem>}</ComboboxList>
+        </ComboboxContent>
+      </Combobox>
+    </PortalHost>,
+  );
+  expect(screen.getByRole('option', { name: 'Cherry' })).toBeDisabled();
+  fireEvent.press(screen.getByText('Cherry'));
+  expect(onValueChange).not.toHaveBeenCalled();
+});
+
+test('selected labels survive the items changing (server-side filtering)', () => {
+  const ui = (items: { value: string; label: string }[]) => (
+    <PortalHost>
+      <Combobox items={items} multiple defaultValue={['u1']} filter={null}>
+        <ComboboxTrigger><ComboboxValue /></ComboboxTrigger>
+      </Combobox>
+    </PortalHost>
+  );
+  render(ui([{ value: 'u1', label: 'Ada' }]));
+  screen.rerender(ui([{ value: 'u2', label: 'Grace' }]));
+  expect(screen.getByText('Ada')).toBeOnTheScreen();
+});
+
+test('inline items may carry extra fields', () => {
+  render(
+    <PortalHost>
+      <Combobox items={[{ value: 'ada', label: 'Ada', role: 'Engineer' }]} defaultOpen>
+        <ComboboxContent><ComboboxList /></ComboboxContent>
+      </Combobox>
+    </PortalHost>,
+  );
+  expect(screen.getByText('Ada')).toBeOnTheScreen();
+});
