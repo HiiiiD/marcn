@@ -5,6 +5,7 @@ import { PortalHost } from '@/lib/portal';
 import { useTheme } from '@/lib/theme';
 import { ButtonsBadges } from './screens/ButtonsBadges';
 import { CardForm } from './screens/CardForm';
+import { Calendars } from './screens/Calendars';
 import { Controls } from './screens/Controls';
 import { Display } from './screens/Display';
 import { FormControls } from './screens/FormControls';
@@ -22,6 +23,7 @@ export default function App() {
           <CardForm />
           <Display />
           <Controls />
+          <Calendars />
           <FormControls />
           <Overlays />
           <Menus />

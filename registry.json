@@ -450,6 +450,29 @@
       "files": [{ "path": "registry/marcn/ui/dropdown-menu.tsx", "type": "registry:ui" }]
     },
     {
+      "name": "calendar-math",
+      "type": "registry:lib",
+      "title": "Calendar math",
+      "description": "Pure date grid, matcher and selection helpers used by Calendar.",
+      "files": [{ "path": "registry/marcn/lib/calendar-math.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "title": "Calendar",
+      "description": "Month grid with single, multiple and range selection, disabled matchers and Intl localization.",
+      "dependencies": ["lucide-react-native@1.53.0"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/calendar-math",
+        "@marcn/use-controllable-state",
+        "@marcn/button",
+        "@marcn/icon",
+        "@marcn/text"
+      ],
+      "files": [{ "path": "registry/marcn/ui/calendar.tsx", "type": "registry:ui" }]
+    },
+    {
       "name": "select",
       "type": "registry:ui",
       "title": "Select",
