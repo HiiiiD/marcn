@@ -1,5 +1,5 @@
 import { createRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { PortalHost } from '@/registry/marcn/lib/portal';
 import {
@@ -75,13 +75,22 @@ test('reopening at a new spot re-anchors the menu', () => {
   expect(place()).toMatchObject({ left: 100, top: 200 });
 });
 
-test('a point near the bottom-right edge stays inside the window', () => {
+test('a point near the bottom-right edge flips and clamps inside the window', () => {
+  const { width, height } = Dimensions.get('window');
   setup(<ContextMenuItem>Copy</ContextMenuItem>);
-  longPress(1000, 2000);
+  longPress(width - 5, height - 5);
   layout(80, 50);
   const { left, top } = place();
-  expect(left).toBeLessThan(1000);
-  expect(top).toBeLessThan(2000);
+  expect(left + 80).toBeLessThanOrEqual(width - 8);
+  expect(top + 50).toBeLessThanOrEqual(height - 5);
+});
+
+test('a point near the top edge with a tall menu clamps to the padding', () => {
+  const { height } = Dimensions.get('window');
+  setup(<ContextMenuItem>Copy</ContextMenuItem>);
+  longPress(20, 10);
+  layout(80, height);
+  expect(place().top).toBeGreaterThanOrEqual(8);
 });
 
 test('selecting an item calls onSelect and closes', () => {
@@ -180,4 +189,34 @@ test('render prop element and ref reach the host', () => {
 test('controlled open prop renders without a long press', () => {
   setup(<ContextMenuItem>Copy</ContextMenuItem>, {}, { open: true });
   expect(screen.getByText('Copy')).toBeOnTheScreen();
+});
+
+test('a disabled trigger ignores the accessibility action', () => {
+  setup(<ContextMenuItem>Copy</ContextMenuItem>, { disabled: true });
+  fireEvent(screen.getByText('Area'), 'accessibilityAction', { nativeEvent: { actionName: 'activate' } });
+  expect(screen.queryByText('Copy')).toBeNull();
+});
+
+test('a programmatic reopen anchors to the trigger, not the last touch point', () => {
+  jest.useFakeTimers();
+  const ref = createRef<View>();
+  const tree = (open: boolean) => (
+    <PortalHost>
+      <ContextMenu open={open}>
+        <ContextMenuTrigger ref={ref}><Text>Area</Text></ContextMenuTrigger>
+        <ContextMenuContent testID="menu"><ContextMenuItem>Copy</ContextMenuItem></ContextMenuContent>
+      </ContextMenu>
+    </PortalHost>
+  );
+  const { rerender } = render(tree(false));
+  ref.current!.measureInWindow = ((cb: (x: number, y: number, w: number, h: number) => void) => cb(10, 20, 100, 40)) as never;
+  longPress(300, 300);
+  rerender(tree(true));
+  layout(80, 50);
+  expect(place()).toMatchObject({ left: 300, top: 300 });
+  rerender(tree(false));
+  settle();
+  rerender(tree(true));
+  layout(80, 50);
+  expect(place()).toMatchObject({ left: 10, top: 60 });
 });

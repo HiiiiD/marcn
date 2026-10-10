@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode, type Ref } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode, type Ref } from 'react';
 import { Pressable, type AccessibilityActionEvent, type GestureResponderEvent, type PressableProps, type View } from 'react-native';
 import { MenuLabel, MenuSeparator, MenuShortcut } from '@/registry/marcn/lib/menu-item';
 import {
@@ -9,6 +9,7 @@ import { MenuSurface, type MenuSurfaceProps } from '@/registry/marcn/lib/menu-su
 import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
 import { OverlayRoot, asText, useOverlay, type OverlayRootProps, type OverlayState } from '@/registry/marcn/lib/overlay-root';
 import { mergeRefs, renderElement, type RenderProp } from '@/registry/marcn/lib/render';
+import { usePresence } from '@/registry/marcn/lib/use-presence';
 import type { AnchorPoint } from '@/registry/marcn/lib/use-anchored-position';
 
 type PointContextValue = { point: AnchorPoint | null; setPoint: (point: AnchorPoint | null) => void };
@@ -23,12 +24,22 @@ function usePoint() {
 
 export type ContextMenuProps = OverlayRootProps;
 
-export function ContextMenu({ children, ...root }: ContextMenuProps) {
+// The point is dropped once the exit animation ends, so a later programmatic open anchors to the trigger.
+function PointProvider({ children }: { children: ReactNode }) {
+  const { open } = useOverlay();
+  const present = usePresence(open);
   const [point, setPoint] = useState<AnchorPoint | null>(null);
+  useEffect(() => {
+    if (!present) setPoint(null);
+  }, [present]);
   const value = useMemo(() => ({ point, setPoint }), [point]);
+  return <PointContext.Provider value={value}>{children}</PointContext.Provider>;
+}
+
+export function ContextMenu({ children, ...root }: ContextMenuProps) {
   return (
     <OverlayRoot {...root}>
-      <PointContext.Provider value={value}>{children}</PointContext.Provider>
+      <PointProvider>{children}</PointProvider>
     </OverlayRoot>
   );
 }
@@ -57,7 +68,7 @@ export function ContextMenuTrigger({ render, onLongPress, onAccessibilityAction,
       },
       onAccessibilityAction: (e: AccessibilityActionEvent) => {
         onAccessibilityAction?.(e);
-        if (e.nativeEvent.actionName !== 'activate') return;
+        if (props.disabled || e.nativeEvent.actionName !== 'activate') return;
         setPoint(null);
         ctx.setOpen(true);
       },

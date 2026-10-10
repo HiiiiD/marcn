@@ -490,7 +490,8 @@
         "@marcn/menu-parts",
         "@marcn/menu-surface",
         "@marcn/render",
-        "@marcn/use-anchored-position"
+        "@marcn/use-anchored-position",
+        "@marcn/use-presence"
       ],
       "files": [
         {
