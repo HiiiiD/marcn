@@ -249,6 +249,13 @@
         "@marcn/slider-math"
       ],
       "files": [{ "path": "registry/marcn/ui/slider.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "popover-position",
+      "type": "registry:lib",
+      "title": "Popover position",
+      "description": "Pure anchor/side/align positioning with flip and clamp, used by Popover.",
+      "files": [{ "path": "registry/marcn/lib/popover-position.ts", "type": "registry:lib" }]
     }
   ]
 }
