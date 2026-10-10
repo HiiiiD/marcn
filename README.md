@@ -83,7 +83,7 @@ Differences from shadcn/ui on native:
 <DatePicker mode="range" selected={range} onSelect={setRange} numberOfMonths={2} />
 ```
 
-- `mode="single"` (default) or `"range"` with `selected`/`defaultSelected`/`onSelect`; the other Calendar props (`locale`, `disabled`, `startMonth`/`endMonth`, `captionLayout`, ...) are forwarded. `mode="multiple"` is not supported.
+- `mode="single"` (default) or `"range"` with `selected`/`defaultSelected`/`onSelect`; the other Calendar props (`locale`, `disabled`, `startMonth`/`endMonth`, `captionLayout`, ...) are forwarded. Passing `selected` makes it controlled even while it is `undefined`, so `useState<Date>()` works and setting it back to `undefined` clears the label. `mode="multiple"` is not supported.
 - The label uses `Intl` with `locale` (`dateStyle: 'long'`, ranges as `Jan 20, 2024 – Feb 09, 2024`); pass `formatDate` to override.
 - The popover closes when a date is picked, or when a range has both ends; set `closeOnSelect={false}` to keep it open. `open`/`defaultOpen`/`onOpenChange` control it, `side`/`align`/`sideOffset`/`alignOffset` place it, `contentStyle` styles it.
 - `style`, `ref` and `testID` go to the trigger. Use `triggerDisabled` to disable it (`disabled` is the Calendar's day matcher).

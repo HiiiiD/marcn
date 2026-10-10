@@ -1,4 +1,4 @@
-import type { Ref } from 'react';
+import { useState, type Ref } from 'react';
 import { StyleSheet, type StyleProp, type View, type ViewStyle } from 'react-native';
 import { Calendar as CalendarIcon } from 'lucide-react-native';
 import { useStyles, useTheme, type Theme } from '@/registry/marcn/lib/theme';
@@ -83,11 +83,11 @@ export function DatePicker(props: DatePickerProps) {
   const { colors } = useTheme();
   const isRange = props.mode === 'range';
 
-  const [value, setValue] = useControllableState<Date | DateRange | undefined>({
-    value: props.selected,
-    defaultValue: props.defaultSelected,
-    onChange: props.onSelect as ((value: Date | DateRange | undefined) => void) | undefined,
-  });
+  // Controlled by key presence: `selected={undefined}` is a cleared value, not a switch to
+  // uncontrolled (useControllableState would resurrect the last internal pick).
+  const controlled = 'selected' in props;
+  const [inner, setInner] = useState<Date | DateRange | undefined>(props.defaultSelected);
+  const value = controlled ? props.selected : inner;
   const [open, setOpen] = useControllableState({ value: openProp, defaultValue: defaultOpen, onChange: onOpenChange });
 
   const format = formatDate ?? ((date: Date) => new Intl.DateTimeFormat(props.locale, isRange ? RANGE_FORMAT : SINGLE_FORMAT).format(date));
@@ -100,13 +100,13 @@ export function DatePicker(props: DatePickerProps) {
   }
 
   const select = (next: Date | DateRange | undefined) => {
-    setValue(next);
+    if (!controlled) setInner(next);
+    (props.onSelect as ((value: Date | DateRange | undefined) => void) | undefined)?.(next);
     if (closeOnSelect && (!isRange || (next as DateRange | undefined)?.to)) setOpen(false);
   };
 
-  // Calendar stays uncontrolled (it remounts on every open): a controlled Calendar keeps a stale
-  // pick when `selected` goes back to undefined.
-  const calendarProps = { ...calendar, defaultSelected: value, onSelect: select } as CalendarProps;
+  // null keeps Calendar controlled when nothing is picked, for the same reason as above.
+  const calendarProps = { ...calendar, selected: value ?? null, onSelect: select } as unknown as CalendarProps;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

@@ -1,5 +1,5 @@
-import { createRef } from 'react';
-import { View } from 'react-native';
+import { createRef, useState } from 'react';
+import { Text, View } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { PortalHost } from '@/registry/marcn/lib/portal';
 import { DatePicker, type DatePickerProps, type DateRange } from '@/registry/marcn/ui/date-picker';
@@ -167,4 +167,45 @@ test('ref reaches the trigger host', () => {
   setup({ ref });
   expect(ref.current).toBeTruthy();
   expect(typeof ref.current?.measureInWindow).toBe('function');
+});
+
+function Controlled({ reset }: { reset?: boolean }) {
+  const [date, setDate] = useState<Date | undefined>();
+  return (
+    <PortalHost>
+      <DatePicker locale="en-US" testID="trigger" defaultMonth={d(2024, 5, 1)} selected={date} onSelect={setDate} />
+      {reset && <Text onPress={() => setDate(undefined)}>Reset</Text>}
+    </PortalHost>
+  );
+}
+
+test('controlled: clearing the picked day goes back to the placeholder', () => {
+  render(<Controlled />);
+  fireEvent.press(trigger());
+  fireEvent.press(day('Wednesday, May 15, 2024'));
+  settle();
+  fireEvent.press(trigger());
+  fireEvent.press(day('Wednesday, May 15, 2024'));
+  expect(screen.getByText('Pick a date')).toBeOnTheScreen();
+});
+
+test('controlled: an external reset goes back to the placeholder', () => {
+  render(<Controlled reset />);
+  fireEvent.press(trigger());
+  fireEvent.press(day('Wednesday, May 15, 2024'));
+  settle();
+  fireEvent.press(screen.getByText('Reset'));
+  expect(screen.getByText('Pick a date')).toBeOnTheScreen();
+  fireEvent.press(trigger());
+  expect(day('Wednesday, May 15, 2024')).not.toBeSelected();
+});
+
+test('controlled range: a rejected first day is not shown as picked', () => {
+  const onSelect = jest.fn();
+  setup({ mode: 'range', selected: undefined, onSelect, defaultMonth: d(2024, 5, 1) });
+  fireEvent.press(trigger());
+  fireEvent.press(day('Friday, May 3, 2024'));
+  expect(onSelect).toHaveBeenCalledWith({ from: d(2024, 5, 3) });
+  expect(day('Friday, May 3, 2024')).not.toBeSelected();
+  expect(screen.getByText('Pick a date')).toBeOnTheScreen();
 });
