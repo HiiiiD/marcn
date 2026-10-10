@@ -100,9 +100,11 @@ export function CollapsibleContent({ forceMount, render, style, children, ...pro
       accessibilityElementsHidden: !open,
       importantForAccessibility: open ? 'auto' : 'no-hide-descendants',
       ...props,
-      style: [styles.clip, animated, style],
+      style: [styles.clip, animated],
       // Natural height is measured here: RN children do not shrink inside the clipped, height-limited parent.
-      children: <View onLayout={(e) => setMeasured(e.nativeEvent.layout.height)}>{children}</View>,
+      children: <View style={style} onLayout={(e) => setMeasured(e.nativeEvent.layout.height)}>
+          {children}
+        </View>,
     } as ViewProps,
     { open, disabled },
   );

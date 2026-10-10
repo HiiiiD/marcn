@@ -46,12 +46,19 @@ export function closestThumb(values: number[], value: number) {
   return value > values[best] ? last : best;
 }
 
+// Lowest and highest index sharing the value of `index`; a stack of thumbs is resolved once the drag direction is known.
+export function tiedRange(values: number[], index: number): [number, number] {
+  const tied = values.map((v, i) => (v === values[index] ? i : -1)).filter((i) => i >= 0);
+  return [tied[0], tied[tied.length - 1]];
+}
+
 type UpdateArgs = { values: number[]; index: number; next: number; min: number; max: number; step: number; minStepsBetweenThumbs: number };
 
 export function updateValue({ values, index, next, min, max, step, minStepsBetweenThumbs }: UpdateArgs) {
   const gap = minStepsBetweenThumbs * step;
-  const lo = index > 0 ? values[index - 1] + gap : min;
-  const hi = index < values.length - 1 ? values[index + 1] - gap : max;
+  const places = Math.max(decimals(step), decimals(min));
+  const lo = index > 0 ? Number((values[index - 1] + gap).toFixed(places)) : min;
+  const hi = index < values.length - 1 ? Number((values[index + 1] - gap).toFixed(places)) : max;
   const value = clamp(snapToStep(next, min, max, step), lo, hi);
   if (value === values[index]) return values;
   const out = values.slice();

@@ -137,3 +137,29 @@ test('root supports ref and render element form', () => {
   render(<Slider testID="root" ref={ref} />);
   expect(ref.current).not.toBeNull();
 });
+
+describe('stacked thumbs', () => {
+  test('dragging right from a stack at the same value moves the right thumb', () => {
+    const onValueChange = jest.fn();
+    render(<Slider testID="root" defaultValue={[50, 50]} onValueChange={onValueChange} />);
+    layout(216);
+    drag([108, 158]);
+    expect(onValueChange).toHaveBeenLastCalledWith([50, 75]);
+  });
+
+  test('dragging left from a stack moves the left thumb', () => {
+    const onValueChange = jest.fn();
+    render(<Slider testID="root" defaultValue={[50, 50]} onValueChange={onValueChange} />);
+    layout(216);
+    drag([108, 58]);
+    expect(onValueChange).toHaveBeenLastCalledWith([25, 50]);
+  });
+
+  test('a stack at min can be pulled apart to the right', () => {
+    const onValueChange = jest.fn();
+    render(<Slider testID="root" defaultValue={[0, 0]} onValueChange={onValueChange} />);
+    layout(216);
+    drag([8, 108]);
+    expect(onValueChange).toHaveBeenLastCalledWith([0, 50]);
+  });
+});

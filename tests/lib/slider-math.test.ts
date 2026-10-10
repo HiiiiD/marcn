@@ -112,3 +112,7 @@ describe('updateValue', () => {
     expect(updateValue({ ...base, values, index: 0, next: 20.2 })).toBe(values);
   });
 });
+
+test('fractional step with minStepsBetweenThumbs carries no float noise', () => {
+  expect(updateValue({ values: [0.2, 0.7], index: 0, next: 0.9, min: 0, max: 1, step: 0.1, minStepsBetweenThumbs: 3 })).toEqual([0.4, 0.7]);
+});

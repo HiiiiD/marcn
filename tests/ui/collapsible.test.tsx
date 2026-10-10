@@ -114,3 +114,16 @@ test('parts throw outside a Collapsible', () => {
   expect(() => render(<CollapsibleTrigger />)).toThrow();
   jest.restoreAllMocks();
 });
+
+test('caller style lands on the measured inner view, not the height-limited outer one', () => {
+  render(
+    <Collapsible defaultOpen>
+      <CollapsibleContent testID="content" style={{ paddingBottom: 16 }}>
+        <Text>Body</Text>
+      </CollapsibleContent>
+    </Collapsible>,
+  );
+  const outer = screen.getByTestId('content');
+  expect(outer).not.toHaveStyle({ paddingBottom: 16 });
+  expect(screen.getByText('Body').parent?.parent).toHaveStyle({ paddingBottom: 16 });
+});

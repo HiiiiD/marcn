@@ -4,6 +4,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import {
   closestThumb,
+  tiedRange,
   offsetFromRatio,
   ratioFromPosition,
   ratioFromValue,
@@ -59,6 +60,7 @@ type Live = {
   values: number[];
   length: number;
   active: number;
+  tie: [number, number] | null;
   min: number;
   max: number;
   step: number;
@@ -81,6 +83,10 @@ function valueAt(live: Live, e: { x: number; y: number }) {
 }
 
 function move(live: Live, next: number) {
+  if (live.tie && next !== live.values[live.active]) {
+    live.active = next > live.values[live.active] ? live.tie[1] : live.tie[0];
+    live.tie = null;
+  }
   const values = updateValue({
     values: live.values,
     index: live.active,
@@ -126,23 +132,31 @@ export function Slider({
       Gesture.Pan()
         .runOnJS(true)
         .minDistance(0)
+        // Let the parent ScrollView win the cross-axis swipe; taps still set the value in onBegin.
+        .activeOffsetX(vertical ? [-999, 999] : [-5, 5])
+        .activeOffsetY(vertical ? [-5, 5] : [-999, 999])
+        .failOffsetY(vertical ? [-999, 999] : [-8, 8])
+        .failOffsetX(vertical ? [-8, 8] : [-999, 999])
         .enabled(!disabled)
         .withTestId('slider')
         .onBegin((e) => {
           const l = live.current;
           const next = valueAt(l, e);
           l.active = closestThumb(l.values, next);
+          const range = tiedRange(l.values, l.active);
+          l.tie = range[0] === range[1] ? null : range;
           move(l, next);
         })
         .onUpdate((e) => move(live.current, valueAt(live.current, e)))
         .onFinalize(() => live.current.onCommit?.(live.current.values)),
-    [disabled],
+    [disabled, vertical],
   );
 
   const nudge = (index: number, direction: 1 | -1) => {
     if (disabled) return;
     const l = live.current;
     l.active = index;
+    l.tie = null;
     move(l, l.values[index] + direction * l.step);
     l.onCommit?.(l.values);
   };
