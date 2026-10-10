@@ -450,6 +450,62 @@
       "files": [{ "path": "registry/marcn/ui/dropdown-menu.tsx", "type": "registry:ui" }]
     },
     {
+      "name": "calendar-math",
+      "type": "registry:lib",
+      "title": "Calendar math",
+      "description": "Pure date grid, matcher, bounds and selection helpers used by Calendar.",
+      "files": [{ "path": "registry/marcn/lib/calendar-math.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "calendar-styles",
+      "type": "registry:lib",
+      "title": "Calendar styles",
+      "description": "Shared theme styles and cell size for Calendar.",
+      "registryDependencies": ["@marcn/theme"],
+      "files": [{ "path": "registry/marcn/lib/calendar-styles.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "calendar-range-drag",
+      "type": "registry:lib",
+      "title": "Calendar range drag",
+      "description": "PanResponder hook and hit-testing that let a pending date range be finished by dragging.",
+      "registryDependencies": ["@marcn/calendar-math", "@marcn/calendar-styles"],
+      "files": [{ "path": "registry/marcn/lib/calendar-range-drag.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "calendar-month",
+      "type": "registry:lib",
+      "title": "Calendar month",
+      "description": "Single month grid used by Calendar.",
+      "registryDependencies": ["@marcn/theme", "@marcn/calendar-math", "@marcn/calendar-styles", "@marcn/calendar-range-drag", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/lib/calendar-month.tsx", "type": "registry:lib" }]
+    },
+    {
+      "name": "calendar-picker",
+      "type": "registry:lib",
+      "title": "Calendar picker",
+      "description": "Calendar header and inline month/year pickers.",
+      "dependencies": ["lucide-react-native@1.53.0"],
+      "registryDependencies": ["@marcn/theme", "@marcn/calendar-styles", "@marcn/button", "@marcn/icon", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/lib/calendar-picker.tsx", "type": "registry:lib" }]
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "title": "Calendar",
+      "description": "Month grid with single, multiple and range selection (tap or drag), multiple months, month/year picker, bounds, disabled matchers and Intl localization.",
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/use-controllable-state",
+        "@marcn/calendar-math",
+        "@marcn/calendar-styles",
+        "@marcn/calendar-range-drag",
+        "@marcn/calendar-month",
+        "@marcn/calendar-picker"
+      ],
+      "files": [{ "path": "registry/marcn/ui/calendar.tsx", "type": "registry:ui" }]
+    },
+    {
       "name": "select",
       "type": "registry:ui",
       "title": "Select",

@@ -44,7 +44,7 @@ Components install with a shared `theme.ts` in your `lib` alias. Edit its tokens
 
 ## Components
 
-`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `select`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset`, `use-anchored-position`, `menu-item` and `menu-surface` lib items.
+`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `select`, `calendar`, plus the `theme`, `render`, `use-controllable-state`, `slider-math`, `calendar-math`, `calendar-styles`, `calendar-range-drag`, `calendar-month`, `calendar-picker`, `portal`, `overlay`, `overlay-root`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset`, `use-anchored-position`, `menu-item` and `menu-surface` lib items.
 
 Components are designed to be edited in place: once added, the code is yours.
 
@@ -63,6 +63,16 @@ Merging: the element's own props win; `style` becomes `[marcn, element]`; `onX` 
 `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group` and `slider` follow the shadcn/ui prop names (`value`/`defaultValue`/`onValueChange`, `type="single" | "multiple"`, `value: number[]` for Slider). Differences on native: no keyboard or focus navigation, no RTL, `Tabs` `activationMode` is accepted but both modes select on press, and Collapsible animates height with reanimated.
 
 `slider` needs `react-native-gesture-handler`: wrap your app root in `GestureHandlerRootView` (`style={{ flex: 1 }}`). A `render` element on Slider must be a native view that accepts a ref.
+
+## Calendar
+
+`calendar` takes `mode="single" | "multiple" | "range"` with `selected`/`defaultSelected`/`onSelect` (`Date`, `Date[]`, `{ from, to }`), controllable `month`/`onMonthChange`, `startMonth`/`endMonth` bounds, `disabled` matchers (`Date`, `{ before }`, `{ after }`, `{ from, to }`, `{ dayOfWeek }`, a function, or an array of them), `weekStartsOn`, `showOutsideDays`, `fixedWeeks`, `numberOfMonths` and `captionLayout="label" | "dropdown"`.
+
+Differences from shadcn/ui on native:
+- `captionLayout="dropdown"` makes the caption tappable and swaps the grid for an inline month picker, with a year picker one tap further. It does not use native selects.
+- `numberOfMonths > 1` stacks the months vertically, steps one month per arrow, and hides outside days.
+- In range mode, after the first tap you can also press and drag across the grid (any direction, across months), then release on the end day. While a range start is pending the calendar claims every touch on its grid, so it will not scroll a parent `ScrollView` and taps are resolved by hit-testing; the arrows and the rest of the screen are unaffected, and the claim ends once the range is complete.
+- Month and weekday names come from `Intl` via `locale` (Hermes ships Intl in current React Native). `weekStartsOn` is not derived from the locale.
 
 ## Overlays
 
