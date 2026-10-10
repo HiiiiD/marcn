@@ -155,6 +155,20 @@
       "title": "useControllableState",
       "description": "Hook behind value/defaultValue/onValueChange props: works controlled or uncontrolled.",
       "files": [{ "path": "registry/marcn/lib/use-controllable-state.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "title": "Collapsible",
+      "description": "Expandable region with an animated height, trigger and content parts.",
+      "dependencies": [
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [
+        "@marcn/render",
+        "@marcn/use-controllable-state"
+      ],
+      "files": [{ "path": "registry/marcn/ui/collapsible.tsx", "type": "registry:ui" }]
     }
   ]
 }
