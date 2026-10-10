@@ -187,6 +187,19 @@
         "@marcn/text"
       ],
       "files": [{ "path": "registry/marcn/ui/accordion.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "Tabbed sections with list, trigger and content parts.",
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/use-controllable-state",
+        "@marcn/text"
+      ],
+      "files": [{ "path": "registry/marcn/ui/tabs.tsx", "type": "registry:ui" }]
     }
   ]
 }
