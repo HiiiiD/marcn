@@ -1,5 +1,5 @@
 import { createRef, useState } from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { PortalHost } from '@/registry/marcn/lib/portal';
 import {
@@ -7,6 +7,7 @@ import {
   type DialogContentProps, type DialogProps,
 } from '@/registry/marcn/ui/dialog';
 import { mockBackHandler } from '../back-handler';
+import { mockInsets } from '../insets';
 
 function setup(props: DialogProps = {}, content: DialogContentProps = {}) {
   return render(
@@ -161,4 +162,14 @@ test('plain string content and trigger are wrapped in Text', () => {
   );
   expect(screen.getByText('Hello')).toBeOnTheScreen();
   expect(screen.getByText('Trigger', { includeHiddenElements: true })).toBeOnTheScreen();
+});
+
+test('keeps clear of the status and gesture bars', () => {
+  mockInsets({ top: 50, bottom: 34 });
+  setup({ defaultOpen: true }, { testID: 'dialog' });
+  let node = screen.getByTestId('dialog').parent;
+  while (node && StyleSheet.flatten(node.props.style)?.paddingTop === undefined) node = node.parent;
+  const frame = StyleSheet.flatten(node!.props.style);
+  expect(frame.paddingTop).toBe(16 + 50);
+  expect(frame.paddingBottom).toBe(16 + 34);
 });

@@ -6,6 +6,7 @@ import { PortalHost } from '@/registry/marcn/lib/portal';
 import { Dialog, DialogContent, DialogTrigger } from '@/registry/marcn/ui/dialog';
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, type SheetContentProps } from '@/registry/marcn/ui/sheet';
 import { mockBackHandler } from '../back-handler';
+import { mockInsets } from '../insets';
 
 function setup(props: { onOpenChange?: (o: boolean) => void; defaultOpen?: boolean } = {}, content: SheetContentProps = {}) {
   return render(
@@ -156,4 +157,31 @@ test('plain string content is wrapped in Text', () => {
     </PortalHost>,
   );
   expect(screen.getByText('Hello')).toBeOnTheScreen();
+});
+
+test('a bottom sheet pads for the gesture bar and stays under the status bar', () => {
+  mockInsets({ top: 40, bottom: 34 });
+  setup();
+  expect(surface().paddingBottom).toBe(34);
+  expect(surface().maxHeight).toBeCloseTo((1334 - 40) * 0.9);
+});
+
+test('a bottom sheet lifted by the keyboard needs no gesture-bar padding', () => {
+  mockInsets({ bottom: 34 });
+  jest.spyOn(Keyboard, 'isVisible').mockReturnValue(true);
+  jest.spyOn(Keyboard, 'metrics').mockReturnValue({ screenX: 0, screenY: 1034, width: 750, height: 300 });
+  setup();
+  expect(surface().paddingBottom).toBe(0);
+});
+
+test('a top sheet pads for the status bar', () => {
+  mockInsets({ top: 40, bottom: 34 });
+  setup({}, { side: 'top' });
+  expect(surface().paddingTop).toBe(40);
+});
+
+test('a right sheet pads top, bottom and its edge', () => {
+  mockInsets({ top: 40, bottom: 34, right: 20, left: 10 });
+  setup({}, { side: 'right' });
+  expect(surface()).toMatchObject({ paddingTop: 40, paddingBottom: 34, paddingRight: 20 });
 });

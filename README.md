@@ -66,7 +66,7 @@ Merging: the element's own props win; `style` becomes `[marcn, element]`; `onX` 
 
 ## Overlays
 
-`dialog`, `popover` and `sheet` render through a JS portal so they can stack (for example a Dialog opened from a Sheet). Mount `PortalHost` once at your app root; it also provides the `GestureHandlerRootView` that `slider` and `sheet` need:
+`dialog`, `popover` and `sheet` render through a JS portal so they can stack (for example a Dialog opened from a Sheet). Mount `PortalHost` once at your app root; it also provides the `GestureHandlerRootView` that `slider` and `sheet` need and a `SafeAreaProvider` (`react-native-safe-area-context`) so overlays keep clear of the status bar, gesture bar and, on Android, the navigation bar under the keyboard:
 
     import { PortalHost } from '@/lib/portal';
 

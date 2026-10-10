@@ -277,7 +277,7 @@
       "type": "registry:lib",
       "title": "useKeyboardInset",
       "description": "Keyboard height as React state and as an animated shared value.",
-      "dependencies": ["react-native-reanimated"],
+      "dependencies": ["react-native-reanimated", "react-native-safe-area-context"],
       "files": [{ "path": "registry/marcn/lib/use-keyboard-inset.ts", "type": "registry:lib" }]
     },
     {
@@ -285,7 +285,7 @@
       "type": "registry:lib",
       "title": "Portal",
       "description": "PortalHost (mount once at the app root) and Portal: stacked layers with accessibility containment.",
-      "dependencies": ["react-native-gesture-handler"],
+      "dependencies": ["react-native-gesture-handler", "react-native-safe-area-context"],
       "files": [{ "path": "registry/marcn/lib/portal.tsx", "type": "registry:lib" }]
     },
     {
@@ -310,7 +310,7 @@
       "type": "registry:ui",
       "title": "Dialog",
       "description": "Centered modal dialog on the portal layer: stacks, dismisses on back/scrim, avoids the keyboard.",
-      "dependencies": ["lucide-react-native", "react-native-reanimated"],
+      "dependencies": ["lucide-react-native", "react-native-reanimated", "react-native-safe-area-context"],
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/render",
@@ -328,7 +328,7 @@
       "type": "registry:ui",
       "title": "Popover",
       "description": "Anchored popover on the portal layer with flip/clamp positioning and keyboard awareness.",
-      "dependencies": ["react-native-reanimated"],
+      "dependencies": ["react-native-reanimated", "react-native-safe-area-context"],
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/render",
@@ -345,7 +345,7 @@
       "type": "registry:ui",
       "title": "Sheet",
       "description": "Edge-anchored sheet on the portal layer with drag-to-dismiss handle, stacking and keyboard lift.",
-      "dependencies": ["react-native-gesture-handler", "react-native-reanimated"],
+      "dependencies": ["react-native-gesture-handler", "react-native-reanimated", "react-native-safe-area-context"],
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/render",

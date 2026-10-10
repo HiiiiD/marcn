@@ -2,6 +2,7 @@ import { useEffect, useMemo, type Ref } from 'react';
 import { StyleSheet, useWindowDimensions, View, type LayoutChangeEvent, type ViewProps } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
 import { asText, OverlayClose, OverlayRoot, OverlayTrigger, useOverlay } from '@/registry/marcn/lib/overlay-root';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
@@ -76,6 +77,7 @@ function SheetSurface({
   const { width, height } = useWindowDimensions();
   const progress = useProgress(open);
   const { inset } = useKeyboardInset();
+  const insets = useSafeAreaInsets();
 
   const vertical = side === 'top' || side === 'bottom';
   const dir = side === 'top' || side === 'left' ? -1 : 1;
@@ -108,9 +110,21 @@ function SheetSurface({
     const offset = dir * ((1 - progress.value) * extent.value + drag.value);
     return {
       transform: vertical ? [{ translateY: offset }] : [{ translateX: offset }],
-      ...(side === 'bottom' ? { bottom: inset.value, maxHeight: (height - inset.value) * 0.9 } : null),
+      ...(side === 'bottom'
+        ? {
+            bottom: inset.value,
+            // The keyboard already covers the gesture bar once it is up.
+            paddingBottom: Math.max(0, insets.bottom - inset.value),
+            maxHeight: (height - inset.value - insets.top) * 0.9,
+          }
+        : null),
     };
   });
+  const edge =
+    side === 'top' ? { paddingTop: insets.top }
+    : side === 'left' ? { paddingTop: insets.top, paddingBottom: insets.bottom, paddingLeft: insets.left }
+    : side === 'right' ? { paddingTop: insets.top, paddingBottom: insets.bottom, paddingRight: insets.right }
+    : null;
 
   const size = snapPoints?.[0];
   const sized = size === undefined ? null : size <= 1 ? size * (vertical ? height : width) : size;
@@ -135,7 +149,7 @@ function SheetSurface({
       extent.value = vertical ? e.nativeEvent.layout.height : e.nativeEvent.layout.width;
       onLayout?.(e);
     },
-    style: [s.surface, s[side], sized === null ? null : vertical ? { height: sized } : { width: sized }, animated, style],
+    style: [s.surface, s[side], sized === null ? null : vertical ? { height: sized } : { width: sized }, edge, animated, style],
     children: handleFirst ? [handle, body] : [body, handle],
   } as ViewProps);
 }

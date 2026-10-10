@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type Ref } from 'react';
 import { StyleSheet, useWindowDimensions, type LayoutChangeEvent, type View, type ViewProps } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
 import { asText, OverlayRoot, OverlayTrigger, useOverlay, type OverlayRootProps } from '@/registry/marcn/lib/overlay-root';
 import { computePosition, type Align, type Rect, type Side, type Size } from '@/registry/marcn/lib/popover-position';
@@ -77,6 +78,7 @@ function PopoverSurface({
   const progress = useProgress(open);
   const window = useWindowDimensions();
   const { height: keyboard } = useKeyboardInset();
+  const insets = useSafeAreaInsets();
   const [anchor, setAnchor] = useState<Rect | null>(null);
   const [size, setSize] = useState<Size | null>(null);
 
@@ -102,12 +104,16 @@ function PopoverSurface({
     onLayout?.(e);
   };
 
-  const position =
+  // Place inside the area the system bars and keyboard leave free, then shift back to window coordinates.
+  const bottom = Math.max(keyboard, insets.bottom);
+  const free = { width: window.width - insets.left - insets.right, height: window.height - insets.top - bottom };
+  const computed =
     anchor && size
-      ? computePosition(anchor, size, { width: window.width, height: window.height - keyboard }, {
+      ? computePosition({ ...anchor, x: anchor.x - insets.left, y: anchor.y - insets.top }, size, free, {
           side, align, sideOffset, alignOffset, avoidCollisions, collisionPadding,
         })
       : null;
+  const position = computed && { ...computed, x: computed.x + insets.left, y: computed.y + insets.top };
 
   const placed = useSharedValue(position ? 1 : 0);
   useEffect(() => {

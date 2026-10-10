@@ -2,6 +2,7 @@ import { createRef } from 'react';
 import { Keyboard, StyleSheet, Text, View } from 'react-native';
 import { act, fireEvent, isHiddenFromAccessibility, render, screen } from '@testing-library/react-native';
 import { PortalHost } from '@/registry/marcn/lib/portal';
+import { mockInsets } from '../insets';
 import { Popover, PopoverContent, PopoverTrigger, type PopoverContentProps } from '@/registry/marcn/ui/popover';
 
 type Measure = (cb: (x: number, y: number, w: number, h: number) => void) => void;
@@ -136,4 +137,20 @@ test('re-measures the anchor once the keyboard lift has settled', () => {
   act(() => handlers.keyboardWillChangeFrame({ endCoordinates: { screenY: 500, height: 300 } } as never));
   act(() => { jest.advanceTimersByTime(300); });
   expect(measure.mock.calls.length).toBeGreaterThan(before + 1);
+});
+
+test('flips below when the top side would run under the status bar', () => {
+  mockInsets({ top: 60 });
+  setup({ side: 'top' }, (cb) => cb(100, 100, 100, 40));
+  fireEvent.press(screen.getByText('Open'));
+  layout();
+  expect(place()).toMatchObject({ top: 144 });
+});
+
+test('flips above when the bottom side would run under the gesture bar', () => {
+  mockInsets({ bottom: 34 });
+  setup({}, (cb) => cb(100, 1230, 100, 40));
+  fireEvent.press(screen.getByText('Open'));
+  layout();
+  expect(place()).toMatchObject({ top: 1176 });
 });

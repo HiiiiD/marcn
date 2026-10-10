@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useId, useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 import { StyleSheet, View, type ViewProps } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 type Entry = { id: string; node: ReactNode; modal: boolean };
 type PortalContextValue = {
@@ -43,16 +44,18 @@ export function PortalHost({ children, ...props }: ViewProps) {
   return (
     <PortalContext.Provider value={value}>
       <GestureHandlerRootView style={styles.fill}>
-        <View style={styles.fill} {...props} {...(topModal >= 0 ? HIDDEN : undefined)}>
-          {children}
-        </View>
-        <View style={styles.layer}>
-          {entries.map((e, i) => (
-            <View key={e.id} style={styles.layer} accessibilityViewIsModal={topModal >= 0 && i === entries.length - 1} {...(i < topModal ? HIDDEN : undefined)}>
-              {e.node}
-            </View>
-          ))}
-        </View>
+        <SafeAreaProvider>
+          <View style={styles.fill} {...props} {...(topModal >= 0 ? HIDDEN : undefined)}>
+            {children}
+          </View>
+          <View style={styles.layer}>
+            {entries.map((e, i) => (
+              <View key={e.id} style={styles.layer} accessibilityViewIsModal={topModal >= 0 && i === entries.length - 1} {...(i < topModal ? HIDDEN : undefined)}>
+                {e.node}
+              </View>
+            ))}
+          </View>
+        </SafeAreaProvider>
       </GestureHandlerRootView>
     </PortalContext.Provider>
   );

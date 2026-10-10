@@ -1,6 +1,7 @@
 import type { Ref } from 'react';
 import { ScrollView, StyleSheet, View, type ViewProps } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
 import {
@@ -84,11 +85,13 @@ function DialogSurface({ showCloseButton = true, style, render, children, ...pro
   const { open, titleId } = useOverlay();
   const progress = useProgress(open);
   const { inset } = useKeyboardInset();
-  const lift = useAnimatedStyle(() => ({ paddingBottom: inset.value }));
+  const insets = useSafeAreaInsets();
+  const gap = s.center.padding as number;
+  const lift = useAnimatedStyle(() => ({ paddingBottom: gap + Math.max(inset.value, insets.bottom) }));
   const enter = useAnimatedStyle(() => ({ opacity: progress.value, transform: [{ scale: 0.95 + 0.05 * progress.value }] }));
 
   return (
-    <Animated.View style={[s.center, lift]}>
+    <Animated.View style={[s.center, { paddingTop: gap + insets.top }, lift]}>
       {renderElement(Animated.View, render, {
         accessibilityLabelledBy: titleId,
         ...props,
