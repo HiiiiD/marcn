@@ -309,6 +309,26 @@
       "files": [{ "path": "registry/marcn/lib/menu-surface.tsx", "type": "registry:lib" }]
     },
     {
+      "name": "menu-parts",
+      "type": "registry:lib",
+      "title": "Menu parts",
+      "description": "Shared select, checkbox and radio menu items for Dropdown Menu and Context Menu.",
+      "dependencies": [
+        "lucide-react-native@1.53.0"
+      ],
+      "registryDependencies": [
+        "@marcn/menu-item",
+        "@marcn/use-controllable-state",
+        "@marcn/icon"
+      ],
+      "files": [
+        {
+          "path": "registry/marcn/lib/menu-parts.tsx",
+          "type": "registry:lib"
+        }
+      ]
+    },
+    {
       "name": "back-stack",
       "type": "registry:lib",
       "title": "Back stack",
@@ -463,16 +483,23 @@
       "type": "registry:ui",
       "title": "Dropdown Menu",
       "description": "Anchored action menu with items, checkbox and radio items, labels, separators and shortcuts.",
-      "dependencies": ["lucide-react-native@1.53.0"],
+      "dependencies": [
+        "lucide-react-native@1.53.0"
+      ],
       "registryDependencies": [
         "@marcn/overlay",
         "@marcn/overlay-root",
         "@marcn/menu-item",
         "@marcn/menu-surface",
-        "@marcn/use-controllable-state",
+        "@marcn/menu-parts",
         "@marcn/icon"
       ],
-      "files": [{ "path": "registry/marcn/ui/dropdown-menu.tsx", "type": "registry:ui" }]
+      "files": [
+        {
+          "path": "registry/marcn/ui/dropdown-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
     },
     {
       "name": "calendar-math",
