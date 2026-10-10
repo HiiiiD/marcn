@@ -185,6 +185,13 @@ test('Enter with no match does nothing', () => {
   expect(screen.getByText('No fruit found.')).toBeOnTheScreen();
 });
 
+test('Enter keeps the search focused so a missed query can be corrected', () => {
+  setup();
+  open();
+  expect(search().props.submitBehavior).toBe('submit');
+  expect(search().props.returnKeyType).toBe('search');
+});
+
 test('a disabled option never selects', () => {
   const onValueChange = jest.fn();
   setup({ onValueChange });

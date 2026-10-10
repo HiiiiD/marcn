@@ -165,8 +165,9 @@ export function ComboboxInput({ style, placeholder, onChangeText, onSubmitEditin
         autoFocus
         autoCorrect={false}
         autoCapitalize="none"
-        // Multiple keeps the keyboard up so several matches can be picked in a row.
-        submitBehavior={combobox.multiple ? 'submit' : 'blurAndSubmit'}
+        // Stays focused on a miss (closing after a pick dismisses the keyboard). Gboard hides itself on "done".
+        submitBehavior="submit"
+        returnKeyType="search"
         accessibilityLabel={placeholder}
         placeholder={placeholder}
         value={combobox.query}
