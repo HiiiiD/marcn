@@ -1,9 +1,9 @@
 import { createContext, useContext, type Ref } from 'react';
-import { StyleSheet, Text as RNText, type TextProps as RNTextProps, type TextStyle } from 'react-native';
+import { Platform, StyleSheet, Text as RNText, type TextProps as RNTextProps, type TextStyle } from 'react-native';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
 
-export type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'lead' | 'large' | 'small' | 'muted';
+export type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'lead' | 'large' | 'small' | 'muted' | 'blockquote' | 'code';
 export type TextProps = RNTextProps & { variant?: TextVariant; render?: RenderProp<RNTextProps>; ref?: Ref<RNText> };
 
 export const TextStyleContext = createContext<TextStyle | undefined>(undefined);
@@ -20,6 +20,15 @@ const createStyles = (t: Theme) =>
     large: { fontSize: t.fontSize.lg, fontWeight: t.fontWeight.semibold },
     small: { fontSize: t.fontSize.sm, fontWeight: t.fontWeight.medium, lineHeight: 14 },
     muted: { fontSize: t.fontSize.sm, color: t.colors.mutedForeground },
+    blockquote: { fontStyle: 'italic', lineHeight: 28, borderLeftWidth: 2, borderLeftColor: t.colors.border, paddingLeft: t.spacing[6] },
+    code: {
+      fontFamily: Platform.select({ ios: 'Menlo', default: 'monospace' }),
+      fontSize: t.fontSize.sm,
+      fontWeight: t.fontWeight.semibold,
+      backgroundColor: t.colors.muted,
+      borderRadius: t.radius.xs,
+      paddingHorizontal: 5,
+    },
   });
 
 export function Text({ variant, style, render, ...props }: TextProps) {

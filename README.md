@@ -44,7 +44,7 @@ Components install with a shared `theme.ts` in your `lib` alias. Edit its tokens
 
 ## Components
 
-`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `spinner`, `empty`, `item`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `context-menu`, `select`, `combobox`, `calendar`, `date-picker`, `input-otp`, `field`, `sonner`, `breadcrumb`, `pagination`, `button-group`, `input-group`, `scroll-area`, `carousel`, plus the `theme`, `render`, `use-controllable-state`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset` and `use-anchored-position` lib items. `portal`, `overlay` and `menu` (shared infrastructure with JSX) are `ui` items.
+`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `spinner`, `empty`, `item`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `alert-dialog`, `tooltip`, `dropdown-menu`, `context-menu`, `select`, `combobox`, `calendar`, `date-picker`, `input-otp`, `field`, `sonner`, `breadcrumb`, `pagination`, `button-group`, `input-group`, `scroll-area`, `carousel`, `aspect-ratio`, plus the `theme`, `render`, `scale`, `use-controllable-state`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset` and `use-anchored-position` lib items. `portal`, `overlay` and `menu` (shared infrastructure with JSX) are `ui` items.
 
 Components are designed to be edited in place: once added, the code is yours.
 
@@ -116,6 +116,12 @@ Differences on native: `Tooltip` opens on long press (there is no hover) and clo
 ## Field
 
 `field` follows shadcn/ui (`Field`, `FieldGroup`, `FieldSet`, `FieldLegend`, `FieldLabel`, `FieldDescription`, `FieldError`) and only lays things out: `orientation="vertical" | "horizontal"` (use horizontal for checkbox and switch rows) and `invalid`/`disabled`, which tint and dim `FieldLabel`. Controls are not wired automatically; pass `aria-invalid` and `disabled` to the control yourself, or read them with `useField()`. `FieldError` takes `message` or children and renders nothing when empty. `Field` accepts `render`.
+
+## Typography, Aspect Ratio, Scale
+
+`Text` covers shadcn's typography: `h1`-`h4`, `p`, `lead`, `large`, `small`, `muted`, `blockquote` (italic, left border) and `code` (inline, monospace on a muted background). Lists have no component; render bullets in `Text`. `AspectRatio` takes `ratio` (default 1), is full width and accepts `render`.
+
+`scale` is optional and not used by any component. It exports `scale`, `moderateScale` and `font`, which size values relative to a design frame width (`GUIDELINE_WIDTH`, 390 by default; `MAX_SCALE_WIDTH` keeps tablets phone-sized). To opt in, wrap your theme tokens, for example `fontSize: { base: font(16) }`. It is separate from the OS font scale (`allowFontScaling`). The `font` +-0.5 platform nudge is tuned per font family.
 
 ## Spinner, Empty, Item
 

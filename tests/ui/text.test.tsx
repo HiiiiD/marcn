@@ -67,3 +67,13 @@ test('ref reaches the host, with and without render', () => {
   expect(plain.current).not.toBeNull();
   expect(rendered.current).not.toBeNull();
 });
+
+test('blockquote has a left border and italic text', () => {
+  render(<Text variant="blockquote">q</Text>);
+  expect(screen.getByText('q')).toHaveStyle({ fontStyle: 'italic', borderLeftWidth: 2, borderLeftColor: lightColors.border });
+});
+
+test('code uses a monospace font on a muted background', () => {
+  render(<Text variant="code">c</Text>);
+  expect(screen.getByText('c')).toHaveStyle({ fontFamily: 'Menlo', backgroundColor: lightColors.muted });
+});
