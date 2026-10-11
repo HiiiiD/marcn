@@ -5,6 +5,13 @@ import { I18nManager, ScrollView, Text as RNText } from 'react-native';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/registry/marcn/ui/carousel';
 import { useCarousel } from '@/registry/marcn/lib/carousel-context';
 
+beforeEach(() => {
+  jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation((cb) => {
+    cb(0);
+    return 0;
+  });
+});
+
 const item = (x: number, y: number, width: number, height: number) => ({ nativeEvent: { layout: { x, y, width, height } } });
 
 function setup({
@@ -368,4 +375,88 @@ test('string and number children are wrapped in Text', () => {
   );
   expect(screen.getByText('plain')).toBeOnTheScreen();
   expect(screen.getByText('0')).toBeOnTheScreen();
+});
+
+test('scrolling in the middle does not re-render the carousel on every event', () => {
+  let renders = 0;
+  function Probe() {
+    useCarousel();
+    renders++;
+    return null;
+  }
+  const { content } = (() => {
+    render(
+      <Carousel gap={16}>
+        <Probe />
+        <CarouselContent testID="c">
+          {[0, 1, 2, 3].map((i) => (
+            <CarouselItem key={i} testID={`i${i}`} basis={100}>x</CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>,
+    );
+    const c = screen.getByTestId('c');
+    fireEvent(c, 'layout', item(0, 0, 100, 100));
+    [0, 1, 2, 3].forEach((i) => fireEvent(screen.getByTestId(`i${i}`), 'layout', item(i * 116, 0, 100, 100)));
+    fireEvent(c, 'contentSizeChange', 448, 100);
+    return { content: c };
+  })();
+  fireEvent.scroll(content, { nativeEvent: { contentOffset: { x: 20, y: 0 } } });
+  const afterEdge = renders;
+  for (let x = 21; x <= 60; x += 4) fireEvent.scroll(content, { nativeEvent: { contentOffset: { x, y: 0 } } });
+  expect(renders).toBe(afterEdge);
+});
+
+describe('RTL (Android mirrors item x and reports physical scrollX)', () => {
+  const mirrored = (i: number) => 448 - i * 116 - 100;
+
+  function rtlSetup(props: Record<string, unknown> = {}) {
+    const scrollRef = createRef<ScrollView>();
+    render(
+      <Carousel gap={16} {...props}>
+        <CarouselContent testID="c" ref={scrollRef}>
+          {[0, 1, 2, 3].map((i) => (
+            <CarouselItem key={i} testID={`i${i}`} basis={100}>x</CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>,
+    );
+    const content = screen.getByTestId('c');
+    fireEvent(content, 'layout', item(0, 0, 200, 100));
+    [0, 1, 2, 3].forEach((i) => fireEvent(screen.getByTestId(`i${i}`), 'layout', item(mirrored(i), 0, 100, 100)));
+    fireEvent(content, 'contentSizeChange', 448, 100);
+    return { content, spy: jest.spyOn(scrollRef.current!, 'scrollTo') };
+  }
+
+  test('snap offsets are the physical positions of the mirrored slides', () => {
+    const { content } = rtlSetup();
+    expect(content.props.snapToOffsets).toEqual([0, 16, 132, 248]);
+  });
+
+  test('item 0 sits at the largest physical offset: previous disabled, next moves toward smaller x', () => {
+    const onIndexChange = jest.fn();
+    const { content, spy } = rtlSetup({ onIndexChange });
+    fireEvent.scroll(content, { nativeEvent: { contentOffset: { x: 248, y: 0 } } });
+    expect(screen.getByLabelText('Previous slide')).toBeDisabled();
+    expect(screen.getByLabelText('Next slide')).not.toBeDisabled();
+    fireEvent.press(screen.getByLabelText('Next slide'));
+    expect(spy).toHaveBeenLastCalledWith({ x: 132, animated: true });
+    expect(onIndexChange).toHaveBeenLastCalledWith(1);
+  });
+
+  test('the last slide is at physical 0: next disabled, index reports the last slide', () => {
+    const onIndexChange = jest.fn();
+    const { content } = rtlSetup({ onIndexChange });
+    scrollEnd(content, 0);
+    expect(screen.getByLabelText('Next slide')).toBeDisabled();
+    expect(screen.getByLabelText('Previous slide')).not.toBeDisabled();
+    expect(onIndexChange).toHaveBeenLastCalledWith(3);
+  });
+
+  test('defaultIndex scrolls to the mirrored position', () => {
+    const { spy } = rtlSetup({ defaultIndex: 2 });
+    expect(spy).toHaveBeenLastCalledWith({ x: 16, animated: false });
+  });
 });
