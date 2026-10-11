@@ -3,6 +3,10 @@
     <TabsTrigger value="account">Account</TabsTrigger>
     <TabsTrigger value="password">Password</TabsTrigger>
   </TabsList>
-  <TabsContent value="account">Make changes to your account here.</TabsContent>
-  <TabsContent value="password">Change your password here.</TabsContent>
+  <TabsContent value="account">
+    <Text>Make changes to your account here.</Text>
+  </TabsContent>
+  <TabsContent value="password">
+    <Text>Change your password here.</Text>
+  </TabsContent>
 </Tabs>

@@ -5,6 +5,7 @@ import type { CarouselAlign } from '@/registry/marcn/ui/carousel/math';
 export type CarouselProps = ViewProps & {
   orientation?: 'horizontal' | 'vertical';
   snap?: boolean;
+  /** Where the active slide rests in the viewport. Only applies when `snap` is on. */
   align?: CarouselAlign;
   gap?: number;
   index?: number;

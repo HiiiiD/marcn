@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { importBlock, parseUsage } from './usage.mjs';
+import { buildImports, importBlock, parseUsage } from './usage.mjs';
 
 test('importBlock stays on one line when short', () => {
   assert.equal(importBlock('button', ['Button']), "import { Button } from '@/components/ui/button';");
@@ -59,4 +59,37 @@ test('single component has no composition', () => {
 test('throws with the label when there is no component', () => {
   assert.throws(() => parseUsage(`<View />`, 'broken'), /broken: usage snippet has no component element/);
   assert.throws(() => parseUsage(`const x = 1;`, 'broken'), /broken/);
+});
+
+test('syntax errors fail with the label', () => {
+  assert.throws(() => parseUsage('<Button>hi</Button', 'broken'), /broken/);
+});
+
+test('more than one root fails', () => {
+  assert.throws(() => parseUsage('<><Toaster /><Button /></>', 'multi'), /multi: usage snippet must have a single root/);
+});
+
+test('known names limit what counts as a component', () => {
+  const known = new Set(['AspectRatio']);
+  const { composition } = parseUsage('<AspectRatio><Image source={s} /></AspectRatio>', 'ar', { known });
+  assert.equal(composition, null);
+});
+
+test('buildImports groups used names by owning item, own item first', () => {
+  const owners = new Map([
+    ['Dialog', ['dialog']],
+    ['DialogContent', ['dialog']],
+    ['Button', ['button']],
+    ['Text', ['text']],
+    ['toast', ['sonner']],
+  ]);
+  const code = '<Dialog><DialogContent><Button onPress={() => toast("x")}>Go</Button><Image /></DialogContent></Dialog>';
+  assert.equal(
+    buildImports('dialog', code, owners),
+    [
+      "import { Dialog, DialogContent } from '@/components/ui/dialog';",
+      "import { Button } from '@/components/ui/button';",
+      "import { toast } from '@/components/ui/sonner';",
+    ].join('\n'),
+  );
 });

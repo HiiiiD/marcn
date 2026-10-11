@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import crypto from 'node:crypto';
 import { codeToHtml } from 'shiki';
 import { createExtractor, extractItem } from './lib/props.mjs';
-import { importBlock, parseUsage } from './lib/usage.mjs';
+import { buildImports, parseUsage } from './lib/usage.mjs';
 import { buildSnack, saveSnack } from './lib/snack.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -63,15 +63,24 @@ const extractor = createExtractor({
 });
 const missingUsage = [];
 
-async function usageFor(item, components) {
+const extracted = new Map();
+const owners = new Map();
+for (const item of registry.items.filter((i) => i.type === 'registry:ui')) {
+  const result = extractItem(extractor, uiFiles(item));
+  extracted.set(item.name, result);
+  for (const name of result.exports) owners.set(name, [...(owners.get(name) ?? []), item.name]);
+}
+const known = new Set([...extracted.values()].flatMap((r) => r.components));
+
+async function usageFor(item) {
   const file = path.join(usageDir, `${item.name}.tsx`);
   if (!fs.existsSync(file)) {
     missingUsage.push(item.name);
     return null;
   }
   const jsx = fs.readFileSync(file, 'utf8').trim();
-  const { root: rootName, composition } = parseUsage(jsx, `usage/${item.name}.tsx`);
-  const imp = importBlock(item.name, components);
+  const { root: rootName, composition } = parseUsage(jsx, `usage/${item.name}.tsx`, { known });
+  const imp = buildImports(item.name, jsx, owners);
   return {
     import: { code: imp, html: await highlight(imp, 'tsx') },
     jsx: { code: jsx, html: await highlight(jsx, 'tsx') },
@@ -99,8 +108,8 @@ for (const item of registry.items) {
     html: await highlight(snack.example, 'tsx'),
   };
   const isUi = item.type === 'registry:ui';
-  const { components, api } = isUi ? extractItem(extractor, uiFiles(item)) : { components: [], api: [] };
-  const usage = isUi ? await usageFor(item, components) : null;
+  const { api } = extracted.get(item.name) ?? { api: [] };
+  const usage = isUi ? await usageFor(item) : null;
   fs.writeFileSync(
     path.join(dataDir, `${item.name}.json`),
     JSON.stringify({ files: out, example, usage, api }),
@@ -110,7 +119,6 @@ for (const item of registry.items) {
     name: item.name,
     title: item.title || item.name,
     description: item.description || '',
-    snackId: snack?.snackId ?? null,
     kind: item.type === 'registry:ui' ? 'components' : 'utilities',
     dependencies: item.dependencies || [],
     registryDependencies: item.registryDependencies || [],

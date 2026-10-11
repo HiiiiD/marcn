@@ -6,6 +6,10 @@ import type { RenderProp } from '@/registry/marcn/lib/render';
 export type SheetSide = 'top' | 'bottom' | 'left' | 'right';
 
 export type SurfaceProps = ViewProps & {
+  /**
+   * Screen edge the sheet slides in from.
+   * @default 'bottom'
+   */
   side?: SheetSide;
   showHandle?: boolean;
   /** Visible sizes: fractions of the window (<= 1), pixels, or `'auto'` to fit the content (measured once on open). The handle snaps between them. */

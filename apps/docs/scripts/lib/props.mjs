@@ -20,13 +20,43 @@ export function createExtractor({ root, files }) {
     return tag?.text ? ts.displayPartsToString(tag.text).trim() : null;
   };
 
-  const printType = (type, node) => {
-    const plain = checker.getNonNullableType(type);
+  const mentionsTypeParam = (node) => {
+    let found = false;
+    const visit = (n) => {
+      if (found) return;
+      if (ts.isTypeReferenceNode(n)) {
+        const s = checker.getSymbolAtLocation(n.typeName);
+        if (s && s.flags & ts.SymbolFlags.TypeParameter) found = true;
+      }
+      ts.forEachChild(n, visit);
+    };
+    visit(node);
+    return found;
+  };
+
+  // Union-synthesised props carry one declaration per member; print each variant.
+  const printType = (sym) => {
+    const decls = sym.declarations.filter((d) => !isExternal(d));
+    const decl = decls[0] ?? sym.declarations[0];
+    const plain = checker.getNonNullableType(checker.getTypeOfSymbolAtLocation(sym, decl));
     if (plain.isUnion() && plain.types.every((t) => t.isStringLiteral())) {
       return plain.types.map((t) => `'${t.value}'`).join(' | ');
     }
-    if (node.type) return node.type.getText().replace(/\s+/g, ' ');
-    return checker.typeToString(plain, node, ts.TypeFormatFlags.NoTruncation);
+    const nodes = decls.map((d) => d.type);
+    if (nodes.length && nodes.every((n) => n && !mentionsTypeParam(n))) {
+      const texts = [...new Set(nodes.map((n) => n.getText().replace(/\s+/g, ' ')))];
+      return texts.length === 1 ? texts[0] : texts.map((s, i) => (ts.isFunctionTypeNode(nodes[i]) ? `(${s})` : s)).join(' | ');
+    }
+    return checker.typeToString(plain, decl, ts.TypeFormatFlags.NoTruncation);
+  };
+
+  const internalDoc = (sym) => {
+    for (const d of sym.declarations) {
+      if (isExternal(d)) continue;
+      const doc = ts.getJSDocCommentsAndTags(d).find(ts.isJSDoc);
+      if (doc?.comment) return ts.getTextOfJSDocComment(doc.comment).trim();
+    }
+    return '';
   };
 
   const collectProps = (type) => {
@@ -89,14 +119,12 @@ export function createExtractor({ root, files }) {
   };
 
   const describe = (sym, defaults) => {
-    const decl = sym.declarations.find((d) => !isExternal(d)) ?? sym.declarations[0];
-    const doc = ts.displayPartsToString(sym.getDocumentationComment(checker)).trim();
     return {
       name: sym.name,
-      type: printType(checker.getTypeOfSymbolAtLocation(sym, decl), decl),
+      type: printType(sym),
       required: !(sym.flags & ts.SymbolFlags.Optional),
       default: defaults.get(sym.name) ?? jsDocDefault(sym),
-      description: doc || SHARED_DESCRIPTIONS[sym.name] || '',
+      description: internalDoc(sym) || SHARED_DESCRIPTIONS[sym.name] || '',
     };
   };
 
@@ -123,17 +151,30 @@ export function createExtractor({ root, files }) {
       if (!mod) return [];
       return checker.getExportsOfModule(mod).flatMap((e) => toComponent(e, sf) ?? []);
     },
+    exportNames(file) {
+      const sf = program.getSourceFile(file);
+      const mod = sf && checker.getSymbolAtLocation(sf);
+      if (!mod) return [];
+      return checker
+        .getExportsOfModule(mod)
+        .filter((e) => {
+          const sym = e.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(e) : e;
+          return sym.flags & (ts.SymbolFlags.Function | ts.SymbolFlags.Variable | ts.SymbolFlags.Class);
+        })
+        .map((e) => e.name);
+    },
   };
 }
 
+// Only the entry module (first file) counts: that is what consumers import from.
 export function extractItem(extractor, files) {
+  const [entry] = files;
   const parts = new Map();
-  for (const file of files) {
-    for (const part of extractor.extract(file)) if (!parts.has(part.part)) parts.set(part.part, part);
-  }
+  for (const part of extractor.extract(entry)) if (!parts.has(part.part)) parts.set(part.part, part);
   const all = [...parts.values()];
   return {
     components: all.map((p) => p.part),
+    exports: extractor.exportNames(entry),
     api: all.filter((p) => p.props.length || p.extends.length),
   };
 }

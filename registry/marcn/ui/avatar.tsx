@@ -14,7 +14,10 @@ const createStyles = (t: Theme) =>
     fallbackText: { color: t.colors.foreground, fontSize: t.fontSize.sm },
   });
 
-export function Avatar({ size = 40, style, ...props }: ViewProps & { size?: number }) {
+export function Avatar({ size = 40, style, ...props }: ViewProps & {
+  /** Diameter in pixels. */
+  size?: number;
+}) {
   const s = useStyles(createStyles);
   const [status, setStatus] = useState<Status>('loading');
   return (
