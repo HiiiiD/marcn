@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog';
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -91,6 +92,18 @@ export function Overlays() {
             </SheetHeader>
           </SheetContent>
         </Sheet>
+        <Drawer>
+          <DrawerTrigger render={outline}>Drawer</DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Drawer</DrawerTitle>
+              <DrawerDescription>Drag the handle down to dismiss.</DrawerDescription>
+            </DrawerHeader>
+            <DrawerFooter>
+              <DrawerClose render={outline}>Close drawer</DrawerClose>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
       </View>
     </Section>
   );

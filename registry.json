@@ -490,6 +490,14 @@
       ]
     },
     {
+      "name": "drawer",
+      "type": "registry:ui",
+      "title": "Drawer",
+      "description": "shadcn's Drawer names over the sheet: bottom edge, drag handle, snap points, drag to dismiss.",
+      "registryDependencies": ["@marcn/sheet"],
+      "files": [{ "path": "registry/marcn/ui/drawer.tsx", "type": "registry:ui" }]
+    },
+    {
       "name": "alert-dialog",
       "type": "registry:ui",
       "title": "Alert Dialog",
