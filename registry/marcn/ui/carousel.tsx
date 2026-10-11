@@ -142,6 +142,7 @@ export function CarouselContent({ style, contentContainerStyle, children, onLayo
       showsHorizontalScrollIndicator={false}
       showsVerticalScrollIndicator={false}
       scrollEventThrottle={16}
+      nestedScrollEnabled
       {...snapProps}
       style={style}
       contentContainerStyle={[{ flexDirection: horizontal ? 'row' : 'column', gap: c.gap }, contentContainerStyle]}

@@ -279,3 +279,8 @@ test('buttons overlay the edges inside the carousel', () => {
   expect(screen.getByLabelText('Previous slide')).toHaveStyle({ position: 'absolute', start: 8 });
   expect(screen.getByLabelText('Next slide')).toHaveStyle({ position: 'absolute', end: 8 });
 });
+
+test('nested scrolling is enabled so vertical carousels scroll inside a vertical page on Android', () => {
+  const { content } = setup({ props: { orientation: 'vertical' } });
+  expect(content.props.nestedScrollEnabled).toBe(true);
+});
