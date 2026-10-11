@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { StyleSheet, type ViewStyle } from 'react-native';
-import type { ReactTestInstance } from 'react-test-renderer';
+import type { ReactTestInstance, ReactTestRendererJSON } from 'react-test-renderer';
 import { PortalHost } from '@/registry/marcn/ui/portal';
 import { Checkbox } from '@/registry/marcn/ui/checkbox';
 import { Text } from '@/registry/marcn/ui/text';
@@ -127,4 +127,36 @@ test('selection survives paging and counts every page', () => {
   fireEvent.press(screen.getByLabelText('Go to next page'));
   expect(screen.getByText('1 of 12 row(s) selected.')).toBeOnTheScreen();
   expect(screen.getByLabelText('Select all')).not.toBeChecked();
+});
+
+const rawStrings = (node: ReactTestRendererJSON | ReactTestRendererJSON[] | null): string[] => {
+  const nodes = Array.isArray(node) ? node : node ? [node] : [];
+  return nodes.flatMap((n) =>
+    (n.children ?? []).flatMap((c) => (typeof c === 'string' ? (n.type === 'Text' ? [] : [`${n.type}:${c}`]) : rawStrings(c))),
+  );
+};
+
+test('function headers and cells that return strings are wrapped in Text', () => {
+  const bare = columnHelper.columns([
+    columnHelper.accessor('email', {}),
+    columnHelper.accessor('status', { header: () => 'State', cell: (info) => info.getValue() }),
+  ]);
+  render(<PortalHost><DataTable columns={bare} data={payments} /></PortalHost>);
+  expect(screen.getByText('State')).toBeOnTheScreen();
+  expect(screen.getByText('user1@example.com')).toBeOnTheScreen();
+  expect(rawStrings(screen.toJSON() as ReactTestRendererJSON[])).toEqual([]);
+});
+
+test('a column with an explicit size is a fixed-width column', () => {
+  const sized = columnHelper.columns([
+    columnHelper.accessor('status', { header: 'Status', size: 60 }),
+    columnHelper.accessor('email', { header: 'Email' }),
+  ]);
+  render(<PortalHost><DataTable columns={sized} data={payments} /></PortalHost>);
+  const widthOf = (node: ReactTestInstance | null) => {
+    while (node && (StyleSheet.flatten(node.props.style) as ViewStyle | undefined)?.width !== 60) node = node.parent;
+    return node;
+  };
+  expect(widthOf(screen.getAllByText('pending')[0])).toHaveStyle({ width: 60, flexGrow: 0, minWidth: 60 });
+  expect(widthOf(screen.getByText('Status'))).toHaveStyle({ width: 60, flexGrow: 0 });
 });

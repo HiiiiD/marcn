@@ -122,7 +122,7 @@ test('caption is muted with a top margin', () => {
 test('default columns share space; colSpan scales flex and min width', () => {
   render(invoices());
   expect(screen.getByTestId('cell')).toHaveStyle({ flexGrow: 1, width: 0, minWidth: 96, padding: 8 });
-  expect(screen.getByTestId('head')).toHaveStyle({ flexGrow: 1, width: 0, minWidth: 96, height: 40, paddingHorizontal: 8 });
+  expect(screen.getByTestId('head')).toHaveStyle({ flexGrow: 1, width: 0, minWidth: 96, minHeight: 40, paddingHorizontal: 8 });
   expect(screen.getByTestId('total')).toHaveStyle({ flexGrow: 2, minWidth: 192 });
 });
 
@@ -144,4 +144,20 @@ test('reads colors from the active scheme', () => {
   (require('react-native/Libraries/Utilities/useColorScheme').default as jest.Mock).mockReturnValue('dark');
   render(<Table><TableBody><TableRow testID="r" selected><TableCell>x</TableCell></TableRow></TableBody></Table>);
   expect(screen.getByTestId('r')).toHaveStyle({ backgroundColor: darkColors.muted });
+});
+
+test('a numeric width makes the column fixed', () => {
+  render(
+    <Table>
+      <TableHeader><TableRow><TableHead testID="h" style={{ width: 40 }}>x</TableHead></TableRow></TableHeader>
+      <TableBody><TableRow><TableCell testID="c" style={{ width: 40 }}>x</TableCell></TableRow></TableBody>
+    </Table>,
+  );
+  expect(screen.getByTestId('h')).toHaveStyle({ width: 40, flexGrow: 0, minWidth: 40 });
+  expect(screen.getByTestId('c')).toHaveStyle({ width: 40, flexGrow: 0, minWidth: 40 });
+});
+
+test('caller can still override the fixed-column minWidth and flexGrow', () => {
+  render(<Table><TableBody><TableRow><TableCell testID="c" style={{ width: 40, flexGrow: 1, minWidth: 10 }}>x</TableCell></TableRow></TableBody></Table>);
+  expect(screen.getByTestId('c')).toHaveStyle({ width: 40, flexGrow: 1, minWidth: 10 });
 });

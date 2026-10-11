@@ -38,6 +38,7 @@ export const columns = columnHelper.columns([
     ),
     enableSorting: false,
     enableHiding: false,
+    size: 48,
   }),
   columnHelper.accessor('status', { header: 'Status' }),
   columnHelper.accessor('email', {
@@ -52,6 +53,7 @@ export const columns = columnHelper.columns([
   }),
   columnHelper.display({
     id: 'actions',
+    size: 56,
     cell: () => (
       <DropdownMenu>
         <DropdownMenuTrigger render={<Button variant="ghost" size="icon" accessibilityLabel="Open menu" />}>

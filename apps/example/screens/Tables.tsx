@@ -10,7 +10,7 @@ const invoices = [
   { invoice: 'INV004', status: 'Paid', method: 'Credit Card', amount: '$450.00' },
 ];
 
-const fixed = { width: 100, flexGrow: 0 } as const;
+const fixed = { width: 100 } as const;
 const right = { alignItems: 'flex-end' } as const;
 
 export function Tables() {

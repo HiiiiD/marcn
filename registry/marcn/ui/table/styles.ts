@@ -1,10 +1,15 @@
-import { StyleSheet, type ViewStyle } from 'react-native';
+import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import type { Theme } from '@/registry/marcn/lib/theme';
 
 export const MIN_COLUMN_WIDTH = 96;
 
 export const span = (n: number): ViewStyle | undefined =>
   n > 1 ? { flexGrow: n, minWidth: MIN_COLUMN_WIDTH * n } : undefined;
+
+export const fixedWidth = (style: StyleProp<ViewStyle>): ViewStyle | undefined => {
+  const width = StyleSheet.flatten(style)?.width;
+  return typeof width === 'number' ? { flexGrow: 0, minWidth: width } : undefined;
+};
 
 export const createStyles = (t: Theme) =>
   StyleSheet.create({
@@ -16,7 +21,7 @@ export const createStyles = (t: Theme) =>
     rowSelected: { backgroundColor: t.colors.muted },
     footer: { borderTopWidth: 1, borderTopColor: t.colors.border, backgroundColor: `${t.colors.muted}80` },
     column: { flexGrow: 1, width: 0, minWidth: MIN_COLUMN_WIDTH, justifyContent: 'center' },
-    head: { height: 40, paddingHorizontal: t.spacing[2] },
+    head: { minHeight: 40, paddingHorizontal: t.spacing[2] },
     cell: { padding: t.spacing[2] },
     caption: { marginTop: t.spacing[4] },
     text: { fontSize: t.fontSize.sm },

@@ -34,6 +34,14 @@ const createStyles = (t: Theme) =>
 
 const text = (node: ReactNode) => (typeof node === 'string' || typeof node === 'number' ? <Text>{node}</Text> : node);
 
+// flexRender wraps function renderers in an element, which hides a returned string from `text`.
+function Render({ comp, props }: { comp: unknown; props: object }) {
+  if (typeof comp === 'function' && !comp.prototype?.isReactComponent) return text(comp(props));
+  return text(flexRender(comp as ReactNode, props));
+}
+
+const sized = (size: number | undefined) => (size === undefined ? undefined : { width: size });
+
 export function DataTable<TData extends RowData>({ columns, data }: DataTableProps<TData>) {
   const s = useStyles(createStyles);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -45,7 +53,6 @@ export function DataTable<TData extends RowData>({ columns, data }: DataTablePro
     features,
     data,
     columns,
-    defaultColumn: { cell: ({ renderValue }) => text(renderValue()?.toString() ?? null) },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -70,8 +77,10 @@ export function DataTable<TData extends RowData>({ columns, data }: DataTablePro
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder ? null : text(flexRender(header.column.columnDef.header, header.getContext()))}
+                  <TableHead key={header.id} style={sized(header.column.columnDef.size)}>
+                    {header.isPlaceholder ? null : (
+                      <Render comp={header.column.columnDef.header} props={header.getContext()} />
+                    )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -82,7 +91,9 @@ export function DataTable<TData extends RowData>({ columns, data }: DataTablePro
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} selected={row.getIsSelected()}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{text(flexRender(cell.column.columnDef.cell, cell.getContext()))}</TableCell>
+                    <TableCell key={cell.id} style={sized(cell.column.columnDef.size)}>
+                      <Render comp={cell.column.columnDef.cell} props={cell.getContext()} />
+                    </TableCell>
                   ))}
                 </TableRow>
               ))
