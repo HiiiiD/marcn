@@ -25,8 +25,11 @@ const destOf = (registryPath) => {
 const ALIAS = /^@\/(?:registry\/marcn\/)?(ui|lib|components\/ui)\/(.+)$/;
 const IMPORT = /(from\s+|import\s+)(['"])(@\/[^'"]+)\2/g;
 
+// Snack's parser rejects numeric literal types (`0 | 1 | 2`, `1 | -1`); widen them in the Snack copy only.
+const NUMERIC_UNION = /(:\s*)-?\d+(?:\s*\|\s*-?\d+)+/g;
+
 const rewrite = (code, from) =>
-  code.replace(IMPORT, (all, kw, q, spec) => {
+  code.replace(NUMERIC_UNION, '$1number').replace(IMPORT, (all, kw, q, spec) => {
     const m = spec.match(ALIAS);
     if (!m) return all;
     const target = m[1] === 'lib' ? `lib/${m[2]}` : `components/ui/${m[2]}`;
