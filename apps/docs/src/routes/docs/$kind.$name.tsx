@@ -1,14 +1,17 @@
 import { Link, createFileRoute, notFound } from '@tanstack/react-router';
 import { CodeBlock } from '@/components/code-block';
+import { SnackPreview } from '@/components/snack-preview';
 import { InstallTabs } from '@/components/install-tabs';
+import { ApiReference } from '@/components/api-reference';
+import { UsageSection } from '@/components/usage-section';
 import { Code, H1, H2, Lead, Stack } from '@/components/prose';
-import { items, loadFiles } from '@/lib/registry';
+import { items, loadItem } from '@/lib/registry';
 
 export const Route = createFileRoute('/docs/$kind/$name')({
   loader: async ({ params }) => {
     const item = items.find((i) => i.name === params.name && i.kind === params.kind);
     if (!item) throw notFound();
-    return { item, files: await loadFiles(item.name) };
+    return { item, ...(await loadItem(item.name)) };
   },
   component: ItemPage,
 });
@@ -43,11 +46,13 @@ function Deps({ title, list, link }: { title: string; list: string[]; link?: boo
 }
 
 function ItemPage() {
-  const { item, files } = Route.useLoaderData();
+  const { item, files, example, usage, api } = Route.useLoaderData();
   return (
     <>
       <H1>{item.title}</H1>
       <Lead>{item.description}</Lead>
+      {item.snackId && example && <SnackPreview id={item.snackId} example={example} />}
+      {usage && <UsageSection usage={usage} />}
       <H2>Installation</H2>
       <Stack>
         <InstallTabs name={item.name} />
@@ -64,6 +69,7 @@ function ItemPage() {
           <CodeBlock key={f.path} code={f.code} html={f.html} title={f.path} />
         ))}
       </Stack>
+      <ApiReference api={api} />
     </>
   );
 }

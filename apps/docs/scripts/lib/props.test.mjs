@@ -58,3 +58,8 @@ test('extractItem dedupes and drops parts with nothing to show', () => {
   assert.deepEqual(components, ['Fx', 'Empty']);
   assert.deepEqual(api.map((p) => p.part), ['Fx']);
 });
+
+test('prints declared type text instead of expanding aliases', () => {
+  const fxPart = byPart(extractor.extract(fx('basic.tsx')), 'Fx');
+  assert.equal(fxPart.props.find((p) => p.name === 'ref').type, 'Ref<View>');
+});

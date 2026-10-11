@@ -18,3 +18,6 @@ export const Code = ({ children }: C) => (
   <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">{children}</code>
 );
 export const Stack = ({ children }: C) => <div className="mt-4 space-y-4">{children}</div>;
+export const H3 = ({ children }: C) => (
+  <h3 className="mt-6 scroll-m-20 text-base font-semibold tracking-tight">{children}</h3>
+);

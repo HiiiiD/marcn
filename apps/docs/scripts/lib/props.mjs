@@ -29,6 +29,7 @@ export function createExtractor({ root, files }) {
     if (plain.isUnion() && plain.types.every((t) => t.isStringLiteral())) {
       return plain.types.map((t) => `'${t.value}'`).join(' | ');
     }
+    if (node.type) return node.type.getText().replace(/\s+/g, ' ');
     return checker.typeToString(plain, node, ts.TypeFormatFlags.NoTruncation);
   };
 
