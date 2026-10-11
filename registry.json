@@ -864,6 +864,30 @@
       ]
     },
     {
+      "name": "data-table",
+      "type": "registry:ui",
+      "title": "Data table",
+      "description": "TanStack Table v9 data table with sorting, filtering, column visibility, row selection and pagination; ported from the shadcn guide.",
+      "dependencies": ["@tanstack/react-table@9.2.8", "lucide-react-native@1.53.0"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/table",
+        "@marcn/button",
+        "@marcn/dropdown-menu",
+        "@marcn/select",
+        "@marcn/input",
+        "@marcn/icon",
+        "@marcn/text"
+      ],
+      "files": [
+        { "path": "registry/marcn/ui/data-table/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/data-table/data-table-features.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/data-table/data-table-column-header.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/data-table/data-table-pagination.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/data-table/data-table-view-options.tsx", "type": "registry:ui" }
+      ]
+    },
+    {
       "name": "carousel",
       "type": "registry:ui",
       "title": "Carousel",
