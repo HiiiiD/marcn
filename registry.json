@@ -867,6 +867,23 @@
         { "path": "registry/marcn/ui/carousel/root.tsx", "type": "registry:ui" },
         { "path": "registry/marcn/ui/carousel/types.ts", "type": "registry:ui" }
       ]
+    },
+    {
+      "name": "chart",
+      "type": "registry:ui",
+      "title": "Chart",
+      "description": "Config-driven chart helpers over TanStack Charts: themed series colors, container, native legend and tooltip content.",
+      "dependencies": ["@tanstack/charts@1.1.0", "react-native-svg@15.15.4"],
+      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "files": [
+        { "path": "registry/marcn/ui/chart/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/chart/config.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/chart/container.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/chart/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/chart/legend.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/chart/chart-tooltip.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/chart/use-chart-colors.ts", "type": "registry:ui" }
+      ]
     }
   ]
 }

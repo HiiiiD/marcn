@@ -44,7 +44,7 @@ Components install with a shared `theme.ts` in your `lib` alias. Edit its tokens
 
 ## Components
 
-`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `spinner`, `empty`, `item`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `drawer`, `alert-dialog`, `tooltip`, `dropdown-menu`, `context-menu`, `select`, `combobox`, `command`, `calendar`, `date-picker`, `input-otp`, `field`, `form-hook-form`, `form-tanstack`, `sonner`, `breadcrumb`, `pagination`, `button-group`, `input-group`, `scroll-area`, `carousel`, `aspect-ratio`, plus the `theme`, `render`, `scale`, `use-controllable-state`, `search-filter`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset` and `use-anchored-position` lib items. `portal`, `overlay` and `menu` (shared infrastructure with JSX) are `ui` items.
+`icon`, `text`, `button`, `badge`, `card`, `input`, `textarea`, `label`, `alert`, `skeleton`, `separator`, `spinner`, `empty`, `item`, `avatar`, `switch`, `checkbox`, `radio-group`, `progress`, `collapsible`, `accordion`, `tabs`, `toggle`, `toggle-group`, `slider`, `dialog`, `popover`, `sheet`, `drawer`, `alert-dialog`, `tooltip`, `dropdown-menu`, `context-menu`, `select`, `combobox`, `command`, `calendar`, `date-picker`, `input-otp`, `field`, `form-hook-form`, `form-tanstack`, `sonner`, `breadcrumb`, `pagination`, `button-group`, `input-group`, `scroll-area`, `carousel`, `chart`, `aspect-ratio`, plus the `theme`, `render`, `scale`, `use-controllable-state`, `search-filter`, `popover-position`, `back-stack`, `use-presence`, `use-keyboard-inset` and `use-anchored-position` lib items. `portal`, `overlay` and `menu` (shared infrastructure with JSX) are `ui` items.
 
 Components are designed to be edited in place: once added, the code is yours.
 
@@ -136,6 +136,20 @@ These follow shadcn/ui. `Spinner` is a rotating `Loader2` icon (16px) that takes
 `breadcrumb`, `pagination`, `button-group` and `input-group` follow the Base UI version of shadcn. `BreadcrumbLink` accepts `render` (wrap expo-router's `Link` in a `Pressable`, as with Button). Pagination is composition only: you compute the page range and own the state, and `PaginationPrevious`/`PaginationNext` always show their text on mobile (`text={null}` for icon-only). `ButtonGroup` joins its direct children by cloning them with a position style, so children must forward `style` (Button, Select trigger and `ButtonGroupText` do; fragments are not flattened). `InputGroup` owns the border and focus ring: use `InputGroupInput`/`InputGroupTextarea` (a plain `Input` does not join) and place addons in render order (React Native has no `order`; `align="block-*"` makes an addon take a full line).
 
 `scroll-area` is a `ScrollView` with a themed thumb that fades in while scrolling (no drag-to-scrub). `carousel` runs on a native `ScrollView`: items snap by default (`snap={false}` for free scrolling), `CarouselItem basis` is a fraction of the viewport (or pixels above 1), `index`/`defaultIndex`/`onIndexChange` control the slide, and `useCarousel()` exposes `index`, `count`, `scrollTo`, `scrollPrev` and `scrollNext` for custom dots. Not ported: `loop`, autoplay, Embla plugins and `setApi`.
+
+## Chart
+
+`chart` wraps [TanStack Charts](https://tanstack.com/charts) (`@tanstack/charts` 1.1.0, React Native adapter on `react-native-svg`). You keep writing the TanStack definition (`defineChart`, marks, scales); marcn adds the shadcn layer. `ChartContainer` takes a `config` (`{ key: { label, color | theme: { light, dark } } }`, where `color` is a literal or a theme token such as `chart1`..`chart5`), an `accessibilityLabel` (required by TanStack) and a `definition`, either a ready definition or `({ config, colors, color }) => defineChart(...)` so series colors follow light/dark (`color` is the `{ domain, range }` for the chart-level `color` option). `ChartLegend` renders a themed native legend from the config, `chartTooltip(config)` is the tooltip option mapping series labels, and `useChart` / `useChartColors` expose the resolved colors. Tooltips open on tap and the tooltip card is drawn by TanStack (always light). The native surface paints the final state only (no animation). Verified marks: bar, line, area, pie/donut (`@tanstack/charts/polar`). The adapter is experimental upstream.
+
+Metro needs package exports, because `@tanstack/charts` has no `main`. In `metro.config.js`:
+
+```js
+const { getDefaultConfig } = require("expo/metro-config");
+const config = getDefaultConfig(__dirname);
+config.resolver.unstable_enablePackageExports = true;
+config.resolver.unstable_conditionNames = ["react-native", "import", "require", "default"];
+module.exports = config;
+```
 
 ## Toasts
 

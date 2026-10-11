@@ -5,7 +5,7 @@ export type Colors = Record<
   | 'background' | 'foreground' | 'card' | 'cardForeground' | 'popover' | 'popoverForeground'
   | 'primary' | 'primaryForeground' | 'secondary' | 'secondaryForeground' | 'muted'
   | 'mutedForeground' | 'accent' | 'accentForeground' | 'destructive' | 'destructiveForeground'
-  | 'border' | 'input' | 'ring',
+  | 'border' | 'input' | 'ring' | 'chart1' | 'chart2' | 'chart3' | 'chart4' | 'chart5',
   string
 >;
 
@@ -29,6 +29,11 @@ export const lightColors: Colors = {
   border: '#e5e5e5',
   input: '#e5e5e5',
   ring: '#a1a1a1',
+  chart1: '#e76e50',
+  chart2: '#2a9d90',
+  chart3: '#274754',
+  chart4: '#e8c468',
+  chart5: '#f4a462',
 };
 
 export const darkColors: Colors = {
@@ -51,6 +56,11 @@ export const darkColors: Colors = {
   border: 'rgba(255,255,255,0.1)',
   input: 'rgba(255,255,255,0.15)',
   ring: '#737373',
+  chart1: '#2662d9',
+  chart2: '#2eb88a',
+  chart3: '#e88c30',
+  chart4: '#af57db',
+  chart5: '#e23670',
 };
 
 export const radius = { xs: 4, sm: 6, md: 8, lg: 10, xl: 14, full: 9999 } as const;
