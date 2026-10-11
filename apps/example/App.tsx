@@ -15,6 +15,7 @@ import { ContextMenus } from './screens/ContextMenus';
 import { Controls } from './screens/Controls';
 import { Display } from './screens/Display';
 import { Fields } from './screens/Fields';
+import { Forms } from './screens/Forms';
 import { FormControls } from './screens/FormControls';
 import { Groups } from './screens/Groups';
 import { Carousels } from './screens/Carousels';
@@ -43,6 +44,7 @@ export default function App() {
           <DatePickers />
           <FormControls />
           <Fields />
+          <Forms />
           <Overlays />
           <Menus />
           <ContextMenus />

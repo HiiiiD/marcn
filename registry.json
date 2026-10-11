@@ -733,6 +733,24 @@
       "files": [{ "path": "registry/marcn/ui/field.tsx", "type": "registry:ui" }]
     },
     {
+      "name": "form-hook-form",
+      "type": "registry:ui",
+      "title": "Form (React Hook Form)",
+      "description": "FormField: React Hook Form Controller wired into Field, with prop bundles for inputs, checkboxes and choice controls.",
+      "dependencies": ["react-hook-form@7.89.0"],
+      "registryDependencies": ["@marcn/field"],
+      "files": [{ "path": "registry/marcn/ui/form-hook-form.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "form-tanstack",
+      "type": "registry:ui",
+      "title": "Form (TanStack Form)",
+      "description": "FormField: a TanStack Form field wired into Field, with prop bundles for inputs, checkboxes and choice controls.",
+      "dependencies": ["@tanstack/react-form@1.33.5"],
+      "registryDependencies": ["@marcn/field"],
+      "files": [{ "path": "registry/marcn/ui/form-tanstack.tsx", "type": "registry:ui" }]
+    },
+    {
       "name": "sonner",
       "type": "registry:ui",
       "title": "Sonner",
