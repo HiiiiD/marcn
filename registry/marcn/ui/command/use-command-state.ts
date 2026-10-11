@@ -63,7 +63,7 @@ export function useCommandState({
       scoreOf,
       register,
       visibleCount: derived.visibleCount,
-      isGroupVisible: (groupId) => derived.groups.has(groupId),
+      isGroupVisible: (groupId) => !searching || derived.groups.has(groupId),
       bestId: derived.bestId,
       submit: () => {
         if (derived.bestId) registry.current.get(derived.bestId)?.run();

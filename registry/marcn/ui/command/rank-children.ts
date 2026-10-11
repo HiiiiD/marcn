@@ -55,8 +55,10 @@ function collect(children: ReactNode, search: string, filter: CommandFilter): { 
 }
 
 export function rankChildren(children: ReactNode, search: string, filter: CommandFilter | null): ReactNode {
-  if (!filter || !search.trim()) return children;
-  const { slots } = collect(children, search, filter);
+  if (!filter) return children;
+  // Idle search still goes through collect so the node shape, and so the keys, match the searching shape.
+  const searching = search.trim() !== '';
+  const { slots } = collect(children, search, searching ? filter : () => 1);
   const sorted = slots
     .flatMap((slot, index) => (slot.score === null ? [] : [{ node: slot.node, score: slot.score, index }]))
     .sort((a, b) => b.score - a.score || a.index - b.index);

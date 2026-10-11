@@ -24,11 +24,13 @@ describe('textOf / itemText', () => {
 });
 
 describe('rankChildren', () => {
-  test('no filter, empty or whitespace search returns the children untouched', () => {
+  test('no filter returns the children untouched; an idle search keeps order and the keys a search uses', () => {
     const kids = [<Item key="a" value="b" />, <Item key="b" value="a" />];
-    expect(rankChildren(kids, '', filter)).toBe(kids);
-    expect(rankChildren(kids, '   ', filter)).toBe(kids);
     expect(rankChildren(kids, 'a', null)).toBe(kids);
+    const keys = (node: unknown) => (node as { key: string }[]).map((n) => n.key);
+    const searching = keys(rankChildren(kids, 'zzz|a|b', (v) => (v ? 1 : 0)));
+    expect(keys(rankChildren(kids, '', filter))).toEqual(searching);
+    expect(keys(rankChildren(kids, '   ', filter))).toEqual(searching);
   });
 
   test('drops non-matching items and sorts by score, ties keep JSX order', () => {

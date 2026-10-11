@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { Text } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/registry/marcn/ui/command';
 import { setup, type as typeText } from './fixture';
@@ -59,4 +61,40 @@ test('a whitespace-only search shows everything in declared order', () => {
   setup();
   typeText('   ');
   expect(screen.getAllByRole('menuitem')).toHaveLength(5);
+});
+
+test('starting and clearing a search keeps matching rows mounted', () => {
+  let mounts = 0;
+  const Probe = () => {
+    useEffect(() => { mounts += 1; }, []);
+    return null;
+  };
+  render(
+    <Command>
+      <CommandInput placeholder="q" />
+      <CommandList>
+        <CommandItem>Calendar<Probe /></CommandItem>
+        <CommandItem>Billing</CommandItem>
+      </CommandList>
+    </Command>,
+  );
+  expect(mounts).toBe(1);
+  typeQ('cal');
+  typeQ('');
+  expect(mounts).toBe(1);
+});
+
+test('a group with no items of its own stays visible until a search is typed', () => {
+  render(
+    <Command>
+      <CommandInput placeholder="q" />
+      <CommandList>
+        <CommandGroup heading="Custom"><Text>Custom row</Text></CommandGroup>
+        <CommandItem>Calendar</CommandItem>
+      </CommandList>
+    </Command>,
+  );
+  expect(screen.getByText('Custom row')).toBeVisible();
+  typeQ('cal');
+  expect(screen.queryByText('Custom row')).toBeNull();
 });
