@@ -1,3 +1,4 @@
+import { createContext } from 'react';
 import type { Ref } from 'react';
 import type { PressableProps, View } from 'react-native';
 
@@ -19,3 +20,4 @@ export function Empty() {
 }
 export function useThing() {}
 export const NOT_A_COMPONENT = 1;
+export const FxContext = createContext<string | null>(null);

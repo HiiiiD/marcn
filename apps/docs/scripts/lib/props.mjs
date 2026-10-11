@@ -105,7 +105,7 @@ export function createExtractor({ root, files }) {
     if (!/^[A-Z]/.test(sym.name) || !(sym.flags & (ts.SymbolFlags.Function | ts.SymbolFlags.Variable))) return null;
     const type = checker.getTypeOfSymbolAtLocation(sym, sf);
     const fn = type.getCallSignatures()[0]?.declaration;
-    if (!fn?.parameters) return null;
+    if (!fn?.parameters || isExternal(fn)) return null;
     const param = fn.parameters[0];
     if (!param) return { part: exported.name, extends: [], props: [] };
     const defaults = defaultsOf(fn);
