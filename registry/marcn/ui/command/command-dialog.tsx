@@ -1,6 +1,6 @@
 import { useStyles } from '@/registry/marcn/lib/theme';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/registry/marcn/ui/dialog';
-import { Command, type CommandProps } from '@/registry/marcn/ui/command/command';
+import { Command, type CommandProps } from '@/registry/marcn/ui/command/command-root';
 import { AutoFocusContext } from '@/registry/marcn/ui/command/context';
 import { createStyles } from '@/registry/marcn/ui/command/styles';
 

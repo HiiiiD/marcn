@@ -658,6 +658,40 @@
       ]
     },
     {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command",
+      "description": "Searchable action list with fuzzy ranking: input, list, groups, items, shortcuts and a dialog variant.",
+      "dependencies": ["lucide-react-native@1.53.0"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/search-filter",
+        "@marcn/use-controllable-state",
+        "@marcn/menu",
+        "@marcn/dialog",
+        "@marcn/input-group",
+        "@marcn/icon",
+        "@marcn/text"
+      ],
+      "files": [
+        { "path": "registry/marcn/ui/command/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/command/command-root.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/command/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/command/command-dialog.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/command/empty.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/command/group.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/command/input.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/command/command-item.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/command/list.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/command/rank-children.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/command/separator.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/command/shortcut.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/command/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/command/use-command-state.ts", "type": "registry:ui" }
+      ]
+    },
+    {
       "name": "input-otp",
       "type": "registry:ui",
       "title": "Input OTP",
