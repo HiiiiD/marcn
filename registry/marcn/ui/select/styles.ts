@@ -13,6 +13,7 @@ export const createStyles = (t: Theme) =>
       borderWidth: 1,
       borderColor: t.colors.input,
     },
+    invalid: { borderColor: t.colors.destructive },
     default: { height: 36 },
     sm: { height: 32 },
     disabled: { opacity: 0.5 },

@@ -44,3 +44,8 @@ test('has a default hitSlop that callers can override', () => {
   rerender(<Checkbox hitSlop={5} />);
   expect(screen.getByRole('checkbox').props.hitSlop).toBe(5);
 });
+
+test('aria-invalid shows destructive border', () => {
+  render(<Checkbox aria-invalid />);
+  expect(screen.getByRole('checkbox')).toHaveStyle({ borderColor: lightColors.destructive });
+});

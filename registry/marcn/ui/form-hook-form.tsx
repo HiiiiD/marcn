@@ -16,10 +16,17 @@ export type FormFieldBindings = {
     checked: boolean;
     onCheckedChange: (checked: boolean) => void;
     onBlur: () => void;
+    'aria-invalid': boolean;
     accessibilityHint?: string;
     disabled?: boolean;
   };
-  choice: { value: string; onValueChange: (value: string) => void; disabled?: boolean };
+  choice: {
+    value: string;
+    onValueChange: (value: string) => void;
+    'aria-invalid': boolean;
+    accessibilityHint?: string;
+    disabled?: boolean;
+  };
   invalid: boolean;
   error?: string;
 };
@@ -70,10 +77,17 @@ export function FormField<TValues extends FieldValues, TName extends FieldPath<T
                 checked: !!field.value,
                 onCheckedChange: field.onChange,
                 onBlur: field.onBlur,
+                'aria-invalid': invalid,
                 accessibilityHint,
                 disabled: field.disabled,
               },
-              choice: { value: field.value ?? '', onValueChange: field.onChange, disabled: field.disabled },
+              choice: {
+                value: field.value ?? '',
+                onValueChange: field.onChange,
+                'aria-invalid': invalid,
+                accessibilityHint,
+                disabled: field.disabled,
+              },
               invalid,
               error,
             })}

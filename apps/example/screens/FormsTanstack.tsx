@@ -52,7 +52,7 @@ export function FormsTanstack() {
             {(f) => (
               <>
                 <FieldLabel>Role</FieldLabel>
-                <RoleSelect {...f.choice} invalid={f.invalid} error={f.error} />
+                <RoleSelect {...f.choice} />
                 <FieldError message={f.error} />
               </>
             )}

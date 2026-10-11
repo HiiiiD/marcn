@@ -82,3 +82,8 @@ test('choice binds value/onValueChange', async () => {
   fireEvent.press(screen.getByRole('radio', { name: 'Pro' }));
   await waitFor(() => expect(api.getValues('plan')).toBe('pro'));
 });
+
+test('invalid checkbox gets the destructive border', async () => {
+  await submit();
+  expect(screen.getByRole('checkbox')).toHaveStyle({ borderColor: lightColors.destructive });
+});

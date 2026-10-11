@@ -1,19 +1,17 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useTheme } from '@/lib/theme';
 import { roles } from './signUpSchema';
 
 type Props = {
   value: string;
   onValueChange: (value: string) => void;
-  invalid: boolean;
-  error?: string;
+  'aria-invalid': boolean;
+  accessibilityHint?: string;
 };
 
-export function RoleSelect({ value, onValueChange, invalid, error }: Props) {
-  const { colors } = useTheme();
+export function RoleSelect({ value, onValueChange, 'aria-invalid': invalid, accessibilityHint }: Props) {
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger accessibilityLabel="Role" accessibilityHint={error} style={invalid && { borderColor: colors.destructive }}>
+      <SelectTrigger accessibilityLabel="Role" aria-invalid={invalid} accessibilityHint={accessibilityHint}>
         <SelectValue placeholder="Pick a role" />
       </SelectTrigger>
       <SelectContent>
