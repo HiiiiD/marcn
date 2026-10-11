@@ -4,6 +4,7 @@ import { Text } from '@/components/ui/text';
 import { Toaster } from '@/components/ui/sonner';
 import { PortalHost } from '@/lib/portal';
 import { useTheme } from '@/lib/theme';
+import { BreadcrumbPagination } from './screens/BreadcrumbPagination';
 import { ButtonsBadges } from './screens/ButtonsBadges';
 import { CardForm } from './screens/CardForm';
 import { Calendars } from './screens/Calendars';
@@ -43,6 +44,7 @@ export default function App() {
           <ContextMenus />
           <Comboboxes />
           <InputOtp />
+          <BreadcrumbPagination />
           <Groups />
           <ScrollAreas />
           <Toasts />

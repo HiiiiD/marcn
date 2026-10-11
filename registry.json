@@ -761,6 +761,24 @@
       "description": "Input or textarea with inline/block addons, buttons and text sharing one border and focus ring.",
       "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/button", "@marcn/input", "@marcn/textarea", "@marcn/text"],
       "files": [{ "path": "registry/marcn/ui/input-group.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "Breadcrumb trail with link (render prop), page, separator and ellipsis parts.",
+      "dependencies": ["lucide-react-native@1.53.0"],
+      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/text", "@marcn/icon"],
+      "files": [{ "path": "registry/marcn/ui/breadcrumb.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "pagination",
+      "type": "registry:ui",
+      "title": "Pagination",
+      "description": "Pagination parts: links built on Button, previous/next with chevrons, and an ellipsis. The consumer owns page state.",
+      "dependencies": ["lucide-react-native@1.53.0"],
+      "registryDependencies": ["@marcn/theme", "@marcn/button", "@marcn/icon", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/ui/pagination.tsx", "type": "registry:ui" }]
     }
   ]
 }
