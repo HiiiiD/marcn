@@ -26,12 +26,12 @@ export const createFieldStyles = (t: Theme) =>
 
 export type ComboboxFieldProps = { disabled?: boolean; 'aria-invalid'?: boolean };
 
-// Shared by the inline input and the chips input: typing, focus and tapping open the list.
+// Shared by the inline input and the chips input: typing and tapping open the list.
 export function useComboboxInputProps({ disabled, ...props }: TextInputProps & ComboboxFieldProps & { ref?: Ref<TextInput> }) {
   const { colors } = useTheme();
   const combobox = useCombobox();
   const off = disabled || combobox.disabled;
-  const { onChangeText, onFocus, onPressIn, onSubmitEditing, ref, ...rest } = props;
+  const { onChangeText, onPressIn, onSubmitEditing, ref, ...rest } = props;
   return {
     off,
     props: {
@@ -51,11 +51,7 @@ export function useComboboxInputProps({ disabled, ...props }: TextInputProps & C
         combobox.typeText(text);
         onChangeText?.(text);
       },
-      onFocus: (e) => {
-        if (!off) combobox.setOpen(true);
-        onFocus?.(e);
-      },
-      // A focused input fires no focus again: this reopens it after Back hid the popup.
+      // Opens on touch, not focus: Android hands focus to the first input when a dialog closes.
       onPressIn: (e) => {
         if (!off) combobox.setOpen(true);
         onPressIn?.(e);

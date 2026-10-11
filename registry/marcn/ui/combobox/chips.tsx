@@ -46,7 +46,10 @@ export function ComboboxChips({ style, 'aria-invalid': invalid, children, ref, .
       onLayout={combobox.bumpAnchor}
       accessible={false}
       disabled={off}
-      onPress={() => combobox.inputRef.current?.focus()}
+      onPress={() => {
+        combobox.setOpen(true);
+        combobox.inputRef.current?.focus();
+      }}
       style={[f.field, s.chips, combobox.open && f.focused, invalid === true && f.invalid, off && f.disabled, style]}
       {...props}
     >
