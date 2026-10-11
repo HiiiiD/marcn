@@ -18,6 +18,13 @@
       "files": [{ "path": "registry/marcn/lib/render.ts", "type": "registry:lib" }]
     },
     {
+      "name": "scale",
+      "type": "registry:lib",
+      "title": "Scale",
+      "description": "Optional responsive scaling helpers (scale, moderateScale, font) relative to a design frame width. Wrap theme font sizes with font() to opt in.",
+      "files": [{ "path": "registry/marcn/lib/scale.ts", "type": "registry:lib" }]
+    },
+    {
       "name": "icon",
       "type": "registry:ui",
       "title": "Icon",
@@ -110,6 +117,14 @@
       "description": "Horizontal or vertical divider.",
       "registryDependencies": ["@marcn/theme"],
       "files": [{ "path": "registry/marcn/ui/separator.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "aspect-ratio",
+      "type": "registry:ui",
+      "title": "Aspect Ratio",
+      "description": "Container that keeps a fixed width to height ratio.",
+      "registryDependencies": ["@marcn/render"],
+      "files": [{ "path": "registry/marcn/ui/aspect-ratio.tsx", "type": "registry:ui" }]
     },
     {
       "name": "spinner",

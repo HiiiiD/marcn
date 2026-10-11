@@ -23,6 +23,7 @@ import { Overlays } from './screens/Overlays';
 import { ScrollAreas } from './screens/ScrollAreas';
 import { SpinnerEmptyItem } from './screens/SpinnerEmptyItem';
 import { Toasts } from './screens/Toasts';
+import { Typography } from './screens/Typography';
 
 export default function App() {
   const { colors } = useTheme();
@@ -34,6 +35,7 @@ export default function App() {
           <ButtonsBadges />
           <CardForm />
           <Display />
+          <Typography />
           <SpinnerEmptyItem />
           <Controls />
           <Calendars />
