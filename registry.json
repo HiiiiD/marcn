@@ -882,6 +882,7 @@
         { "path": "registry/marcn/ui/chart/context.ts", "type": "registry:ui" },
         { "path": "registry/marcn/ui/chart/legend.tsx", "type": "registry:ui" },
         { "path": "registry/marcn/ui/chart/chart-tooltip.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/chart/themed-tooltip.tsx", "type": "registry:ui" },
         { "path": "registry/marcn/ui/chart/use-chart-colors.ts", "type": "registry:ui" }
       ]
     }

@@ -5,7 +5,7 @@ import { darkColors, lightColors } from '@/registry/marcn/lib/theme';
 
 const mockChart = jest.fn((_props: Record<string, unknown>) => null);
 jest.mock('@tanstack/charts/react-native', () => ({ Chart: (props: Record<string, unknown>) => mockChart(props) }));
-jest.mock('@tanstack/charts/react-native/tooltip', () => ({ tooltip: { id: 'native-tooltip' } }));
+jest.mock('@tanstack/charts/tooltip/model', () => ({}));
 
 const config: ChartConfig = {
   desktop: { label: 'Desktop', color: 'chart1' },
@@ -68,7 +68,7 @@ test('useChart throws outside the container and exposes config inside', () => {
 
 test('chartTooltip maps series labels and marks the primary row', () => {
   const t = chartTooltip(config);
-  expect(t.use).toEqual({ id: 'native-tooltip' });
+  expect(t.use).toMatchObject({ __chartExtensionType: 'tooltip', __chartTooltipHost: 'react-native' });
   const a = { group: 'desktop', groupLabel: 'desktop', xValue: 'Jan', yValue: 5, color: '#a' };
   const b = { group: null, groupLabel: '', xValue: 'Jan', yValue: 7, color: '#b' };
   const ctx = { primaryPoint: a, formatX: (v: unknown) => `x${v}`, formatY: (v: unknown) => `y${v}`, yLabel: 'Value' };
