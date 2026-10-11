@@ -1869,7 +1869,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-store@npm:^0.11.0":
+"@tanstack/react-store@npm:^0.11.0, @tanstack/react-store@npm:^0.11.2":
   version: 0.11.2
   resolution: "@tanstack/react-store@npm:0.11.2"
   dependencies:
@@ -1882,10 +1882,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/store@npm:0.11.2, @tanstack/store@npm:^0.11.0":
+"@tanstack/react-table@npm:9.2.8":
+  version: 9.2.8
+  resolution: "@tanstack/react-table@npm:9.2.8"
+  dependencies:
+    "@tanstack/react-store": "npm:^0.11.2"
+    "@tanstack/table-core": "npm:9.2.8"
+  peerDependencies:
+    react: ">=18"
+  checksum: 10c0/bc72fe599de3cf4edc120952ddab05225a1d1533060ffec2e4fde00b9aa394ee96052e09fd399685d52e1b56b18500488b15960c65aa5f9273f641b61c2ca29f
+  languageName: node
+  linkType: hard
+
+"@tanstack/store@npm:0.11.2, @tanstack/store@npm:^0.11.0, @tanstack/store@npm:^0.11.2":
   version: 0.11.2
   resolution: "@tanstack/store@npm:0.11.2"
   checksum: 10c0/5422149c853c16e642a0ddfb51c2b4a867a11516069d3b9647659212e9762b86d609144de6ac6ec099b0360c3b198d1243f613148d69c1028dee56382f0430cd
+  languageName: node
+  linkType: hard
+
+"@tanstack/table-core@npm:9.2.8":
+  version: 9.2.8
+  resolution: "@tanstack/table-core@npm:9.2.8"
+  dependencies:
+    "@tanstack/store": "npm:^0.11.2"
+  checksum: 10c0/a57aeaadd0779dfeea7eb05d7babeb1d740200dad1294efd6fb1476be723122fb6a0bc169d2ba0f022d2d064f4aa4af3850df9d8b6739fcd97d77695601d6db9
   languageName: node
   linkType: hard
 
@@ -3210,6 +3231,7 @@ __metadata:
     "@shopify/flash-list": "npm:2.0.2"
     "@tanstack/charts": "npm:1.1.0"
     "@tanstack/react-form": "npm:1.33.5"
+    "@tanstack/react-table": "npm:9.2.8"
     "@types/react": "npm:~19.2.2"
     expo: "npm:~57.0.27"
     expo-status-bar: "npm:~57.0.1"
