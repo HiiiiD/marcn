@@ -844,6 +844,50 @@
       "files": [{ "path": "registry/marcn/ui/pagination.tsx", "type": "registry:ui" }]
     },
     {
+      "name": "table",
+      "type": "registry:ui",
+      "title": "Table",
+      "description": "Table, header, body, footer, row, head, cell and caption parts in a horizontal scroll view; ported from shadcn.",
+      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "files": [
+        { "path": "registry/marcn/ui/table/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/body.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/caption.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/cell.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/footer.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/head.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/header.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/row-group.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/row.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/styles.ts", "type": "registry:ui" }
+      ]
+    },
+    {
+      "name": "data-table",
+      "type": "registry:ui",
+      "title": "Data table",
+      "description": "TanStack Table v9 data table with sorting, filtering, column visibility, row selection and pagination; ported from the shadcn guide.",
+      "dependencies": ["@tanstack/react-table@9.2.8", "lucide-react-native@1.53.0"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/table",
+        "@marcn/button",
+        "@marcn/dropdown-menu",
+        "@marcn/select",
+        "@marcn/input",
+        "@marcn/icon",
+        "@marcn/text"
+      ],
+      "files": [
+        { "path": "registry/marcn/ui/data-table/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/data-table/data-table-features.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/data-table/data-table-column-header.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/data-table/data-table-pagination.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/data-table/data-table-view-options.tsx", "type": "registry:ui" }
+      ]
+    },
+    {
       "name": "carousel",
       "type": "registry:ui",
       "title": "Carousel",
