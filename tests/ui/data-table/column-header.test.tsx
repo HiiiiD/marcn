@@ -1,10 +1,13 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 import { PortalHost } from '@/registry/marcn/ui/portal';
 import { DataTableColumnHeader } from '@/registry/marcn/ui/data-table/data-table-column-header';
 import { columnHelper, Harness } from './fixtures';
 
 const hidden = { includeHiddenElements: true };
+
+beforeEach(() => jest.useFakeTimers());
+afterEach(() => jest.useRealTimers());
 
 const columns = columnHelper.columns([
   columnHelper.accessor('email', { header: ({ column }) => <DataTableColumnHeader column={column} title="Email" /> }),
@@ -51,7 +54,8 @@ test('Asc and Desc set the sort direction', async () => {
   expect(screen.getByTestId('sorted', hidden)).toHaveTextContent('false');
   fireEvent.press(screen.getByRole('button', { name: /Email/, ...hidden }));
   fireEvent.press(await screen.findByText('Asc'));
-  await waitFor(() => expect(screen.queryByText('Asc')).toBeNull());
+  act(() => { jest.advanceTimersByTime(300); });
+  expect(screen.queryByText('Asc')).toBeNull();
   expect(screen.getByTestId('sorted', hidden)).toHaveTextContent('asc');
   fireEvent.press(screen.getByRole('button', { name: /Email/, ...hidden }));
   fireEvent.press(await screen.findByText('Desc'));
