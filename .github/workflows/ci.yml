@@ -2,7 +2,7 @@ name: ci
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   check:
@@ -21,9 +21,13 @@ jobs:
       - run: yarn example:sync
       - run: yarn tsc --noEmit
         working-directory: apps/example
+      - run: yarn install --immutable
+        working-directory: apps/docs
+      - run: yarn build
+        working-directory: apps/docs
 
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     needs: check
     runs-on: ubuntu-latest
     permissions: { contents: read, pages: write, id-token: write }
@@ -36,7 +40,12 @@ jobs:
         with: { node-version: 22, cache: yarn }
       - run: yarn install --immutable
       - run: yarn registry:build
+      - run: yarn install --immutable
+        working-directory: apps/docs
+      - run: yarn build
+        working-directory: apps/docs
+        env: { DOCS_BASE_PATH: /marcn }
       - uses: actions/upload-pages-artifact@v3
-        with: { path: public/r }
+        with: { path: apps/docs/dist }
       - id: deployment
         uses: actions/deploy-pages@v4

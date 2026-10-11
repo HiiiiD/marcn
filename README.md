@@ -27,14 +27,14 @@ Create `components.json` at the app root:
         "utils": "@/lib/utils",
         "hooks": "@/hooks"
       },
-      "registries": { "@marcn": "https://<host>/{name}.json" }
+      "registries": { "@marcn": "https://hiiiid.github.io/marcn/r/{name}.json" }
     }
 
 ## Install
 
 Add the registry to your `components.json`:
 
-    "registries": { "@marcn": "https://<host>/{name}.json" }
+    "registries": { "@marcn": "https://hiiiid.github.io/marcn/r/{name}.json" }
 
 Then:
 
