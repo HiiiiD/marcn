@@ -44,7 +44,10 @@ afterEach(() => {
 });
 
 const input = () => screen.getByPlaceholderText('Pick a fruit');
-const focus = () => fireEvent(input(), 'focus');
+const focus = () => {
+  fireEvent(input(), 'pressIn');
+  fireEvent(input(), 'focus');
+};
 const type = (text: string) => fireEvent.changeText(input(), text);
 const submit = () => fireEvent(input(), 'submitEditing');
 const settle = () => act(() => { jest.advanceTimersByTime(200); });
@@ -74,6 +77,13 @@ test('focusing the input opens every option; the selected one is marked', () => 
   expect(screen.getByRole('combobox', { includeHiddenElements: true })).toBeExpanded();
   expect(options()).toHaveLength(4);
   expect(screen.getByRole('option', { selected: true })).toHaveTextContent('Banana');
+});
+
+test('focus the system hands over without a touch does not open the popup', () => {
+  setup();
+  fireEvent(input(), 'focus');
+  expect(options()).toHaveLength(0);
+  expect(screen.getByRole('combobox', { includeHiddenElements: true })).not.toBeExpanded();
 });
 
 test('pressing the focused input opens the popup again after back hid it', () => {

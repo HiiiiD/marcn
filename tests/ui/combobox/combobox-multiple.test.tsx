@@ -78,7 +78,7 @@ test('picking adds a chip, clears the typed text and keeps the popup open', () =
 test('picking a selected option again removes it', () => {
   const onValueChange = jest.fn();
   setup({ defaultValue: ['apple'], onValueChange });
-  fireEvent(input(), 'focus');
+  fireEvent(input(), 'pressIn');
   fireEvent.press(screen.getByRole('option', { name: 'Apple' }));
   expect(onValueChange).toHaveBeenLastCalledWith([]);
 });

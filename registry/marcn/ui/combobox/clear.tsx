@@ -22,6 +22,7 @@ export function ComboboxClear({ disabled, onPress, ...props }: ComboboxClearProp
       onPress={(e) => {
         onPress?.(e);
         combobox.clear();
+        combobox.setOpen(true);
         combobox.inputRef.current?.focus();
       }}
     >
