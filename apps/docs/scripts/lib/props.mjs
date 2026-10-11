@@ -1,10 +1,6 @@
 import path from 'node:path';
 import ts from 'typescript';
-
-const COMMON = {
-  render: 'Replaces the rendered element. Accepts an element or a function `(props, state) => element`.',
-  ref: 'Ref to the underlying host element.',
-};
+import { SHARED_DESCRIPTIONS } from './shared-descriptions.mjs';
 
 const normalize = (file) => file.replaceAll(String.fromCharCode(92), '/');
 const isExternal = (node) => normalize(node.getSourceFile().fileName).includes('/node_modules/');
@@ -100,7 +96,7 @@ export function createExtractor({ root, files }) {
       type: printType(checker.getTypeOfSymbolAtLocation(sym, decl), decl),
       required: !(sym.flags & ts.SymbolFlags.Optional),
       default: defaults.get(sym.name) ?? jsDocDefault(sym),
-      description: doc || COMMON[sym.name] || '',
+      description: doc || SHARED_DESCRIPTIONS[sym.name] || '',
     };
   };
 

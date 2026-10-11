@@ -7,7 +7,7 @@ import { createExtractor, extractItem } from './props.mjs';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(here, '..', '..', '..', '..');
 const fx = (n) => path.join(here, '__fixtures__', n);
-const files = ['basic.tsx', 'union.tsx', 'defaults.tsx'].map(fx);
+const files = ['basic.tsx', 'union.tsx', 'defaults.tsx', 'shared.tsx'].map(fx);
 const extractor = createExtractor({ root, files });
 const byPart = (parts, name) => parts.find((p) => p.part === name);
 
@@ -62,4 +62,12 @@ test('extractItem dedupes and drops parts with nothing to show', () => {
 test('prints declared type text instead of expanding aliases', () => {
   const fxPart = byPart(extractor.extract(fx('basic.tsx')), 'Fx');
   assert.equal(fxPart.props.find((p) => p.name === 'ref').type, 'Ref<View>');
+});
+
+test('shared descriptions fill gaps but never override JSDoc', () => {
+  const sh = byPart(extractor.extract(fx('shared.tsx')), 'Sh');
+  const desc = (n) => sh.props.find((p) => p.name === n).description;
+  assert.equal(desc('open'), 'Controlled open state.');
+  assert.equal(desc('custom'), '');
+  assert.equal(desc('side'), 'Own text.');
 });
