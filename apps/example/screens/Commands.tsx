@@ -15,7 +15,7 @@ const countries = [
   'Italy', 'Japan', 'Kenya', 'Mexico', 'Morocco', 'Netherlands', 'Norway', 'Peru', 'Poland', 'Portugal', 'Spain', 'Sweden',
 ];
 
-function Palette({ onSelect }: { onSelect: (value: string) => void }) {
+function Palette({ onSelect, withCountries }: { onSelect: (value: string) => void; withCountries?: boolean }) {
   return (
     <>
       <CommandInput placeholder="Type a command or search..." />
@@ -29,15 +29,20 @@ function Palette({ onSelect }: { onSelect: (value: string) => void }) {
         <CommandSeparator />
         <CommandGroup heading="Settings">
           <CommandItem value="profile" keywords={['account']} onSelect={onSelect}>
-            <Icon icon={User} />Profile<CommandShortcut>⌘P</CommandShortcut>
+            <Icon icon={User} />Profile<CommandShortcut>Account</CommandShortcut>
           </CommandItem>
           <CommandItem value="billing" onSelect={onSelect}>
-            <Icon icon={CreditCard} />Billing<CommandShortcut>⌘B</CommandShortcut>
+            <Icon icon={CreditCard} />Billing<CommandShortcut>Plan</CommandShortcut>
           </CommandItem>
           <CommandItem value="settings" onSelect={onSelect}>
-            <Icon icon={Settings} />Settings<CommandShortcut>⌘S</CommandShortcut>
+            <Icon icon={Settings} />Settings<CommandShortcut>App</CommandShortcut>
           </CommandItem>
         </CommandGroup>
+        {withCountries && (
+          <CommandGroup heading="Countries">
+            {countries.map((name) => <CommandItem key={name} onSelect={onSelect}>{name}</CommandItem>)}
+          </CommandGroup>
+        )}
       </CommandList>
     </>
   );
@@ -57,7 +62,7 @@ export function Commands() {
         <Button variant="outline" onPress={() => setOpen(true)}>Open command dialog</Button>
       </View>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <Palette onSelect={(value) => { setLast(value); setOpen(false); }} />
+        <Palette withCountries onSelect={(value) => { setLast(value); setOpen(false); }} />
       </CommandDialog>
 
       <Command style={styles.inline}>
