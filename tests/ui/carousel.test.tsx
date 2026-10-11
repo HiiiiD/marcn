@@ -284,3 +284,88 @@ test('nested scrolling is enabled so vertical carousels scroll inside a vertical
   const { content } = setup({ props: { orientation: 'vertical' } });
   expect(content.props.nestedScrollEnabled).toBe(true);
 });
+
+function mount(props: Record<string, unknown>, count = 4) {
+  const scrollRef = createRef<ScrollView>();
+  const tree = (n: number) => (
+    <Carousel gap={16} {...props}>
+      <CarouselContent testID="c" ref={scrollRef}>
+        {Array.from({ length: n }, (_, i) => (
+          <CarouselItem key={i} testID={`i${i}`} basis={100}>x</CarouselItem>
+        ))}
+      </CarouselContent>
+    </Carousel>
+  );
+  const utils = render(tree(count));
+  return { ...utils, tree, scrollRef, content: screen.getByTestId('c') };
+}
+
+test('defaultIndex is applied once real layouts arrive after a natural-size first pass', () => {
+  const { content, scrollRef } = mount({ defaultIndex: 3 });
+  const spy = jest.spyOn(scrollRef.current!, 'scrollTo');
+  spy.mockClear();
+  fireEvent(content, 'layout', item(0, 0, 100, 100));
+  [0, 1, 2, 3].forEach((i) => fireEvent(screen.getByTestId(`i${i}`), 'layout', item(i * 10, 0, 10, 10)));
+  fireEvent(content, 'contentSizeChange', 40, 100);
+  expect(spy).not.toHaveBeenCalled();
+  [0, 1, 2, 3].forEach((i) => fireEvent(screen.getByTestId(`i${i}`), 'layout', item(i * 116, 0, 100, 100)));
+  fireEvent(content, 'contentSizeChange', 448, 100);
+  expect(spy).toHaveBeenLastCalledWith({ x: 348, animated: false });
+});
+
+test('a viewport resize re-syncs the scroll position to the current slide', () => {
+  const { content, scrollRef } = mount({ defaultIndex: 3 });
+  fireEvent(content, 'layout', item(0, 0, 100, 100));
+  [0, 1, 2, 3].forEach((i) => fireEvent(screen.getByTestId(`i${i}`), 'layout', item(i * 116, 0, 100, 100)));
+  fireEvent(content, 'contentSizeChange', 448, 100);
+  const spy = jest.spyOn(scrollRef.current!, 'scrollTo');
+  fireEvent(content, 'layout', item(0, 0, 150, 100));
+  expect(spy).toHaveBeenLastCalledWith({ x: 298, animated: false });
+});
+
+test('count follows the children, so removed slides are forgotten', () => {
+  let api!: ReturnType<typeof useCarousel>;
+  function Probe() {
+    api = useCarousel();
+    return null;
+  }
+  const tree = (n: number) => (
+    <Carousel gap={16}>
+      <Probe />
+      <CarouselContent testID="c">
+        {Array.from({ length: n }, (_, i) => (
+          <CarouselItem key={i} testID={`i${i}`} basis={100}>x</CarouselItem>
+        ))}
+      </CarouselContent>
+    </Carousel>
+  );
+  const { rerender } = render(tree(4));
+  [0, 1, 2, 3].forEach((i) => fireEvent(screen.getByTestId(`i${i}`), 'layout', item(i * 116, 0, 100, 100)));
+  expect(api.count).toBe(4);
+  rerender(tree(2));
+  expect(api.count).toBe(2);
+});
+
+test('free mode updates the index when a drag ends with no velocity (iOS slow release)', () => {
+  const onIndexChange = jest.fn();
+  const { content } = setup({ props: { snap: false, onIndexChange } });
+  const drag = (x: number, velocity?: { x: number; y: number }) =>
+    fireEvent(content, 'scrollEndDrag', { nativeEvent: { contentOffset: { x, y: 0 }, velocity } });
+  drag(217, { x: 2, y: 0 });
+  expect(onIndexChange).not.toHaveBeenCalled();
+  drag(217, { x: 0, y: 0 });
+  expect(onIndexChange).toHaveBeenLastCalledWith(2);
+});
+
+test('string and number children are wrapped in Text', () => {
+  render(
+    <Carousel>
+      <CarouselContent>
+        {'plain'}
+        {0}
+      </CarouselContent>
+    </Carousel>,
+  );
+  expect(screen.getByText('plain')).toBeOnTheScreen();
+  expect(screen.getByText('0')).toBeOnTheScreen();
+});

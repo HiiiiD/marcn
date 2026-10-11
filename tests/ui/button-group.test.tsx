@@ -73,6 +73,16 @@ test('non-element children and fragments do not crash', () => {
     </ButtonGroup>,
   );
   expect(screen.getByTestId('f')).toBeOnTheScreen();
+  expect(screen.getByText('text')).toBeOnTheScreen();
+});
+
+test('a zero from {count && <Button />} renders inside Text, not as a bare string', () => {
+  render(
+    <ButtonGroup>
+      {0}
+    </ButtonGroup>,
+  );
+  expect(screen.getByText('0')).toBeOnTheScreen();
 });
 
 test('child style is kept and join wins on radius', () => {

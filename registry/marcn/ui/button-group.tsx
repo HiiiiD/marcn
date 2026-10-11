@@ -59,6 +59,8 @@ export function ButtonGroup({ orientation = 'horizontal', style, children, ...pr
   const total = items.filter(isJoinable).length;
   let seen = -1;
   const joined = items.map((child) => {
+    if (typeof child === 'string' || typeof child === 'number') return <Text key={child}>{child}</Text>;
+    if (typeof child === 'string' || typeof child === 'number') return <Text key={`text-${child}`}>{child}</Text>;
     if (!isJoinable(child)) return child;
     seen += 1;
     if (total < 2) return child;

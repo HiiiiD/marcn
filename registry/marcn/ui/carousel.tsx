@@ -53,6 +53,7 @@ export function Carousel({
   const [contentSize, setContentSize] = useState(0);
   const [offset, setOffset] = useState(0);
   const [layouts, setLayouts] = useState<ItemLayout[]>([]);
+  const [count, setCount] = useState(0);
   const [index, setIndex] = useControllableState({ value: indexProp, defaultValue: defaultIndex, onChange: onIndexChange });
 
   const starts = layouts.map((l) => l?.start ?? 0);
@@ -74,17 +75,18 @@ export function Carousel({
   };
 
   const ready = viewport > 0 && layouts.length > 0;
-  const synced = useRef(false);
-  useEffect(() => {
+  const sync = (animated: boolean) => {
     const target = targetOf(index);
-    if (!ready || target === undefined) return;
-    if (!synced.current) {
-      synced.current = true;
-      if (target > 0) scrollToOffset(target, false);
-    } else if (indexProp !== undefined && Math.abs(offset - target) > 1) {
-      scrollToOffset(target);
-    }
-  }, [ready, indexProp, layouts.length]);
+    if (target !== undefined && Math.abs(offset - target) > 1) scrollToOffset(target, animated);
+  };
+  // Re-run when geometry changes (first real layout, rotation, resize) so the current slide stays in place.
+  const geometry = `${viewport}|${contentSize}|${points.join(',')}`;
+  useEffect(() => {
+    if (ready) sync(false);
+  }, [ready, geometry]);
+  useEffect(() => {
+    if (ready && indexProp !== undefined) sync(true);
+  }, [indexProp]);
 
   const value: CarouselContextValue = {
     orientation,
@@ -93,7 +95,7 @@ export function Carousel({
     gap: gapSize,
     viewport,
     index,
-    count: layouts.length,
+    count,
     canScrollPrev: offset > 1,
     canScrollNext: max > 0 && offset < max - 1,
     scrollTo: (i, animated = true) => {
@@ -110,6 +112,10 @@ export function Carousel({
     setContentSize,
     handleScroll: setOffset,
     handleScrollEnd: (end) => setIndex(indexAt(end)),
+    setCount: (n) => {
+      setCount(n);
+      setLayouts((prev) => (prev.length > n ? prev.slice(0, n) : prev));
+    },
     registerItem: (i, layout) =>
       setLayouts((prev) => {
         const current = prev[i];
@@ -129,10 +135,11 @@ export function Carousel({
   );
 }
 
-export function CarouselContent({ style, contentContainerStyle, children, onLayout, onContentSizeChange, onScroll, onMomentumScrollEnd, ref, ...props }: CarouselContentProps) {
+export function CarouselContent({ style, contentContainerStyle, children, onLayout, onContentSizeChange, onScroll, onMomentumScrollEnd, onScrollEndDrag, ref, ...props }: CarouselContentProps) {
   const c = useCarousel();
   const horizontal = c.orientation === 'horizontal';
   const items = Children.toArray(children);
+  useEffect(() => c.setCount(items.length), [items.length]);
   const axis = (e: { nativeEvent: { contentOffset: { x: number; y: number } } }) => (horizontal ? e.nativeEvent.contentOffset.x : e.nativeEvent.contentOffset.y);
   const snapProps = c.snap ? { snapToOffsets: c.snapPoints, decelerationRate: 'fast' as const, disableIntervalMomentum: true } : {};
   return (
@@ -162,11 +169,17 @@ export function CarouselContent({ style, contentContainerStyle, children, onLayo
         c.handleScrollEnd(axis(e));
         onMomentumScrollEnd?.(e);
       }}
+      onScrollEndDrag={(e) => {
+        // iOS fires no momentum end when a drag is released at rest.
+        const velocity = e.nativeEvent.velocity;
+        if (velocity && Math.abs(horizontal ? velocity.x : velocity.y) < 0.05) c.handleScrollEnd(axis(e));
+        onScrollEndDrag?.(e);
+      }}
       {...props}
     >
       {items.map((child, i) => (
         <CarouselItemContext.Provider key={i} value={{ index: i, count: items.length }}>
-          {child}
+          {typeof child === 'string' || typeof child === 'number' ? <Text>{child}</Text> : child}
         </CarouselItemContext.Provider>
       ))}
     </ScrollView>

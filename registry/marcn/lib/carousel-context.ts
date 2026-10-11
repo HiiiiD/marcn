@@ -23,6 +23,7 @@ export type CarouselContextValue = {
   setContentSize: (size: number) => void;
   handleScroll: (offset: number) => void;
   handleScrollEnd: (offset: number) => void;
+  setCount: (count: number) => void;
   registerItem: (index: number, layout: ItemLayout) => void;
 };
 
