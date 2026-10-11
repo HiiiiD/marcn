@@ -53,6 +53,8 @@ export function DataTable<TData extends RowData>({ columns, data }: DataTablePro
     features,
     data,
     columns,
+    // TanStack defaults every column to size 150; only an explicit size should fix a width.
+    defaultColumn: { size: undefined },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,

@@ -160,3 +160,10 @@ test('a column with an explicit size is a fixed-width column', () => {
   expect(widthOf(screen.getAllByText('pending')[0])).toHaveStyle({ width: 60, flexGrow: 0, minWidth: 60 });
   expect(widthOf(screen.getByText('Status'))).toHaveStyle({ width: 60, flexGrow: 0 });
 });
+
+test('columns without a size keep sharing the width', () => {
+  setup();
+  let node: ReactTestInstance | null = screen.getByText('user1@example.com');
+  while (node && (StyleSheet.flatten(node.props.style) as ViewStyle | undefined)?.flexGrow === undefined) node = node.parent;
+  expect(node).toHaveStyle({ flexGrow: 1, width: 0 });
+});
