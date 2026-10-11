@@ -10,6 +10,7 @@ import { CardForm } from './screens/CardForm';
 import { Calendars } from './screens/Calendars';
 import { DatePickers } from './screens/DatePickers';
 import { Comboboxes } from './screens/Comboboxes';
+import { Commands } from './screens/Commands';
 import { ContextMenus } from './screens/ContextMenus';
 import { Controls } from './screens/Controls';
 import { Display } from './screens/Display';
@@ -46,6 +47,7 @@ export default function App() {
           <Menus />
           <ContextMenus />
           <Comboboxes />
+          <Commands />
           <InputOtp />
           <Carousels />
           <BreadcrumbPagination />
