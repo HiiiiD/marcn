@@ -844,6 +844,26 @@
       "files": [{ "path": "registry/marcn/ui/pagination.tsx", "type": "registry:ui" }]
     },
     {
+      "name": "table",
+      "type": "registry:ui",
+      "title": "Table",
+      "description": "Table, header, body, footer, row, head, cell and caption parts in a horizontal scroll view; ported from shadcn.",
+      "registryDependencies": ["@marcn/theme", "@marcn/text"],
+      "files": [
+        { "path": "registry/marcn/ui/table/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/body.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/caption.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/cell.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/footer.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/head.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/header.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/row-group.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/row.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/table/styles.ts", "type": "registry:ui" }
+      ]
+    },
+    {
       "name": "carousel",
       "type": "registry:ui",
       "title": "Carousel",
