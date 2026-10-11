@@ -9,6 +9,7 @@ shadcn-style component registry for React Native. Plain `StyleSheet` (no NativeW
 - `apps/example` is a showcase app. Its `components/ui` and `lib` are generated and gitignored.
 - `apps/docs` is the Vite + TanStack Router docs site (deployed to GitHub Pages with the registry JSON under `/r`). `yarn build` there needs `yarn registry:build` first; it generates per-item data from `public/r`.
 - `apps/docs/examples/<item>.tsx` is the Expo Snack demo for a component (typecheck: `yarn tsc -p apps/docs/examples`). `gen-data.mjs` uploads each snack to Snack and caches its id by content hash in `apps/docs/snack-ids.json` (commit it). Snack runs Expo SDK 54, so native modules are unversioned there; items needing packages snackager cannot bundle (`chart`, `data-table`) have no demo. Run `yarn registry:build` before regenerating: snacks are built from `public/r`.
+- `apps/docs/usage/<item>.tsx` is the Usage snippet of a component: one JSX root, no imports (the import block and the Composition tree are generated from it). The API Reference is extracted from the registry sources by `scripts/lib/props.mjs`: only props declared in `registry/marcn` appear. Describe a prop with a one-line JSDoc, or add it to `scripts/lib/shared-descriptions.mjs` if it means the same everywhere. `yarn test` in `apps/docs` runs the script tests.
 - `docs/` is gitignored on purpose (specs and plans). Never `git add` it.
 
 ## Commands
