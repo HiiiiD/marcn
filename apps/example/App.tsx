@@ -4,6 +4,7 @@ import { Text } from '@/components/ui/text';
 import { Toaster } from '@/components/ui/sonner';
 import { PortalHost } from '@/lib/portal';
 import { useTheme } from '@/lib/theme';
+import { BreadcrumbPagination } from './screens/BreadcrumbPagination';
 import { ButtonsBadges } from './screens/ButtonsBadges';
 import { CardForm } from './screens/CardForm';
 import { Calendars } from './screens/Calendars';
@@ -14,9 +15,12 @@ import { Controls } from './screens/Controls';
 import { Display } from './screens/Display';
 import { Fields } from './screens/Fields';
 import { FormControls } from './screens/FormControls';
+import { Groups } from './screens/Groups';
+import { Carousels } from './screens/Carousels';
 import { InputOtp } from './screens/InputOtp';
 import { Menus } from './screens/Menus';
 import { Overlays } from './screens/Overlays';
+import { ScrollAreas } from './screens/ScrollAreas';
 import { SpinnerEmptyItem } from './screens/SpinnerEmptyItem';
 import { Toasts } from './screens/Toasts';
 
@@ -41,6 +45,10 @@ export default function App() {
           <ContextMenus />
           <Comboboxes />
           <InputOtp />
+          <Carousels />
+          <BreadcrumbPagination />
+          <Groups />
+          <ScrollAreas />
           <Toasts />
         </ScrollView>
         <StatusBar style="auto" />

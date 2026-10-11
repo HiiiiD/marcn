@@ -729,6 +729,89 @@
       "description": "Imperative toast() API with stacked, swipeable toasts; mount <Toaster /> once under PortalHost.",
       "registryDependencies": ["@marcn/portal", "@marcn/toast-layer", "@marcn/toast-store", "@marcn/toast-stack"],
       "files": [{ "path": "registry/marcn/ui/sonner.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "scrollbar-math",
+      "type": "registry:lib",
+      "title": "Scrollbar math",
+      "description": "Pure thumb size and position math for ScrollArea.",
+      "files": [{ "path": "registry/marcn/lib/scrollbar-math.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "title": "Scroll area",
+      "description": "ScrollView with a themed scrollbar thumb that fades in while scrolling.",
+      "dependencies": ["react-native-reanimated@4.5.1"],
+      "registryDependencies": ["@marcn/theme", "@marcn/scrollbar-math"],
+      "files": [{ "path": "registry/marcn/ui/scroll-area.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "button-group",
+      "type": "registry:ui",
+      "title": "Button group",
+      "description": "Joins adjacent buttons (or any child that forwards style) into one segmented control; includes text and separator parts.",
+      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/separator", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/ui/button-group.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "input-group",
+      "type": "registry:ui",
+      "title": "Input group",
+      "description": "Input or textarea with inline/block addons, buttons and text sharing one border and focus ring.",
+      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/button", "@marcn/input", "@marcn/textarea", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/ui/input-group.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "Breadcrumb trail with link (render prop), page, separator and ellipsis parts.",
+      "dependencies": ["lucide-react-native@1.53.0"],
+      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/text", "@marcn/icon"],
+      "files": [{ "path": "registry/marcn/ui/breadcrumb.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "pagination",
+      "type": "registry:ui",
+      "title": "Pagination",
+      "description": "Pagination parts: links built on Button, previous/next with chevrons, and an ellipsis. The consumer owns page state.",
+      "dependencies": ["lucide-react-native@1.53.0"],
+      "registryDependencies": ["@marcn/theme", "@marcn/button", "@marcn/icon", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/ui/pagination.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "carousel-math",
+      "type": "registry:lib",
+      "title": "Carousel math",
+      "description": "Pure snap-offset, nearest/leading index and neighbour math for Carousel.",
+      "files": [{ "path": "registry/marcn/lib/carousel-math.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "carousel-context",
+      "type": "registry:lib",
+      "title": "Carousel context",
+      "description": "Context and useCarousel hook shared by the Carousel parts.",
+      "registryDependencies": ["@marcn/carousel-math"],
+      "files": [{ "path": "registry/marcn/lib/carousel-context.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "carousel",
+      "type": "registry:ui",
+      "title": "Carousel",
+      "description": "Snapping (or free-scrolling) carousel on a native ScrollView with item basis, controlled index and previous/next buttons.",
+      "dependencies": ["lucide-react-native@1.53.0"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/use-controllable-state",
+        "@marcn/carousel-math",
+        "@marcn/carousel-context",
+        "@marcn/button",
+        "@marcn/icon",
+        "@marcn/text"
+      ],
+      "files": [{ "path": "registry/marcn/ui/carousel.tsx", "type": "registry:ui" }]
     }
   ]
 }

@@ -1,0 +1,277 @@
+import { Children, useContext, useEffect, useRef, useState, type Ref } from 'react';
+import { I18nManager, ScrollView, View, type ScrollViewProps, type ViewProps } from 'react-native';
+import {
+  CarouselContext,
+  CarouselItemContext,
+  useCarousel,
+  type CarouselContextValue,
+  type ItemLayout,
+} from '@/registry/marcn/lib/carousel-context';
+import { itemOffsets, leadingIndex, nearestIndex, neighborOffset, snapPoints, type CarouselAlign } from '@/registry/marcn/lib/carousel-math';
+import { mergeRefs } from '@/registry/marcn/lib/render';
+import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
+import { useControllableState } from '@/registry/marcn/lib/use-controllable-state';
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from 'lucide-react-native';
+import { Button, type ButtonProps } from '@/registry/marcn/ui/button';
+import { Icon } from '@/registry/marcn/ui/icon';
+import { Text } from '@/registry/marcn/ui/text';
+
+export { useCarousel };
+
+export type CarouselProps = ViewProps & {
+  orientation?: 'horizontal' | 'vertical';
+  snap?: boolean;
+  align?: CarouselAlign;
+  gap?: number;
+  index?: number;
+  defaultIndex?: number;
+  onIndexChange?: (index: number) => void;
+  ref?: Ref<View>;
+};
+export type CarouselContentProps = Omit<ScrollViewProps, 'horizontal'> & { ref?: Ref<ScrollView> };
+export type CarouselItemProps = ViewProps & { basis?: number; ref?: Ref<View> };
+
+const createStyles = (t: Theme) => ({ gap: t.spacing[4] });
+
+export function Carousel({
+  orientation = 'horizontal',
+  snap = true,
+  align = 'start',
+  gap,
+  index: indexProp,
+  defaultIndex = 0,
+  onIndexChange,
+  style,
+  children,
+  ...props
+}: CarouselProps) {
+  const defaults = useStyles(createStyles);
+  const gapSize = gap ?? defaults.gap;
+  const horizontal = orientation === 'horizontal';
+  const scrollRef = useRef<ScrollView>(null);
+  const [viewport, setViewport] = useState(0);
+  const [contentSize, setContentSize] = useState(0);
+  const offsetRef = useRef(0);
+  const [edge, setEdge] = useState<'start' | 'middle' | 'end'>('start');
+  const [layouts, setLayouts] = useState<ItemLayout[]>([]);
+  const [count, setCount] = useState(0);
+  const [index, setIndex] = useControllableState({ value: indexProp, defaultValue: defaultIndex, onChange: onIndexChange });
+
+  const max = Math.max(contentSize - viewport, 0);
+  // Android lays rows out right-to-left in RTL (item 0 gets the largest x) and reports the physical scrollX,
+  // so work in a mirrored "logical" space and flip only at the ScrollView boundary.
+  const first = layouts[0];
+  const last = layouts[layouts.length - 1];
+  const rtl = horizontal && !!first && !!last && layouts.length > 1 && first.start > last.start;
+  const mirror = (v: number) => (rtl ? max - v : v);
+  const starts = layouts.map((l) => (l ? (rtl ? contentSize - l.start - l.size : l.start) : 0));
+  const sizes = layouts.map((l) => l?.size ?? 0);
+  const offsets = itemOffsets({ starts, sizes, viewport, content: contentSize, align: snap ? align : 'start' });
+  const points = snap ? snapPoints(offsets) : starts.map((start) => Math.min(Math.round(start), max));
+  const targetOf = (i: number) => (snap ? offsets[i] : points[i]);
+  const indexAt = (value: number) => (snap ? nearestIndex(offsets, value, index) : leadingIndex(starts, sizes, value));
+
+  const scrollToOffset = (value: number, animated = true) =>
+    scrollRef.current?.scrollTo(horizontal ? { x: mirror(value), animated } : { y: value, animated });
+
+  const step = (direction: 1 | -1) => {
+    const next = neighborOffset(points, offsetRef.current, direction, max);
+    if (next === null) return;
+    scrollToOffset(next);
+    setIndex(indexAt(next));
+  };
+
+  const ready = viewport > 0 && layouts.length > 0;
+  const sync = (animated: boolean) => {
+    const target = targetOf(index);
+    // Android's initial RTL scroll events can report a stale offset, so always re-assert the position there.
+    if (target === undefined || (!rtl && Math.abs(offsetRef.current - target) <= 1)) return;
+    // A non-animated scrollTo issued in the same frame as the first layout is dropped on Android.
+    if (animated) scrollToOffset(target, true);
+    else requestAnimationFrame(() => scrollToOffset(target, false));
+  };
+  // Re-run when geometry changes (first real layout, rotation, resize) so the current slide stays in place.
+  const geometry = `${viewport}|${contentSize}|${points.join(',')}`;
+  useEffect(() => {
+    if (ready) sync(false);
+  }, [ready, geometry]);
+  useEffect(() => {
+    if (ready && indexProp !== undefined) sync(true);
+  }, [indexProp]);
+
+  const value: CarouselContextValue = {
+    orientation,
+    snap,
+    align,
+    gap: gapSize,
+    viewport,
+    index,
+    count,
+    canScrollPrev: edge !== 'start',
+    canScrollNext: max > 0 && edge !== 'end',
+    scrollTo: (i, animated = true) => {
+      const target = targetOf(i);
+      if (target === undefined) return;
+      setIndex(i);
+      scrollToOffset(target, animated);
+    },
+    scrollPrev: () => step(-1),
+    scrollNext: () => step(1),
+    scrollRef,
+    snapPoints: rtl ? points.map(mirror).sort((a, b) => a - b) : points,
+    setViewport,
+    setContentSize,
+    handleScroll: (raw) => {
+      const o = mirror(raw);
+      offsetRef.current = o;
+      setEdge(o <= 1 ? 'start' : max > 0 && o >= max - 1 ? 'end' : 'middle');
+    },
+    handleScrollEnd: (end) => setIndex(indexAt(mirror(end))),
+    setCount: (n) => {
+      setCount(n);
+      setLayouts((prev) => (prev.length > n ? prev.slice(0, n) : prev));
+    },
+    registerItem: (i, layout) =>
+      setLayouts((prev) => {
+        const current = prev[i];
+        if (current && current.start === layout.start && current.size === layout.size) return prev;
+        const next = prev.slice();
+        next[i] = layout;
+        return next;
+      }),
+  };
+
+  return (
+    <CarouselContext.Provider value={value}>
+      <View style={[{ position: 'relative' }, style]} {...props}>
+        {children}
+      </View>
+    </CarouselContext.Provider>
+  );
+}
+
+export function CarouselContent({ style, contentContainerStyle, children, onLayout, onContentSizeChange, onScroll, onMomentumScrollEnd, onScrollEndDrag, ref, ...props }: CarouselContentProps) {
+  const c = useCarousel();
+  const horizontal = c.orientation === 'horizontal';
+  const items = Children.toArray(children);
+  useEffect(() => c.setCount(items.length), [items.length]);
+  const axis = (e: { nativeEvent: { contentOffset: { x: number; y: number } } }) => (horizontal ? e.nativeEvent.contentOffset.x : e.nativeEvent.contentOffset.y);
+  const snapProps = c.snap ? { snapToOffsets: c.snapPoints, decelerationRate: 'fast' as const, disableIntervalMomentum: true } : {};
+  return (
+    <ScrollView
+      ref={mergeRefs(c.scrollRef, ref)}
+      horizontal={horizontal}
+      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
+      scrollEventThrottle={16}
+      nestedScrollEnabled
+      {...snapProps}
+      style={style}
+      contentContainerStyle={[{ flexDirection: horizontal ? 'row' : 'column', gap: c.gap }, contentContainerStyle]}
+      onLayout={(e) => {
+        c.setViewport(horizontal ? e.nativeEvent.layout.width : e.nativeEvent.layout.height);
+        onLayout?.(e);
+      }}
+      onContentSizeChange={(width, height) => {
+        c.setContentSize(horizontal ? width : height);
+        onContentSizeChange?.(width, height);
+      }}
+      onScroll={(e) => {
+        c.handleScroll(axis(e));
+        onScroll?.(e);
+      }}
+      onMomentumScrollEnd={(e) => {
+        c.handleScrollEnd(axis(e));
+        onMomentumScrollEnd?.(e);
+      }}
+      onScrollEndDrag={(e) => {
+        // iOS fires no momentum end when a drag is released at rest.
+        const velocity = e.nativeEvent.velocity;
+        if (velocity && Math.abs(horizontal ? velocity.x : velocity.y) < 0.05) c.handleScrollEnd(axis(e));
+        onScrollEndDrag?.(e);
+      }}
+      {...props}
+    >
+      {items.map((child, i) => (
+        <CarouselItemContext.Provider key={i} value={{ index: i, count: items.length }}>
+          {typeof child === 'string' || typeof child === 'number' ? <Text>{child}</Text> : child}
+        </CarouselItemContext.Provider>
+      ))}
+    </ScrollView>
+  );
+}
+
+export function CarouselItem({ basis = 1, style, children, onLayout, ...props }: CarouselItemProps) {
+  const c = useCarousel();
+  const slot = useContext(CarouselItemContext);
+  const horizontal = c.orientation === 'horizontal';
+  const size = c.viewport > 0 ? (basis <= 1 ? basis * c.viewport : basis) : undefined;
+  const content = typeof children === 'string' || typeof children === 'number' ? <Text>{children}</Text> : children;
+  return (
+    <View
+      role="group"
+      accessibilityLabel={slot ? `${slot.index + 1} of ${slot.count}` : undefined}
+      style={[horizontal ? { width: size } : { height: size }, style]}
+      onLayout={(e) => {
+        if (slot) {
+          const { x, y, width, height } = e.nativeEvent.layout;
+          c.registerItem(slot.index, horizontal ? { start: x, size: width } : { start: y, size: height });
+        }
+        onLayout?.(e);
+      }}
+      {...props}
+    >
+      {content}
+    </View>
+  );
+}
+
+const flip = () => (I18nManager.isRTL ? { transform: [{ scaleX: -1 }] } : undefined);
+
+const edge = (side: 'prev' | 'next', horizontal: boolean) => {
+  const inset = 8;
+  if (horizontal) return { position: 'absolute', top: '50%', marginTop: -18, ...(side === 'prev' ? { start: inset } : { end: inset }) } as const;
+  return { position: 'absolute', start: '50%', marginStart: -18, ...(side === 'prev' ? { top: inset } : { bottom: inset }) } as const;
+};
+
+export function CarouselPrevious({ variant = 'outline', size = 'icon', style, onPress, ...props }: ButtonProps) {
+  const c = useCarousel();
+  const horizontal = c.orientation === 'horizontal';
+  return (
+    <Button
+      variant={variant}
+      size={size}
+      accessibilityLabel="Previous slide"
+      disabled={!c.canScrollPrev}
+      style={[edge('prev', horizontal), style]}
+      {...props}
+      onPress={(e) => {
+        onPress?.(e);
+        c.scrollPrev();
+      }}
+    >
+      <Icon icon={horizontal ? ChevronLeft : ChevronUp} size={16} style={horizontal ? flip() : undefined} />
+    </Button>
+  );
+}
+
+export function CarouselNext({ variant = 'outline', size = 'icon', style, onPress, ...props }: ButtonProps) {
+  const c = useCarousel();
+  const horizontal = c.orientation === 'horizontal';
+  return (
+    <Button
+      variant={variant}
+      size={size}
+      accessibilityLabel="Next slide"
+      disabled={!c.canScrollNext}
+      style={[edge('next', horizontal), style]}
+      {...props}
+      onPress={(e) => {
+        onPress?.(e);
+        c.scrollNext();
+      }}
+    >
+      <Icon icon={horizontal ? ChevronRight : ChevronDown} size={16} style={horizontal ? flip() : undefined} />
+    </Button>
+  );
+}
