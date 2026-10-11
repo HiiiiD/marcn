@@ -11,10 +11,11 @@ import { createStyles } from '@/registry/marcn/ui/select/styles';
 export type SelectTriggerProps = Omit<OverlayTriggerProps, 'style' | 'children'> & {
   size?: 'default' | 'sm';
   children?: ReactNode;
+  'aria-invalid'?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
-export function SelectTrigger({ size = 'default', style, disabled, children, ...props }: SelectTriggerProps) {
+export function SelectTrigger({ size = 'default', style, disabled, children, 'aria-invalid': ariaInvalid, ...props }: SelectTriggerProps) {
   const s = useStyles(createStyles);
   const { colors } = useTheme();
   const select = useSelect();
@@ -25,7 +26,7 @@ export function SelectTrigger({ size = 'default', style, disabled, children, ...
       accessibilityRole="combobox"
       accessibilityState={{ expanded: open, disabled: !!isDisabled }}
       disabled={isDisabled}
-      style={[s.trigger, s[size], isDisabled && s.disabled, style]}
+      style={[s.trigger, s[size], ariaInvalid === true && s.invalid, isDisabled && s.disabled, style]}
       {...props}
     >
       {children}

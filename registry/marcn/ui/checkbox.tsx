@@ -6,6 +6,7 @@ import { Icon } from '@/registry/marcn/ui/icon';
 export type CheckboxProps = Omit<PressableProps, 'style' | 'children' | 'onPress'> & {
   checked?: boolean | 'indeterminate';
   onCheckedChange?: (checked: boolean) => void;
+  'aria-invalid'?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -20,11 +21,12 @@ const createStyles = (t: Theme) =>
       borderColor: t.colors.input,
       borderRadius: t.radius.xs,
     },
+    invalid: { borderColor: t.colors.destructive },
     on: { backgroundColor: t.colors.primary, borderColor: t.colors.primary },
     disabled: { opacity: 0.5 },
   });
 
-export function Checkbox({ checked = false, onCheckedChange, disabled, style, ...props }: CheckboxProps) {
+export function Checkbox({ checked = false, onCheckedChange, disabled, style, 'aria-invalid': ariaInvalid, ...props }: CheckboxProps) {
   const s = useStyles(createStyles);
   const { colors, spacing } = useTheme();
   const on = checked !== false;
@@ -35,7 +37,7 @@ export function Checkbox({ checked = false, onCheckedChange, disabled, style, ..
       disabled={disabled}
       hitSlop={spacing[3]}
       onPress={() => onCheckedChange?.(checked !== true)}
-      style={[s.box, on && s.on, disabled && s.disabled, style]}
+      style={[s.box, on && s.on, ariaInvalid === true && s.invalid, disabled && s.disabled, style]}
       {...props}
     >
       {on && <Icon icon={checked === 'indeterminate' ? Minus : Check} size={12} color={colors.primaryForeground} />}

@@ -1,6 +1,7 @@
 import { createRef } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import { lightColors } from '@/registry/marcn/lib/theme';
 import { PortalHost } from '@/registry/marcn/ui/portal';
 import { Dialog, DialogContent } from '@/registry/marcn/ui/dialog';
 import {
@@ -219,4 +220,9 @@ test('a long list opens with the selected option scrolled into view', () => {
   fireEvent(screen.getByRole('option', { selected: true }), 'layout', { nativeEvent: { layout: { x: 0, y: 5400, width: 100, height: 36 } } });
   expect(scrollTo).toHaveBeenCalledWith(expect.objectContaining({ y: expect.any(Number), animated: false }));
   expect(scrollTo.mock.calls[0][0].y).toBeGreaterThan(5000);
+});
+
+test('aria-invalid shows destructive border on the trigger', () => {
+  setup({}, { 'aria-invalid': true });
+  expect(StyleSheet.flatten(screen.getByTestId('trigger').props.style).borderColor).toBe(lightColors.destructive);
 });
