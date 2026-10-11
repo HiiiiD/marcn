@@ -206,6 +206,13 @@
       "files": [{ "path": "registry/marcn/lib/use-controllable-state.ts", "type": "registry:lib" }]
     },
     {
+      "name": "search-filter",
+      "type": "registry:lib",
+      "title": "searchFilter",
+      "description": "Accent- and case-insensitive substring match and a fuzzy command score, shared by Combobox and Command.",
+      "files": [{ "path": "registry/marcn/lib/search-filter.ts", "type": "registry:lib" }]
+    },
+    {
       "name": "collapsible",
       "type": "registry:ui",
       "title": "Collapsible",
@@ -624,6 +631,7 @@
         "@marcn/back-stack",
         "@marcn/portal",
         "@marcn/render",
+        "@marcn/search-filter",
         "@marcn/use-anchored-position",
         "@marcn/use-controllable-state",
         "@marcn/use-presence",
