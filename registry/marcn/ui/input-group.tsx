@@ -123,6 +123,8 @@ function useControl(part: string, { ref, disabled, onFocus, onBlur, 'aria-invali
   return {
     ref: mergeRefs(group.controlRef, ref),
     disabled: disabled || group.disabled,
+    // The group already dims itself; the control must not dim again on top.
+    dimStyle: group.disabled ? { opacity: 1 } : undefined,
     onFocus: (e: Parameters<NonNullable<InputProps['onFocus']>>[0]) => {
       setFocused(true);
       onFocus?.(e);
@@ -136,10 +138,12 @@ function useControl(part: string, { ref, disabled, onFocus, onBlur, 'aria-invali
 
 export function InputGroupInput({ style, ...props }: InputProps) {
   const s = useStyles(createStyles);
-  return <Input {...props} {...useControl('InputGroupInput', props)} style={[s.control.bare, style]} />;
+  const { dimStyle, ...control } = useControl('InputGroupInput', props);
+  return <Input {...props} {...control} style={[s.control.bare, dimStyle, style]} />;
 }
 
 export function InputGroupTextarea({ style, ...props }: InputProps) {
   const s = useStyles(createStyles);
-  return <Textarea {...props} {...useControl('InputGroupTextarea', props)} style={[s.control.bare, style]} />;
+  const { dimStyle, ...control } = useControl('InputGroupTextarea', props);
+  return <Textarea {...props} {...control} style={[s.control.bare, dimStyle, style]} />;
 }

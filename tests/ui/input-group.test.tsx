@@ -132,3 +132,20 @@ test('group ref reaches the view', () => {
   render(<InputGroup ref={ref} />);
   expect(ref.current).not.toBeNull();
 });
+
+test('a disabled group dims once: the control does not dim again, a lone disabled control still does', () => {
+  render(
+    <>
+      <InputGroup disabled>
+        <InputGroupInput testID="in-group" />
+        <InputGroupTextarea testID="area-in-group" />
+      </InputGroup>
+      <InputGroup>
+        <InputGroupInput testID="alone" disabled />
+      </InputGroup>
+    </>,
+  );
+  expect(screen.getByTestId('in-group')).toHaveStyle({ opacity: 1 });
+  expect(screen.getByTestId('area-in-group')).toHaveStyle({ opacity: 1 });
+  expect(screen.getByTestId('alone')).toHaveStyle({ opacity: 0.5 });
+});
