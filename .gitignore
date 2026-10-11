@@ -1,4 +1,4 @@
-docs
+/docs
 node_modules
 public/r
 apps/example/components/ui
@@ -13,3 +13,6 @@ apps/example/lib
 .pnp.*
 
 .tmp/
+
+.agents/skills
+.claude/commands

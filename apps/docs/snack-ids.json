@@ -1,0 +1,206 @@
+{
+  "button": {
+    "hash": "74100ac497b4d7b12071c90fc488bb538d49ac94",
+    "id": "KeOcOCP6mMgjW_Xo9LeLK"
+  },
+  "dialog": {
+    "hash": "13aee6c123505bea000be1c34e01c89cd867d658",
+    "id": "xsx5tyuauIZ-8xNwSriGA"
+  },
+  "icon": {
+    "hash": "955095d219b867f89e85d6b78160c10a9593cec3",
+    "id": "BoihPu0VDMn8dSKSlXZ-O"
+  },
+  "text": {
+    "hash": "f77b02037445261a3ff32c0c42f45874a0eb5ddd",
+    "id": "DvV8qNWT9dznIOaZ01ka1"
+  },
+  "badge": {
+    "hash": "94a3a101776134abf3979eac9138c3c4f0eee875",
+    "id": "Kg3nU1AyVTPCaVA7Yuszs"
+  },
+  "card": {
+    "hash": "50d2c351a3a2ca63c41049f682dac893281234cb",
+    "id": "RdHtryUnwz8yD27X7Kj8-"
+  },
+  "input": {
+    "hash": "5d30c9c796e93820a9e2fb5964a87de7adc7ee7f",
+    "id": "JRRmoxOgdUXJaV95S4eeo"
+  },
+  "textarea": {
+    "hash": "58693163fbf405dd1fa67bad8fdb6d309718bfc8",
+    "id": "Tel32gnINQ_2iDdPlUgdj"
+  },
+  "label": {
+    "hash": "b6a49b186f54a9319fbb24824b55acf8f490fc7c",
+    "id": "zjCqVsMQOqhkRvB1jvs2b"
+  },
+  "alert": {
+    "hash": "25cba8c3fdfddb754b987c76d9d2915eba3f8e3a",
+    "id": "rWFRe6etlrS97Sm4MkZpc"
+  },
+  "skeleton": {
+    "hash": "fe871cb667bee3a67291841a00cbe034f0fff2f2",
+    "id": "QgDBgboVATBnmpr1w2_97"
+  },
+  "separator": {
+    "hash": "7d357ceb62b217459f6543d1ddcb831ff35bde64",
+    "id": "52_3jduFrltfuWQwsRA_B"
+  },
+  "aspect-ratio": {
+    "hash": "c781378cb51e51963b09b1e1bec796bb78e86105",
+    "id": "oHPGTfRHVe6K-sEXYBAn-"
+  },
+  "spinner": {
+    "hash": "14fc0a88725d3e5947d65a0ea075cf827f0de6a7",
+    "id": "oJN4twF1-q_crg3KHu8k6"
+  },
+  "empty": {
+    "hash": "e6771b24a02274c5328474cb78c95f006d6f7fd2",
+    "id": "212GRiS2btilatVz1Jh0S"
+  },
+  "item": {
+    "hash": "17bce9ab180c697ba2bc141d9536bec3dc31e03b",
+    "id": "GjGNc_MTCFoiH_fMyCMMO"
+  },
+  "avatar": {
+    "hash": "01b13037ba992a61721efdbb54c52e46d0c9d382",
+    "id": "KJo6Crav86fzdeo6jB8Ur"
+  },
+  "switch": {
+    "hash": "e3befec9bb9fed150fef053a73c67f2d1787a330",
+    "id": "GaLQxZauV8mgnn5itB_iv"
+  },
+  "checkbox": {
+    "hash": "0c754eae4f70a71aca1408da7e7127fe7ce899cd",
+    "id": "jTn9nwF_N7SnclHnMBhAT"
+  },
+  "radio-group": {
+    "hash": "b157a448c567db1a9522b374bf4f30bf365cc0b8",
+    "id": "MLP3L4H68-3XKojB4Rqdm"
+  },
+  "progress": {
+    "hash": "d19fef34552835e1e8c28f4a1f575d49db1d01eb",
+    "id": "6HMHD3tbtLF8oPoPAGDg8"
+  },
+  "collapsible": {
+    "hash": "03e2a4b32757d078fd1f39ce1d87f5e6061504da",
+    "id": "sPYzUnkeQCLyUuIvHyLjW"
+  },
+  "accordion": {
+    "hash": "6d67a9e445e8a9cfa6136921cf4565950967f884",
+    "id": "7rydSpLj26UqSZGTtqoE-"
+  },
+  "tabs": {
+    "hash": "8cc16207e70c69296b9621d921fc7f9cb2440bac",
+    "id": "P6-6oW8H-tRdVPCu4PxT_"
+  },
+  "toggle": {
+    "hash": "640392e9a6e1a283c7d52bbd5b53eea7ef0b35c2",
+    "id": "fBgnRLWUbhJOKVY8v46aL"
+  },
+  "toggle-group": {
+    "hash": "21bd4b5cb57fb7de2605932db663451e34a162c8",
+    "id": "kCOMfymvEO2n-OEeimub7"
+  },
+  "slider": {
+    "hash": "50d782d30b85363b1fac397e7b07bfbe10756238",
+    "id": "XsYhsPyzSVVZ3olakgHti"
+  },
+  "popover": {
+    "hash": "d8a1acdb05331f29d81e3bc62171f1d6d57d776a",
+    "id": "XNcZSh497gwuI3hn-Ub1Q"
+  },
+  "sheet": {
+    "hash": "d48821b6eaee18c77d6cd8e49da5b26e78df2e4c",
+    "id": "qy8VasE8csZIXCYamH-Kf"
+  },
+  "drawer": {
+    "hash": "e992f2d0e3ea4a161bc0136eea1c9dabf17ba01f",
+    "id": "r2pav6hGSOK6nne31_lbw"
+  },
+  "alert-dialog": {
+    "hash": "5441abee7684da01216249cc2f70fa352d60dbea",
+    "id": "CpugnX0_oZxwcjiCzcdJ4"
+  },
+  "tooltip": {
+    "hash": "31b518d796aaad2ff65c7a470efb8c577d933b52",
+    "id": "fn0LHVIhyj9CTDskaZQEX"
+  },
+  "context-menu": {
+    "hash": "13005146c59626a8d2e75805b1f2b87df118bafe",
+    "id": "Zh0JtMEpWaXM6-XlScg3m"
+  },
+  "dropdown-menu": {
+    "hash": "c5dfd3d7f66cdafb83eefc80ca1605d139aeff45",
+    "id": "wF18kjSiRZ64oe_TmWhzh"
+  },
+  "calendar": {
+    "hash": "383c3f606c655fc252ee58148695b29c5326f5be",
+    "id": "mPKd0wT_GtArd3W3oOgc-"
+  },
+  "date-picker": {
+    "hash": "1c7c8bff9cf882c1b5ca87adbd5ca3841ebf2399",
+    "id": "iIdyToXMjakAbwz3uRiN8"
+  },
+  "select": {
+    "hash": "e04cee6348aa9ee062ae23c8ad71e63020e82475",
+    "id": "UM1VLmCPPtaLlH-5EquaD"
+  },
+  "combobox": {
+    "hash": "a6cf2aa4491b55e35b5c1d41821a4afec252656a",
+    "id": "ONBEfyvvWoo2TEmQQo7Gn"
+  },
+  "command": {
+    "hash": "c12e1cad7c42b52a3efac70648e9eb2b473c8ffd",
+    "id": "wSrbb9x7nKT5jv4FOR-R-"
+  },
+  "input-otp": {
+    "hash": "da848904b9a625b3f79bd3a73c76b677ef2455e3",
+    "id": "VYYd2SPlqziOyoz0rHJtP"
+  },
+  "field": {
+    "hash": "4389b2aebcf39362171215e5dfab40c8e887dd78",
+    "id": "OZP5CVRuGcSqmOHiN7flD"
+  },
+  "form-hook-form": {
+    "hash": "9adedeed68d92cd1c0d094b4cecdead4214cc5e1",
+    "id": "vsdSp-VcX2GhU0oqDCQ0b"
+  },
+  "form-tanstack": {
+    "hash": "85cb6bc31d45200d24aeb9c7f5b2fae725d7f6f9",
+    "id": "CqF3vxgLnk5aPhO0lwXlm"
+  },
+  "sonner": {
+    "hash": "0b4933a232f9fac75159c9c46f77885302c15e19",
+    "id": "y3rOfY1chrTkri8H01LCX"
+  },
+  "scroll-area": {
+    "hash": "5c95127e95fa0518950ed6a5704066f092cbfcd7",
+    "id": "NIY8QQj08_6kXa1tZwd7V"
+  },
+  "button-group": {
+    "hash": "009945aa3570710547d11761cfadf4faa93b7640",
+    "id": "glQxja292jf0mr05nQeBh"
+  },
+  "input-group": {
+    "hash": "a81db92599b30fb9de13b236c394a68fda306a41",
+    "id": "0SRj1uS4AAZ3flfrn_qXx"
+  },
+  "breadcrumb": {
+    "hash": "0488ca0c110572616e95d19d53b886cd413a1981",
+    "id": "6eH_TxRfX88iCQOBG1xFB"
+  },
+  "pagination": {
+    "hash": "e13151cbd0eb42f91fff387373a5d748e0e1cb67",
+    "id": "KEEIOMt2hwmlAB7I5FAhB"
+  },
+  "table": {
+    "hash": "ebd25e7a0e680455e46412dd6ccf9de3f28b6dca",
+    "id": "pU5VTamOEOELC_cN27nTv"
+  },
+  "carousel": {
+    "hash": "e4cb4ac416d592b2a1d8e1a5791474ba585f64fb",
+    "id": "Ok-aljakeY_OLd94f-fTH"
+  }
+}

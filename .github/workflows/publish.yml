@@ -1,0 +1,27 @@
+name: Publish
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions: { contents: read, pages: write, id-token: write }
+    concurrency: { group: pages, cancel-in-progress: false }
+    environment: { name: github-pages, url: '${{ steps.deployment.outputs.page_url }}' }
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: yarn }
+      - run: yarn install --immutable
+      - run: yarn registry:build
+      - run: yarn install --immutable
+        working-directory: apps/docs
+      - run: yarn build
+        working-directory: apps/docs
+        env: { DOCS_BASE_PATH: /marcn }
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: apps/docs/dist }
+      - id: deployment
+        uses: actions/deploy-pages@v4

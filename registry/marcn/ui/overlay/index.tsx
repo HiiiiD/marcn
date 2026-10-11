@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
 });
 
 function focusNode(ref: RefObject<View | null>) {
-  if (ref.current) AccessibilityInfo.sendAccessibilityEvent(ref.current, 'focus');
+  if (ref.current) AccessibilityInfo.sendAccessibilityEvent?.(ref.current, 'focus');
 }
 
 export type OverlayProps = {

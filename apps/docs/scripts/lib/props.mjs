@@ -1,0 +1,180 @@
+import path from 'node:path';
+import ts from 'typescript';
+import { SHARED_DESCRIPTIONS } from './shared-descriptions.mjs';
+
+const normalize = (file) => file.replaceAll(String.fromCharCode(92), '/');
+const isExternal = (node) => normalize(node.getSourceFile().fileName).includes('/node_modules/');
+
+function loadOptions(root) {
+  const cfg = ts.readConfigFile(path.join(root, 'tsconfig.json'), ts.sys.readFile);
+  const parsed = ts.parseJsonConfigFileContent(cfg.config, ts.sys, root);
+  return { ...parsed.options, noEmit: true, skipLibCheck: true, types: ['node'] };
+}
+
+export function createExtractor({ root, files }) {
+  const program = ts.createProgram(files, loadOptions(root));
+  const checker = program.getTypeChecker();
+
+  const jsDocDefault = (sym) => {
+    const tag = sym.getJsDocTags(checker).find((t) => t.name === 'default');
+    return tag?.text ? ts.displayPartsToString(tag.text).trim() : null;
+  };
+
+  const mentionsTypeParam = (node) => {
+    let found = false;
+    const visit = (n) => {
+      if (found) return;
+      if (ts.isTypeReferenceNode(n)) {
+        const s = checker.getSymbolAtLocation(n.typeName);
+        if (s && s.flags & ts.SymbolFlags.TypeParameter) found = true;
+      }
+      ts.forEachChild(n, visit);
+    };
+    visit(node);
+    return found;
+  };
+
+  // Union-synthesised props carry one declaration per member; print each variant.
+  const printType = (sym) => {
+    const decls = sym.declarations.filter((d) => !isExternal(d));
+    const decl = decls[0] ?? sym.declarations[0];
+    const plain = checker.getNonNullableType(checker.getTypeOfSymbolAtLocation(sym, decl));
+    if (plain.isUnion() && plain.types.every((t) => t.isStringLiteral())) {
+      return plain.types.map((t) => `'${t.value}'`).join(' | ');
+    }
+    const nodes = decls.map((d) => d.type);
+    if (nodes.length && nodes.every((n) => n && !mentionsTypeParam(n))) {
+      const texts = [...new Set(nodes.map((n) => n.getText().replace(/\s+/g, ' ')))];
+      return texts.length === 1 ? texts[0] : texts.map((s, i) => (ts.isFunctionTypeNode(nodes[i]) ? `(${s})` : s)).join(' | ');
+    }
+    return checker.typeToString(plain, decl, ts.TypeFormatFlags.NoTruncation);
+  };
+
+  const internalDoc = (sym) => {
+    for (const d of sym.declarations) {
+      if (isExternal(d)) continue;
+      const doc = ts.getJSDocCommentsAndTags(d).find(ts.isJSDoc);
+      if (doc?.comment) return ts.getTextOfJSDocComment(doc.comment).trim();
+    }
+    return '';
+  };
+
+  const collectProps = (type) => {
+    const map = new Map(checker.getPropertiesOfType(type).map((s) => [s.name, s]));
+    if (type.isUnion()) {
+      for (const member of type.types) {
+        for (const sym of checker.getPropertiesOfType(member)) if (!map.has(sym.name)) map.set(sym.name, sym);
+      }
+    }
+    return [...map.values()].filter((s) => s.declarations?.some((d) => !isExternal(d)));
+  };
+
+  const bindingPatterns = (fn) => {
+    const out = [];
+    const first = fn.parameters[0]?.name;
+    if (first && ts.isObjectBindingPattern(first)) out.push(first);
+    if (fn.body && ts.isBlock(fn.body)) {
+      for (const stmt of fn.body.statements) {
+        if (!ts.isVariableStatement(stmt)) continue;
+        for (const decl of stmt.declarationList.declarations) {
+          if (ts.isObjectBindingPattern(decl.name)) out.push(decl.name);
+        }
+      }
+    }
+    return out;
+  };
+
+  const defaultsOf = (fn) => {
+    const map = new Map();
+    for (const pattern of bindingPatterns(fn)) {
+      for (const el of pattern.elements) {
+        if (!el.initializer) continue;
+        map.set((el.propertyName ?? el.name).getText(), el.initializer.getText());
+      }
+    }
+    return map;
+  };
+
+  const baseNames = (typeNode) => {
+    const out = new Set();
+    const seen = new Set();
+    const visit = (n) => {
+      if (ts.isTypeReferenceNode(n)) {
+        const sym = checker.getSymbolAtLocation(n.typeName);
+        const target = sym && sym.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(sym) : sym;
+        const decl = target?.declarations?.[0];
+        if (decl && isExternal(decl)) {
+          if (/Props$/.test(target.name)) out.add(target.name);
+        } else if (decl && ts.isTypeAliasDeclaration(decl) && !seen.has(decl)) {
+          seen.add(decl);
+          visit(decl.type);
+        }
+        n.typeArguments?.forEach(visit);
+        return;
+      }
+      ts.forEachChild(n, visit);
+    };
+    if (typeNode) visit(typeNode);
+    return [...out];
+  };
+
+  const describe = (sym, defaults) => {
+    return {
+      name: sym.name,
+      type: printType(sym),
+      required: !(sym.flags & ts.SymbolFlags.Optional),
+      default: defaults.get(sym.name) ?? jsDocDefault(sym),
+      description: internalDoc(sym) || SHARED_DESCRIPTIONS[sym.name] || '',
+    };
+  };
+
+  const toComponent = (exported, sf) => {
+    const sym = exported.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(exported) : exported;
+    if (!/^[A-Z]/.test(sym.name) || !(sym.flags & (ts.SymbolFlags.Function | ts.SymbolFlags.Variable))) return null;
+    const type = checker.getTypeOfSymbolAtLocation(sym, sf);
+    const fn = type.getCallSignatures()[0]?.declaration;
+    if (!fn?.parameters || isExternal(fn)) return null;
+    const param = fn.parameters[0];
+    if (!param) return { part: exported.name, extends: [], props: [] };
+    const defaults = defaultsOf(fn);
+    return {
+      part: exported.name,
+      extends: baseNames(param.type),
+      props: collectProps(checker.getTypeAtLocation(param)).map((s) => describe(s, defaults)),
+    };
+  };
+
+  return {
+    extract(file) {
+      const sf = program.getSourceFile(file);
+      const mod = sf && checker.getSymbolAtLocation(sf);
+      if (!mod) return [];
+      return checker.getExportsOfModule(mod).flatMap((e) => toComponent(e, sf) ?? []);
+    },
+    exportNames(file) {
+      const sf = program.getSourceFile(file);
+      const mod = sf && checker.getSymbolAtLocation(sf);
+      if (!mod) return [];
+      return checker
+        .getExportsOfModule(mod)
+        .filter((e) => {
+          const sym = e.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(e) : e;
+          return sym.flags & (ts.SymbolFlags.Function | ts.SymbolFlags.Variable | ts.SymbolFlags.Class);
+        })
+        .map((e) => e.name);
+    },
+  };
+}
+
+// Only the entry module (first file) counts: that is what consumers import from.
+export function extractItem(extractor, files) {
+  const [entry] = files;
+  const parts = new Map();
+  for (const part of extractor.extract(entry)) if (!parts.has(part.part)) parts.set(part.part, part);
+  const all = [...parts.values()];
+  return {
+    components: all.map((p) => p.part),
+    exports: extractor.exportNames(entry),
+    api: all.filter((p) => p.props.length || p.extends.length),
+  };
+}
