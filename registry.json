@@ -779,6 +779,39 @@
       "dependencies": ["lucide-react-native@1.53.0"],
       "registryDependencies": ["@marcn/theme", "@marcn/button", "@marcn/icon", "@marcn/text"],
       "files": [{ "path": "registry/marcn/ui/pagination.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "carousel-math",
+      "type": "registry:lib",
+      "title": "Carousel math",
+      "description": "Pure snap-offset, nearest/leading index and neighbour math for Carousel.",
+      "files": [{ "path": "registry/marcn/lib/carousel-math.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "carousel-context",
+      "type": "registry:lib",
+      "title": "Carousel context",
+      "description": "Context and useCarousel hook shared by the Carousel parts.",
+      "registryDependencies": ["@marcn/carousel-math"],
+      "files": [{ "path": "registry/marcn/lib/carousel-context.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "carousel",
+      "type": "registry:ui",
+      "title": "Carousel",
+      "description": "Snapping (or free-scrolling) carousel on a native ScrollView with item basis, controlled index and previous/next buttons.",
+      "dependencies": ["lucide-react-native@1.53.0"],
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/use-controllable-state",
+        "@marcn/carousel-math",
+        "@marcn/carousel-context",
+        "@marcn/button",
+        "@marcn/icon",
+        "@marcn/text"
+      ],
+      "files": [{ "path": "registry/marcn/ui/carousel.tsx", "type": "registry:ui" }]
     }
   ]
 }
