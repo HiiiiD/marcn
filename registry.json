@@ -745,6 +745,22 @@
       "dependencies": ["react-native-reanimated@4.5.1"],
       "registryDependencies": ["@marcn/theme", "@marcn/scrollbar-math"],
       "files": [{ "path": "registry/marcn/ui/scroll-area.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "button-group",
+      "type": "registry:ui",
+      "title": "Button group",
+      "description": "Joins adjacent buttons (or any child that forwards style) into one segmented control; includes text and separator parts.",
+      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/separator", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/ui/button-group.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "input-group",
+      "type": "registry:ui",
+      "title": "Input group",
+      "description": "Input or textarea with inline/block addons, buttons and text sharing one border and focus ring.",
+      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/button", "@marcn/input", "@marcn/textarea", "@marcn/text"],
+      "files": [{ "path": "registry/marcn/ui/input-group.tsx", "type": "registry:ui" }]
     }
   ]
 }
