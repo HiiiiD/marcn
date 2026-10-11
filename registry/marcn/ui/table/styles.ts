@@ -15,7 +15,7 @@ export const createStyles = (t: Theme) =>
     rowLast: { borderBottomWidth: 0 },
     rowSelected: { backgroundColor: t.colors.muted },
     footer: { borderTopWidth: 1, borderTopColor: t.colors.border, backgroundColor: `${t.colors.muted}80` },
-    column: { flexGrow: 1, flexBasis: 0, minWidth: MIN_COLUMN_WIDTH, justifyContent: 'center' },
+    column: { flexGrow: 1, width: 0, minWidth: MIN_COLUMN_WIDTH, justifyContent: 'center' },
     head: { height: 40, paddingHorizontal: t.spacing[2] },
     cell: { padding: t.spacing[2] },
     caption: { marginTop: t.spacing[4] },

@@ -13,6 +13,7 @@ import { Comboboxes } from './screens/Comboboxes';
 import { Commands } from './screens/Commands';
 import { ContextMenus } from './screens/ContextMenus';
 import { Controls } from './screens/Controls';
+import { DataTables } from './screens/DataTables';
 import { Display } from './screens/Display';
 import { Fields } from './screens/Fields';
 import { Forms } from './screens/Forms';
@@ -25,6 +26,7 @@ import { Menus } from './screens/Menus';
 import { Overlays } from './screens/Overlays';
 import { ScrollAreas } from './screens/ScrollAreas';
 import { SpinnerEmptyItem } from './screens/SpinnerEmptyItem';
+import { Tables } from './screens/Tables';
 import { Toasts } from './screens/Toasts';
 import { Typography } from './screens/Typography';
 
@@ -57,6 +59,8 @@ export default function App() {
           <BreadcrumbPagination />
           <Groups />
           <ScrollAreas />
+          <Tables />
+          <DataTables />
           <Toasts />
         </ScrollView>
         <StatusBar style="auto" />

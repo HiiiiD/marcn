@@ -121,8 +121,8 @@ test('caption is muted with a top margin', () => {
 
 test('default columns share space; colSpan scales flex and min width', () => {
   render(invoices());
-  expect(screen.getByTestId('cell')).toHaveStyle({ flexGrow: 1, flexBasis: 0, minWidth: 96, padding: 8 });
-  expect(screen.getByTestId('head')).toHaveStyle({ flexGrow: 1, flexBasis: 0, minWidth: 96, height: 40, paddingHorizontal: 8 });
+  expect(screen.getByTestId('cell')).toHaveStyle({ flexGrow: 1, width: 0, minWidth: 96, padding: 8 });
+  expect(screen.getByTestId('head')).toHaveStyle({ flexGrow: 1, width: 0, minWidth: 96, height: 40, paddingHorizontal: 8 });
   expect(screen.getByTestId('total')).toHaveStyle({ flexGrow: 2, minWidth: 192 });
 });
 
