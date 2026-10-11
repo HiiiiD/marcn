@@ -729,6 +729,22 @@
       "description": "Imperative toast() API with stacked, swipeable toasts; mount <Toaster /> once under PortalHost.",
       "registryDependencies": ["@marcn/portal", "@marcn/toast-layer", "@marcn/toast-store", "@marcn/toast-stack"],
       "files": [{ "path": "registry/marcn/ui/sonner.tsx", "type": "registry:ui" }]
+    },
+    {
+      "name": "scrollbar-math",
+      "type": "registry:lib",
+      "title": "Scrollbar math",
+      "description": "Pure thumb size and position math for ScrollArea.",
+      "files": [{ "path": "registry/marcn/lib/scrollbar-math.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "title": "Scroll area",
+      "description": "ScrollView with a themed scrollbar thumb that fades in while scrolling.",
+      "dependencies": ["react-native-reanimated@4.5.1"],
+      "registryDependencies": ["@marcn/theme", "@marcn/scrollbar-math"],
+      "files": [{ "path": "registry/marcn/ui/scroll-area.tsx", "type": "registry:ui" }]
     }
   ]
 }

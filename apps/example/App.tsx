@@ -17,6 +17,7 @@ import { FormControls } from './screens/FormControls';
 import { InputOtp } from './screens/InputOtp';
 import { Menus } from './screens/Menus';
 import { Overlays } from './screens/Overlays';
+import { ScrollAreas } from './screens/ScrollAreas';
 import { SpinnerEmptyItem } from './screens/SpinnerEmptyItem';
 import { Toasts } from './screens/Toasts';
 
@@ -41,6 +42,7 @@ export default function App() {
           <ContextMenus />
           <Comboboxes />
           <InputOtp />
+          <ScrollAreas />
           <Toasts />
         </ScrollView>
         <StatusBar style="auto" />
