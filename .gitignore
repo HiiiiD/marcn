@@ -13,3 +13,6 @@ apps/example/lib
 .pnp.*
 
 .tmp/
+
+.agents/skills
+.claude/commands
