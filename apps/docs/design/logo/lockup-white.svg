@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 64" fill="none" color="#ffffff">
+  <rect width="210" height="64" fill="#000000"/>
+  <g fill="currentColor" transform="scale(.5)">
+    <path d="M10 30C10 23 14 20 20 23L42 36C46 38 48 42 48 48V68C48 70 47 71 45 73L30 81C26 83 27 86 32 85C48 85 61 68 69 62C76 56 83 55 91 60L114 75C117 77 118 79 118 83V100C118 107 114 110 108 107L85 96C81 94 79 90 79 85V64C68 66 58 84 44 92C29 101 10 94 10 83V30Z"/>
+    <path d="M79 42C79 37 81 34 86 32L108 21C114 18 118 21 118 28V64C118 69 117 70 113 68L92 56C86 53 83 52 79 52V42Z"/>
+  </g>
+  <text x="72" y="44" fill="currentColor" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="34" font-weight="650" letter-spacing="-1.7">marcn</text>
+</svg>

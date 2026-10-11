@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>marcn — linked panels</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 40px 24px; background: #f4f3ef; color: #171717; font-family: ui-sans-serif, system-ui, sans-serif; }
+    main { max-width: 900px; margin: auto; }
+    h1 { margin: 0 0 8px; font-size: 24px; letter-spacing: -.04em; }
+    p { margin: 0 0 28px; color: #666; font-size: 14px; line-height: 1.5; }
+    h2 { margin: 0 0 24px; font-size: 12px; font-weight: 500; opacity: .65; }
+    figure { margin: 0; display: grid; justify-items: center; gap: 12px; }
+    figcaption { font-size: 12px; opacity: .65; }
+    .comparison { display: flex; justify-content: center; gap: 48px; padding: 24px; margin-bottom: 24px; border: 1px solid #dedbd3; border-radius: 12px; }
+    .reference { width: 161px; height: 209px; }
+    .reconstruction { position: relative; width: 161px; height: 209px; background: #fbfaf7; }
+    .reconstruction .mark { position: absolute; width: 128px; height: 128px; left: 21px; top: 14px; }
+    .reconstruction .icon { position: absolute; width: 48px; height: 48px; left: 63px; top: 153px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    section { padding: 24px; border: 1px solid #ddd; border-radius: 12px; }
+    .light { background: #fff; color: #000; }
+    .dark { background: #000; color: #fff; border-color: #000; }
+    .sizes { display: flex; justify-content: center; align-items: end; gap: 40px; margin-bottom: 24px; }
+    .sizes svg { display: block; width: var(--size); height: var(--size); }
+    .large svg { display: block; width: 256px; max-width: 100%; height: auto; }
+    .lockup { display: block; width: 180px; height: auto; margin: 24px auto 0; }
+    .symbols { position: absolute; width: 0; height: 0; overflow: hidden; }
+    @media (max-width: 600px) {
+      body { padding: 24px 16px; }
+      .grid { grid-template-columns: 1fr; }
+      .comparison { gap: 16px; padding: 16px 8px; flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="marcn-mark" viewBox="0 0 128 128">
+      <g fill="currentColor">
+        <path d="M10 30C10 23 14 20 20 23L42 36C46 38 48 42 48 48V68C48 70 47 71 45 73L30 81C26 83 27 86 32 85C48 85 61 68 69 62C76 56 83 55 91 60L114 75C117 77 118 79 118 83V100C118 107 114 110 108 107L85 96C81 94 79 90 79 85V64C68 66 58 84 44 92C29 101 10 94 10 83V30Z"/>
+    <path d="M79 42C79 37 81 34 86 32L108 21C114 18 118 21 118 28V64C118 69 117 70 113 68L92 56C86 53 83 52 79 52V42Z"/>
+      </g>
+    </symbol>
+  </svg>
+  <main>
+    <h1>marcn · linked panels</h1>
+    <p>Hand-drawn vector reconstruction of the selected reference.</p>
+    <div class="comparison">
+      <figure>
+        <img class="reference" src="reference.png" alt="Selected logo reference">
+        <figcaption>Your reference</figcaption>
+      </figure>
+      <figure>
+        <div class="reconstruction" role="img" aria-label="Vector reconstruction of the mark and rounded-square icon">
+          <img class="mark" src="mark.svg" alt="">
+          <img class="icon" src="icon.svg" alt="">
+        </div>
+        <figcaption>SVG reconstruction</figcaption>
+      </figure>
+    </div>
+    <div class="grid">
+      <section class="light">
+        <h2>Light · inline SVG inherits currentColor</h2>
+        <div class="sizes">
+          <figure><svg style="--size:16px" aria-hidden="true"><use href="#marcn-mark"/></svg><figcaption>16 px</figcaption></figure>
+          <figure><svg style="--size:32px" aria-hidden="true"><use href="#marcn-mark"/></svg><figcaption>32 px</figcaption></figure>
+          <figure><svg style="--size:64px" aria-hidden="true"><use href="#marcn-mark"/></svg><figcaption>64 px</figcaption></figure>
+        </div>
+        <figure class="large"><svg viewBox="0 0 128 128" aria-hidden="true"><use href="#marcn-mark"/></svg><figcaption>256 px</figcaption></figure>
+        <img class="lockup" src="lockup-black.svg" alt="marcn horizontal lockup">
+      </section>
+      <section class="dark">
+        <h2>Dark · inline SVG inherits currentColor</h2>
+        <div class="sizes">
+          <figure><svg style="--size:16px" aria-hidden="true"><use href="#marcn-mark"/></svg><figcaption>16 px</figcaption></figure>
+          <figure><svg style="--size:32px" aria-hidden="true"><use href="#marcn-mark"/></svg><figcaption>32 px</figcaption></figure>
+          <figure><svg style="--size:64px" aria-hidden="true"><use href="#marcn-mark"/></svg><figcaption>64 px</figcaption></figure>
+        </div>
+        <figure class="large"><svg viewBox="0 0 128 128" aria-hidden="true"><use href="#marcn-mark"/></svg><figcaption>256 px</figcaption></figure>
+        <img class="lockup" src="lockup-white.svg" alt="marcn horizontal lockup">
+      </section>
+    </div>
+  </main>
+</body>
+</html>
