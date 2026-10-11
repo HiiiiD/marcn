@@ -1,0 +1,42 @@
+import { StyleSheet } from 'react-native';
+import type { Theme } from '@/registry/marcn/lib/theme';
+
+export const createStyles = (t: Theme) => {
+  const text = { fontSize: t.fontSize.sm, fontWeight: t.fontWeight.medium };
+  return {
+    base: StyleSheet.create({
+      root: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: t.spacing[2], borderRadius: t.radius.md },
+      disabled: { opacity: 0.5 },
+    }),
+    variant: StyleSheet.create({
+      default: { backgroundColor: t.colors.primary },
+      destructive: { backgroundColor: t.colors.destructive },
+      outline: { backgroundColor: t.colors.background, borderWidth: 1, borderColor: t.colors.border },
+      secondary: { backgroundColor: t.colors.secondary },
+      ghost: {},
+      link: {},
+    }),
+    pressed: StyleSheet.create({
+      default: { opacity: 0.9 },
+      destructive: { opacity: 0.9 },
+      outline: { backgroundColor: t.colors.accent },
+      secondary: { opacity: 0.8 },
+      ghost: { backgroundColor: t.colors.accent },
+      link: { opacity: 0.7 },
+    }),
+    size: StyleSheet.create({
+      default: { height: 36, paddingHorizontal: t.spacing[4] },
+      sm: { height: 32, paddingHorizontal: t.spacing[3] },
+      lg: { height: 40, paddingHorizontal: t.spacing[6] },
+      icon: { height: 36, width: 36 },
+    }),
+    text: StyleSheet.create({
+      default: { ...text, color: t.colors.primaryForeground },
+      destructive: { ...text, color: t.colors.destructiveForeground },
+      outline: { ...text, color: t.colors.foreground },
+      secondary: { ...text, color: t.colors.secondaryForeground },
+      ghost: { ...text, color: t.colors.foreground },
+      link: { ...text, color: t.colors.primary, textDecorationLine: 'underline' },
+    }),
+  };
+};

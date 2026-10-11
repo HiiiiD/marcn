@@ -4,8 +4,8 @@ shadcn-style component registry for React Native. Plain `StyleSheet` (no NativeW
 
 ## Layout
 
-- `registry.json` lists every item; source lives in `registry/marcn/lib` and `registry/marcn/ui`.
-- `tests/` mirrors the registry (`tests/lib`, `tests/ui`); `tests/setup.ts` mocks `useColorScheme`, `react-native-reanimated` and `react-native-worklets`.
+- `registry.json` lists every item; source lives in `registry/marcn/lib` (shared helpers) and `registry/marcn/ui`. Multi-part components are folders (`ui/<name>/index.tsx` re-exports the API, one file per part); helpers used by one component live in its folder. `lib` holds only `.ts` (hooks, math, stores, theme); anything with JSX, including shared infrastructure (`portal`, `overlay`, `menu`), lives in `ui`. Folder items list all files in `registry.json` and install as folders; imports between their files use `@/registry/marcn/ui/<name>/<file>`, never relative.
+- `tests/` mirrors the registry (`tests/lib`, `tests/ui/<component>/`); `tests/setup.ts` mocks `useColorScheme`, `react-native-reanimated` and `react-native-worklets`.
 - `apps/example` is a showcase app. Its `components/ui` and `lib` are generated and gitignored.
 - `docs/` is gitignored on purpose (specs and plans). Never `git add` it.
 
