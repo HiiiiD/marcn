@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { Toaster } from '@/components/ui/sonner';
-import { PortalHost } from '@/lib/portal';
+import { PortalHost } from '@/components/ui/portal';
 import { useTheme } from '@/lib/theme';
 import { BreadcrumbPagination } from './screens/BreadcrumbPagination';
 import { ButtonsBadges } from './screens/ButtonsBadges';

@@ -2,14 +2,14 @@ import { useCallback, useContext, type ReactNode } from 'react';
 import { ChevronRight } from 'lucide-react-native';
 import {
   MenuCloseContext, MenuItemRow, MenuLabel, MenuSeparator, MenuShortcut, useMenuClose, type MenuItemRowProps,
-} from '@/registry/marcn/lib/menu-item';
-import { MenuSurface, type MenuSurfaceProps } from '@/registry/marcn/lib/menu-surface';
-import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
-import { OverlayRoot, OverlayTrigger, useOverlay, type OverlayRootProps } from '@/registry/marcn/lib/overlay-root';
+} from '@/registry/marcn/ui/menu/menu-item';
+import { MenuSurface, type MenuSurfaceProps } from '@/registry/marcn/ui/menu/menu-surface';
+import { Overlay, type OverlayProps } from '@/registry/marcn/ui/overlay';
+import { OverlayRoot, OverlayTrigger, useOverlay, type OverlayRootProps } from '@/registry/marcn/ui/overlay/overlay-root';
 import {
   MenuCheckboxItem, MenuGroup, MenuItem, MenuRadioGroup, MenuRadioItem,
   type MenuCheckboxItemProps, type MenuItemProps, type MenuRadioGroupProps, type MenuRadioItemProps, type MenuSelectEvent,
-} from '@/registry/marcn/lib/menu-parts';
+} from '@/registry/marcn/ui/menu/menu-parts';
 import { Icon } from '@/registry/marcn/ui/icon';
 
 export const DropdownMenu = OverlayRoot;

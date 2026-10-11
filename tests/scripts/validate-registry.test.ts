@@ -70,3 +70,29 @@ test('reports registry import that matches no item', () => {
   const root = setup({ 'registry/marcn/ui/a.tsx': "import { T } from '@/registry/marcn/ui/zzz';" });
   expect(validateRegistry({ items: [item({})] }, root)[0]).toMatch(/matches no item/);
 });
+
+test('rejects files named like a folder item or reusing a stem across .ts and .tsx', () => {
+  const root = setup({
+    'registry/marcn/ui/a/index.tsx': '',
+    'registry/marcn/ui/b/a.tsx': '',
+    'registry/marcn/ui/b/index.tsx': '',
+    'registry/marcn/ui/b/x.ts': '',
+    'registry/marcn/ui/c/x.tsx': '',
+  });
+  const f = (p: string) => ({ path: `registry/marcn/ui/${p}`, type: 'registry:ui' });
+  const errors = validateRegistry({
+    items: [
+      item({ name: 'a', files: [f('a/index.tsx')] }),
+      item({ name: 'b', files: [f('b/index.tsx'), f('b/a.tsx'), f('b/x.ts')] }),
+      item({ name: 'c', files: [f('c/x.tsx')] }),
+    ],
+  }, root);
+  expect(errors.join('\n')).toMatch(/named like registry item "a"/);
+  expect(errors.join('\n')).toMatch(/"x" is used as both/);
+});
+
+test('rejects tsx files under lib', () => {
+  const root = setup({ 'registry/marcn/lib/a.tsx': '' });
+  const errors = validateRegistry({ items: [item({ type: 'registry:lib', files: [{ path: 'registry/marcn/lib/a.tsx', type: 'registry:lib' }] })] }, root);
+  expect(errors[0]).toMatch(/lib holds only \.ts/);
+});

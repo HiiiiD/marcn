@@ -15,7 +15,7 @@
       "type": "registry:lib",
       "title": "Render",
       "description": "renderElement helper behind the render prop: swap a component's element while keeping its props, styles, handlers and refs.",
-      "files": [{ "path": "registry/marcn/lib/render.tsx", "type": "registry:lib" }]
+      "files": [{ "path": "registry/marcn/lib/render.ts", "type": "registry:lib" }]
     },
     {
       "name": "icon",
@@ -40,7 +40,11 @@
       "title": "Button",
       "description": "Pressable button with default, destructive, outline, secondary, ghost and link variants.",
       "registryDependencies": ["@marcn/theme", "@marcn/text", "@marcn/render"],
-      "files": [{ "path": "registry/marcn/ui/button.tsx", "type": "registry:ui" }]
+      "files": [
+        { "path": "registry/marcn/ui/button/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/button/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/button/types.ts", "type": "registry:ui" }
+      ]
     },
     {
       "name": "badge",
@@ -130,7 +134,12 @@
       "title": "Item",
       "description": "Flexible row for lists: media, content, title, description, actions, header, footer, group and separator.",
       "registryDependencies": ["@marcn/theme", "@marcn/text", "@marcn/render", "@marcn/separator"],
-      "files": [{ "path": "registry/marcn/ui/item.tsx", "type": "registry:ui" }]
+      "files": [
+        { "path": "registry/marcn/ui/item/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/item/parts.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/item/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/item/types.ts", "type": "registry:ui" }
+      ]
     },
     {
       "name": "avatar",
@@ -186,23 +195,21 @@
       "type": "registry:ui",
       "title": "Collapsible",
       "description": "Expandable region with an animated height, trigger and content parts.",
-      "dependencies": [
-        "react-native-reanimated@4.5.1"
-      ],
-      "registryDependencies": [
-        "@marcn/render",
-        "@marcn/use-controllable-state"
-      ],
-      "files": [{ "path": "registry/marcn/ui/collapsible.tsx", "type": "registry:ui" }]
+      "dependencies": ["react-native-reanimated@4.5.1"],
+      "registryDependencies": ["@marcn/render", "@marcn/use-controllable-state"],
+      "files": [
+        { "path": "registry/marcn/ui/collapsible/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/collapsible/content.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/collapsible/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/collapsible/trigger.tsx", "type": "registry:ui" }
+      ]
     },
     {
       "name": "accordion",
       "type": "registry:ui",
       "title": "Accordion",
       "description": "Vertically stacked collapsible sections, single or multiple open.",
-      "dependencies": [
-        "lucide-react-native@1.53.0"
-      ],
+      "dependencies": ["lucide-react-native@1.53.0"],
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/render",
@@ -211,7 +218,14 @@
         "@marcn/icon",
         "@marcn/text"
       ],
-      "files": [{ "path": "registry/marcn/ui/accordion.tsx", "type": "registry:ui" }]
+      "files": [
+        { "path": "registry/marcn/ui/accordion/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/accordion/accordion-item.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/accordion/content.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/accordion/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/accordion/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/accordion/trigger.tsx", "type": "registry:ui" }
+      ]
     },
     {
       "name": "tabs",
@@ -224,7 +238,14 @@
         "@marcn/use-controllable-state",
         "@marcn/text"
       ],
-      "files": [{ "path": "registry/marcn/ui/tabs.tsx", "type": "registry:ui" }]
+      "files": [
+        { "path": "registry/marcn/ui/tabs/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/tabs/content.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/tabs/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/tabs/list.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/tabs/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/tabs/trigger.tsx", "type": "registry:ui" }
+      ]
     },
     {
       "name": "toggle",
@@ -237,7 +258,11 @@
         "@marcn/use-controllable-state",
         "@marcn/text"
       ],
-      "files": [{ "path": "registry/marcn/ui/toggle.tsx", "type": "registry:ui" }]
+      "files": [
+        { "path": "registry/marcn/ui/toggle/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/toggle/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/toggle/types.ts", "type": "registry:ui" }
+      ]
     },
     {
       "name": "toggle-group",
@@ -250,30 +275,29 @@
         "@marcn/use-controllable-state",
         "@marcn/toggle"
       ],
-      "files": [{ "path": "registry/marcn/ui/toggle-group.tsx", "type": "registry:ui" }]
-    },
-    {
-      "name": "slider-math",
-      "type": "registry:lib",
-      "title": "Slider math",
-      "description": "Pure value/position helpers used by Slider.",
-      "files": [{ "path": "registry/marcn/lib/slider-math.ts", "type": "registry:lib" }]
+      "files": [
+        { "path": "registry/marcn/ui/toggle-group/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/toggle-group/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/toggle-group/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/toggle-group/toggle-group-item.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/toggle-group/types.ts", "type": "registry:ui" }
+      ]
     },
     {
       "name": "slider",
       "type": "registry:ui",
       "title": "Slider",
       "description": "Single or multi-thumb range slider driven by react-native-gesture-handler.",
-      "dependencies": [
-        "react-native-gesture-handler@~2.32.0"
-      ],
-      "registryDependencies": [
-        "@marcn/theme",
-        "@marcn/render",
-        "@marcn/use-controllable-state",
-        "@marcn/slider-math"
-      ],
-      "files": [{ "path": "registry/marcn/ui/slider.tsx", "type": "registry:ui" }]
+      "dependencies": ["react-native-gesture-handler@~2.32.0"],
+      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/use-controllable-state"],
+      "files": [
+        { "path": "registry/marcn/ui/slider/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/slider/constants.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/slider/drag.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/slider/math.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/slider/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/slider/types.ts", "type": "registry:ui" }
+      ]
     },
     {
       "name": "popover-position",
@@ -288,44 +312,34 @@
       "title": "Use anchored position",
       "description": "Measures a trigger and places an anchored surface with flip/clamp, keyboard and safe-area awareness.",
       "dependencies": ["react-native-reanimated@4.5.1", "react-native-safe-area-context@~5.7.0"],
-      "registryDependencies": ["@marcn/popover-position", "@marcn/use-keyboard-inset", "@marcn/use-presence"],
+      "registryDependencies": [
+        "@marcn/popover-position",
+        "@marcn/use-keyboard-inset",
+        "@marcn/use-presence"
+      ],
       "files": [{ "path": "registry/marcn/lib/use-anchored-position.ts", "type": "registry:lib" }]
     },
     {
-      "name": "menu-item",
-      "type": "registry:lib",
-      "title": "Menu item",
-      "description": "Shared menu row, label, shortcut, separator and close context for Dropdown Menu and Select.",
-      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/overlay-root", "@marcn/separator", "@marcn/text"],
-      "files": [{ "path": "registry/marcn/lib/menu-item.tsx", "type": "registry:lib" }]
-    },
-    {
-      "name": "menu-surface",
-      "type": "registry:lib",
-      "title": "Menu surface",
-      "description": "Anchored, scrollable popover-style surface for menus and select lists.",
-      "dependencies": ["react-native-reanimated@4.5.1"],
-      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/overlay-root", "@marcn/use-anchored-position"],
-      "files": [{ "path": "registry/marcn/lib/menu-surface.tsx", "type": "registry:lib" }]
-    },
-    {
-      "name": "menu-parts",
-      "type": "registry:lib",
-      "title": "Menu parts",
-      "description": "Shared select, checkbox and radio menu items for Dropdown Menu and Context Menu.",
-      "dependencies": [
-        "lucide-react-native@1.53.0"
-      ],
+      "name": "menu",
+      "type": "registry:ui",
+      "title": "Menu",
+      "description": "Shared menu rows, parts and anchored surface behind Dropdown Menu, Context Menu, Select and Combobox.",
+      "dependencies": ["react-native-reanimated@4.5.1", "lucide-react-native@1.53.0"],
       "registryDependencies": [
-        "@marcn/menu-item",
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/overlay",
+        "@marcn/separator",
+        "@marcn/text",
+        "@marcn/use-anchored-position",
         "@marcn/use-controllable-state",
         "@marcn/icon"
       ],
       "files": [
-        {
-          "path": "registry/marcn/lib/menu-parts.tsx",
-          "type": "registry:lib"
-        }
+        { "path": "registry/marcn/ui/menu/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/menu/menu-item.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/menu/menu-parts.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/menu/menu-surface.tsx", "type": "registry:ui" }
       ]
     },
     {
@@ -352,63 +366,63 @@
       "files": [{ "path": "registry/marcn/lib/use-keyboard-inset.ts", "type": "registry:lib" }]
     },
     {
-      "name": "sheet-snap",
-      "type": "registry:lib",
-      "title": "Sheet snap",
-      "description": "Pure drag math for Sheet: rubber-band stretch, snap-point and dismiss resolution.",
-      "files": [{ "path": "registry/marcn/lib/sheet-snap.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "sheet-scroll",
-      "type": "registry:lib",
-      "title": "Sheet scroll",
-      "description": "SheetScrollView and SheetFlatList: lists that hand a body drag over to the Sheet once scrolled to the top.",
-      "dependencies": ["react-native-gesture-handler@~2.32.0", "react-native-reanimated@4.5.1"],
-      "registryDependencies": ["@marcn/sheet-snap"],
-      "files": [{ "path": "registry/marcn/lib/sheet-scroll.tsx", "type": "registry:lib" }]
-    },
-    {
       "name": "portal",
-      "type": "registry:lib",
+      "type": "registry:ui",
       "title": "Portal",
       "description": "PortalHost (mount once at the app root) and Portal: stacked layers with accessibility containment.",
-      "dependencies": ["react-native-gesture-handler@~2.32.0", "react-native-safe-area-context@~5.7.0"],
-      "files": [{ "path": "registry/marcn/lib/portal.tsx", "type": "registry:lib" }]
-    },
-    {
-      "name": "overlay-root",
-      "type": "registry:lib",
-      "title": "Overlay root",
-      "description": "Open state, trigger ref and Trigger/Close parts shared by Dialog, Popover and Sheet.",
-      "registryDependencies": ["@marcn/render", "@marcn/use-controllable-state", "@marcn/text"],
-      "files": [{ "path": "registry/marcn/lib/overlay-root.tsx", "type": "registry:lib" }]
+      "dependencies": [
+        "react-native-gesture-handler@~2.32.0",
+        "react-native-safe-area-context@~5.7.0"
+      ],
+      "files": [{ "path": "registry/marcn/ui/portal.tsx", "type": "registry:ui" }]
     },
     {
       "name": "overlay",
-      "type": "registry:lib",
+      "type": "registry:ui",
       "title": "Overlay",
-      "description": "Presence, scrim, back handling and focus for a stacked overlay layer.",
+      "description": "Overlay layer (presence, scrim, back handling, focus) plus the shared OverlayRoot state and Trigger/Close parts behind Dialog, Popover and Sheet.",
       "dependencies": ["react-native-reanimated@4.5.1"],
-      "registryDependencies": ["@marcn/back-stack", "@marcn/overlay-root", "@marcn/portal", "@marcn/use-presence"],
-      "files": [{ "path": "registry/marcn/lib/overlay.tsx", "type": "registry:lib" }]
+      "registryDependencies": [
+        "@marcn/back-stack",
+        "@marcn/portal",
+        "@marcn/use-presence",
+        "@marcn/render",
+        "@marcn/use-controllable-state",
+        "@marcn/text"
+      ],
+      "files": [
+        { "path": "registry/marcn/ui/overlay/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/overlay/overlay-root.tsx", "type": "registry:ui" }
+      ]
     },
     {
       "name": "dialog",
       "type": "registry:ui",
       "title": "Dialog",
       "description": "Centered modal dialog on the portal layer: stacks, dismisses on back/scrim, avoids the keyboard.",
-      "dependencies": ["lucide-react-native@1.53.0", "react-native-reanimated@4.5.1", "react-native-safe-area-context@~5.7.0"],
+      "dependencies": [
+        "lucide-react-native@1.53.0",
+        "react-native-reanimated@4.5.1",
+        "react-native-safe-area-context@~5.7.0"
+      ],
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/render",
         "@marcn/text",
         "@marcn/icon",
         "@marcn/overlay",
-        "@marcn/overlay-root",
         "@marcn/use-presence",
         "@marcn/use-keyboard-inset"
       ],
-      "files": [{ "path": "registry/marcn/ui/dialog.tsx", "type": "registry:ui" }]
+      "files": [
+        { "path": "registry/marcn/ui/dialog/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/dialog/content.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/dialog/dialog-root.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/dialog/parts.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/dialog/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/dialog/surface.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/dialog/types.ts", "type": "registry:ui" }
+      ]
     },
     {
       "name": "popover",
@@ -420,7 +434,6 @@
         "@marcn/theme",
         "@marcn/render",
         "@marcn/overlay",
-        "@marcn/overlay-root",
         "@marcn/popover-position",
         "@marcn/use-anchored-position"
       ],
@@ -431,33 +444,35 @@
       "type": "registry:ui",
       "title": "Sheet",
       "description": "Edge-anchored sheet on the portal layer with snap points, rubber-band drag handle, stacking and keyboard lift.",
-      "dependencies": ["react-native-gesture-handler@~2.32.0", "react-native-reanimated@4.5.1", "react-native-safe-area-context@~5.7.0"],
+      "dependencies": [
+        "react-native-gesture-handler@~2.32.0",
+        "react-native-reanimated@4.5.1",
+        "react-native-safe-area-context@~5.7.0"
+      ],
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/render",
         "@marcn/dialog",
         "@marcn/overlay",
-        "@marcn/overlay-root",
-        "@marcn/sheet-snap",
-        "@marcn/sheet-scroll",
         "@marcn/use-controllable-state",
         "@marcn/use-presence",
         "@marcn/use-keyboard-inset"
       ],
-      "files": [{ "path": "registry/marcn/ui/sheet.tsx", "type": "registry:ui" }]
+      "files": [
+        { "path": "registry/marcn/ui/sheet/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/sheet/scroll.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/sheet/snap.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/sheet/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/sheet/surface.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/sheet/types.ts", "type": "registry:ui" }
+      ]
     },
     {
       "name": "alert-dialog",
       "type": "registry:ui",
       "title": "Alert Dialog",
       "description": "Modal confirmation dialog: no backdrop dismiss, Cancel/Action buttons, focus starts on Cancel.",
-      "registryDependencies": [
-        "@marcn/render",
-        "@marcn/overlay",
-        "@marcn/overlay-root",
-        "@marcn/button",
-        "@marcn/dialog"
-      ],
+      "registryDependencies": ["@marcn/render", "@marcn/overlay", "@marcn/button", "@marcn/dialog"],
       "files": [{ "path": "registry/marcn/ui/alert-dialog.tsx", "type": "registry:ui" }]
     },
     {
@@ -470,13 +485,18 @@
         "@marcn/theme",
         "@marcn/render",
         "@marcn/portal",
-        "@marcn/overlay-root",
+        "@marcn/overlay",
         "@marcn/use-anchored-position",
         "@marcn/use-controllable-state",
         "@marcn/use-presence",
         "@marcn/text"
       ],
-      "files": [{ "path": "registry/marcn/ui/tooltip.tsx", "type": "registry:ui" }]
+      "files": [
+        { "path": "registry/marcn/ui/tooltip/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/tooltip/content.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/tooltip/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/tooltip/trigger.tsx", "type": "registry:ui" }
+      ]
     },
     {
       "name": "context-menu",
@@ -485,19 +505,17 @@
       "description": "Long-press menu anchored at the touch point, with items, checkbox and radio items, labels, separators and shortcuts.",
       "registryDependencies": [
         "@marcn/overlay",
-        "@marcn/overlay-root",
-        "@marcn/menu-item",
-        "@marcn/menu-parts",
-        "@marcn/menu-surface",
+        "@marcn/menu",
         "@marcn/render",
         "@marcn/use-anchored-position",
         "@marcn/use-presence"
       ],
       "files": [
-        {
-          "path": "registry/marcn/ui/context-menu.tsx",
-          "type": "registry:ui"
-        }
+        { "path": "registry/marcn/ui/context-menu/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/context-menu/aliases.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/context-menu/content.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/context-menu/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/context-menu/trigger.tsx", "type": "registry:ui" }
       ]
     },
     {
@@ -505,63 +523,9 @@
       "type": "registry:ui",
       "title": "Dropdown Menu",
       "description": "Anchored action menu with items, checkbox and radio items, labels, separators and shortcuts.",
-      "dependencies": [
-        "lucide-react-native@1.53.0"
-      ],
-      "registryDependencies": [
-        "@marcn/overlay",
-        "@marcn/overlay-root",
-        "@marcn/menu-item",
-        "@marcn/menu-surface",
-        "@marcn/menu-parts",
-        "@marcn/icon"
-      ],
-      "files": [
-        {
-          "path": "registry/marcn/ui/dropdown-menu.tsx",
-          "type": "registry:ui"
-        }
-      ]
-    },
-    {
-      "name": "calendar-math",
-      "type": "registry:lib",
-      "title": "Calendar math",
-      "description": "Pure date grid, matcher, bounds and selection helpers used by Calendar.",
-      "files": [{ "path": "registry/marcn/lib/calendar-math.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "calendar-styles",
-      "type": "registry:lib",
-      "title": "Calendar styles",
-      "description": "Shared theme styles and cell size for Calendar.",
-      "registryDependencies": ["@marcn/theme"],
-      "files": [{ "path": "registry/marcn/lib/calendar-styles.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "calendar-range-drag",
-      "type": "registry:lib",
-      "title": "Calendar range drag",
-      "description": "PanResponder hook and hit-testing that let a pending date range be finished by dragging.",
-      "registryDependencies": ["@marcn/calendar-math", "@marcn/calendar-styles"],
-      "files": [{ "path": "registry/marcn/lib/calendar-range-drag.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "calendar-month",
-      "type": "registry:lib",
-      "title": "Calendar month",
-      "description": "Single month grid used by Calendar.",
-      "registryDependencies": ["@marcn/theme", "@marcn/calendar-math", "@marcn/calendar-styles", "@marcn/calendar-range-drag", "@marcn/text"],
-      "files": [{ "path": "registry/marcn/lib/calendar-month.tsx", "type": "registry:lib" }]
-    },
-    {
-      "name": "calendar-picker",
-      "type": "registry:lib",
-      "title": "Calendar picker",
-      "description": "Calendar header and inline month/year pickers.",
       "dependencies": ["lucide-react-native@1.53.0"],
-      "registryDependencies": ["@marcn/theme", "@marcn/calendar-styles", "@marcn/button", "@marcn/icon", "@marcn/text"],
-      "files": [{ "path": "registry/marcn/lib/calendar-picker.tsx", "type": "registry:lib" }]
+      "registryDependencies": ["@marcn/overlay", "@marcn/menu", "@marcn/icon"],
+      "files": [{ "path": "registry/marcn/ui/dropdown-menu.tsx", "type": "registry:ui" }]
     },
     {
       "name": "calendar",
@@ -571,13 +535,21 @@
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/use-controllable-state",
-        "@marcn/calendar-math",
-        "@marcn/calendar-styles",
-        "@marcn/calendar-range-drag",
-        "@marcn/calendar-month",
-        "@marcn/calendar-picker"
+        "@marcn/text",
+        "@marcn/button",
+        "@marcn/icon"
       ],
-      "files": [{ "path": "registry/marcn/ui/calendar.tsx", "type": "registry:ui" }]
+      "files": [
+        { "path": "registry/marcn/ui/calendar/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/calendar/calendar-root.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/calendar/math.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/calendar/month.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/calendar/picker.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/calendar/range-drag.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/calendar/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/calendar/types.ts", "type": "registry:ui" }
+      ],
+      "dependencies": ["lucide-react-native@1.53.0"]
     },
     {
       "name": "date-picker",
@@ -595,7 +567,11 @@
         "@marcn/popover",
         "@marcn/text"
       ],
-      "files": [{ "path": "registry/marcn/ui/date-picker.tsx", "type": "registry:ui" }]
+      "files": [
+        { "path": "registry/marcn/ui/date-picker/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/date-picker/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/date-picker/types.ts", "type": "registry:ui" }
+      ]
     },
     {
       "name": "select",
@@ -606,15 +582,21 @@
       "registryDependencies": [
         "@marcn/theme",
         "@marcn/overlay",
-        "@marcn/overlay-root",
-        "@marcn/menu-item",
-        "@marcn/menu-surface",
+        "@marcn/menu",
         "@marcn/render",
         "@marcn/use-controllable-state",
         "@marcn/icon",
         "@marcn/text"
       ],
-      "files": [{ "path": "registry/marcn/ui/select.tsx", "type": "registry:ui" }]
+      "files": [
+        { "path": "registry/marcn/ui/select/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/select/content.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/select/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/select/parts.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/select/select-item.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/select/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/select/trigger.tsx", "type": "registry:ui" }
+      ]
     },
     {
       "name": "combobox",
@@ -630,27 +612,27 @@
         "@marcn/use-anchored-position",
         "@marcn/use-controllable-state",
         "@marcn/use-presence",
-        "@marcn/menu-item",
+        "@marcn/menu",
         "@marcn/icon",
         "@marcn/text"
       ],
-      "files": [{ "path": "registry/marcn/ui/combobox.tsx", "type": "registry:ui" }]
-    },
-    {
-      "name": "otp-state",
-      "type": "registry:lib",
-      "title": "OTP state",
-      "description": "Sanitizing and active-slot helpers for Input OTP.",
-      "files": [{ "path": "registry/marcn/lib/otp-state.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "otp-caret",
-      "type": "registry:lib",
-      "title": "OTP caret",
-      "description": "Blinking caret shown in the active Input OTP slot.",
-      "dependencies": ["react-native-reanimated@4.5.1"],
-      "registryDependencies": ["@marcn/theme"],
-      "files": [{ "path": "registry/marcn/lib/otp-caret.tsx", "type": "registry:lib" }]
+      "files": [
+        { "path": "registry/marcn/ui/combobox/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/chips.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/clear.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/combobox-item.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/content.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/filter.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/input-props.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/input.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/list-styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/list.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/parts.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/trigger.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/types.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/combobox/use-combobox-state.ts", "type": "registry:ui" }
+      ]
     },
     {
       "name": "input-otp",
@@ -661,11 +643,21 @@
         "@marcn/theme",
         "@marcn/render",
         "@marcn/use-controllable-state",
-        "@marcn/text",
-        "@marcn/otp-state",
-        "@marcn/otp-caret"
+        "@marcn/text"
       ],
-      "files": [{ "path": "registry/marcn/ui/input-otp.tsx", "type": "registry:ui" }]
+      "files": [
+        { "path": "registry/marcn/ui/input-otp/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-otp/caret.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-otp/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-otp/group.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-otp/root.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-otp/separator.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-otp/slot.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-otp/state.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-otp/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-otp/types.ts", "type": "registry:ui" }
+      ],
+      "dependencies": ["react-native-reanimated@4.5.1"]
     },
     {
       "name": "field",
@@ -676,66 +668,31 @@
       "files": [{ "path": "registry/marcn/ui/field.tsx", "type": "registry:ui" }]
     },
     {
-      "name": "toast-store",
-      "type": "registry:lib",
-      "title": "Toast store",
-      "description": "Module-level toast store: types, upsert, dismiss, subscribe.",
-      "files": [{ "path": "registry/marcn/lib/toast-store.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "toast-stack",
-      "type": "registry:lib",
-      "title": "Toast stack",
-      "description": "Pure stack layout and swipe math for toasts.",
-      "files": [{ "path": "registry/marcn/lib/toast-stack.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "use-toast-timer",
-      "type": "registry:lib",
-      "title": "Toast timer",
-      "description": "Pausable auto-close timer hook.",
-      "files": [{ "path": "registry/marcn/lib/use-toast-timer.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "toast-view",
-      "type": "registry:lib",
-      "title": "Toast view",
-      "description": "Single animated, swipeable toast.",
-      "dependencies": ["react-native-reanimated@4.5.1", "react-native-gesture-handler@~2.32.0", "lucide-react-native@1.53.0"],
-      "registryDependencies": [
-        "@marcn/theme",
-        "@marcn/toast-store",
-        "@marcn/toast-stack",
-        "@marcn/use-toast-timer",
-        "@marcn/button",
-        "@marcn/icon",
-        "@marcn/text"
-      ],
-      "files": [{ "path": "registry/marcn/lib/toast-view.tsx", "type": "registry:lib" }]
-    },
-    {
-      "name": "toast-layer",
-      "type": "registry:lib",
-      "title": "Toast layer",
-      "description": "Stack state and positioning for toasts.",
-      "dependencies": ["react-native-safe-area-context@~5.7.0"],
-      "registryDependencies": ["@marcn/toast-stack", "@marcn/toast-store", "@marcn/toast-view"],
-      "files": [{ "path": "registry/marcn/lib/toast-layer.tsx", "type": "registry:lib" }]
-    },
-    {
       "name": "sonner",
       "type": "registry:ui",
       "title": "Sonner",
       "description": "Imperative toast() API with stacked, swipeable toasts; mount <Toaster /> once under PortalHost.",
-      "registryDependencies": ["@marcn/portal", "@marcn/toast-layer", "@marcn/toast-store", "@marcn/toast-stack"],
-      "files": [{ "path": "registry/marcn/ui/sonner.tsx", "type": "registry:ui" }]
-    },
-    {
-      "name": "scrollbar-math",
-      "type": "registry:lib",
-      "title": "Scrollbar math",
-      "description": "Pure thumb size and position math for ScrollArea.",
-      "files": [{ "path": "registry/marcn/lib/scrollbar-math.ts", "type": "registry:lib" }]
+      "registryDependencies": [
+        "@marcn/portal",
+        "@marcn/theme",
+        "@marcn/button",
+        "@marcn/icon",
+        "@marcn/text"
+      ],
+      "files": [
+        { "path": "registry/marcn/ui/sonner/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/sonner/layer.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/sonner/stack.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/sonner/store.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/sonner/use-timer.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/sonner/view.tsx", "type": "registry:ui" }
+      ],
+      "dependencies": [
+        "react-native-reanimated@4.5.1",
+        "react-native-gesture-handler@~2.32.0",
+        "lucide-react-native@1.53.0",
+        "react-native-safe-area-context@~5.7.0"
+      ]
     },
     {
       "name": "scroll-area",
@@ -743,8 +700,14 @@
       "title": "Scroll area",
       "description": "ScrollView with a themed scrollbar thumb that fades in while scrolling.",
       "dependencies": ["react-native-reanimated@4.5.1"],
-      "registryDependencies": ["@marcn/theme", "@marcn/scrollbar-math"],
-      "files": [{ "path": "registry/marcn/ui/scroll-area.tsx", "type": "registry:ui" }]
+      "registryDependencies": ["@marcn/theme"],
+      "files": [
+        { "path": "registry/marcn/ui/scroll-area/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/scroll-area/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/scroll-area/math.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/scroll-area/scroll-bar.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/scroll-area/styles.ts", "type": "registry:ui" }
+      ]
     },
     {
       "name": "button-group",
@@ -759,8 +722,25 @@
       "type": "registry:ui",
       "title": "Input group",
       "description": "Input or textarea with inline/block addons, buttons and text sharing one border and focus ring.",
-      "registryDependencies": ["@marcn/theme", "@marcn/render", "@marcn/button", "@marcn/input", "@marcn/textarea", "@marcn/text"],
-      "files": [{ "path": "registry/marcn/ui/input-group.tsx", "type": "registry:ui" }]
+      "registryDependencies": [
+        "@marcn/theme",
+        "@marcn/render",
+        "@marcn/button",
+        "@marcn/input",
+        "@marcn/textarea",
+        "@marcn/text"
+      ],
+      "files": [
+        { "path": "registry/marcn/ui/input-group/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-group/addon.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-group/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-group/control.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-group/group.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-group/input-group-button.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-group/styles.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-group/text.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/input-group/types.ts", "type": "registry:ui" }
+      ]
     },
     {
       "name": "breadcrumb",
@@ -781,21 +761,6 @@
       "files": [{ "path": "registry/marcn/ui/pagination.tsx", "type": "registry:ui" }]
     },
     {
-      "name": "carousel-math",
-      "type": "registry:lib",
-      "title": "Carousel math",
-      "description": "Pure snap-offset, nearest/leading index and neighbour math for Carousel.",
-      "files": [{ "path": "registry/marcn/lib/carousel-math.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "carousel-context",
-      "type": "registry:lib",
-      "title": "Carousel context",
-      "description": "Context and useCarousel hook shared by the Carousel parts.",
-      "registryDependencies": ["@marcn/carousel-math"],
-      "files": [{ "path": "registry/marcn/lib/carousel-context.ts", "type": "registry:lib" }]
-    },
-    {
       "name": "carousel",
       "type": "registry:ui",
       "title": "Carousel",
@@ -805,13 +770,20 @@
         "@marcn/theme",
         "@marcn/render",
         "@marcn/use-controllable-state",
-        "@marcn/carousel-math",
-        "@marcn/carousel-context",
         "@marcn/button",
         "@marcn/icon",
         "@marcn/text"
       ],
-      "files": [{ "path": "registry/marcn/ui/carousel.tsx", "type": "registry:ui" }]
+      "files": [
+        { "path": "registry/marcn/ui/carousel/index.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/carousel/carousel-item.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/carousel/content.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/carousel/context.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/carousel/math.ts", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/carousel/nav.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/carousel/root.tsx", "type": "registry:ui" },
+        { "path": "registry/marcn/ui/carousel/types.ts", "type": "registry:ui" }
+      ]
     }
   ]
 }

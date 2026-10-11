@@ -1,7 +1,7 @@
 import { createRef } from 'react';
 import { Dimensions, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { act, fireEvent, isHiddenFromAccessibility, render, screen } from '@testing-library/react-native';
-import { PortalHost } from '@/registry/marcn/lib/portal';
+import { PortalHost } from '@/registry/marcn/ui/portal';
 import { Dialog, DialogContent } from '@/registry/marcn/ui/dialog';
 import {
   DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel,

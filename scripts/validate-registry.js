@@ -12,7 +12,35 @@ function validateRegistry(registry, root = process.cwd()) {
   const names = new Set(registry.items.map((i) => i.name));
   const owner = new Map();
   for (const item of registry.items) {
-    for (const f of item.files) owner.set(f.path.replace(/\.tsx?$/, ''), item.name);
+    for (const f of item.files) {
+      const key = f.path.replace(/\.tsx?$/, '');
+      owner.set(key, item.name);
+      if (key.endsWith('/index')) owner.set(key.slice(0, -'/index'.length), item.name);
+    }
+  }
+
+  // The shadcn CLI re-resolves rewritten imports by file basename, so ambiguous names get rewired to the wrong file.
+  const stems = new Map();
+  const folders = new Set(registry.items.filter((i) => i.files.some((f) => f.path.endsWith('/index.tsx'))).map((i) => i.name));
+  for (const item of registry.items) {
+    for (const f of item.files) {
+      const m = f.path.match(/([^/]+)\.(tsx?)$/);
+      if (!m || m[1] === 'index') continue;
+      if (folders.has(m[1])) {
+        errors.push(`${item.name}: file ${f.path} is named like registry item "${m[1]}"; prefix it with the component name`);
+      }
+      const seen = stems.get(m[1]) ?? new Map();
+      seen.set(m[2], f.path);
+      stems.set(m[1], seen);
+    }
+  }
+  for (const item of registry.items) {
+    for (const f of item.files) {
+      if (f.path.includes('/lib/') && f.path.endsWith('.tsx')) errors.push(`${item.name}: ${f.path} is JSX; lib holds only .ts, move it to ui`);
+    }
+  }
+  for (const [stem, exts] of stems) {
+    if (exts.size > 1) errors.push(`"${stem}" is used as both .ts and .tsx (${[...exts.values()].join(', ')}); the CLI resolves it to the .tsx`);
   }
 
   for (const item of registry.items) {

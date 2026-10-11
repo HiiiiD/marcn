@@ -1,8 +1,8 @@
 import type { Ref } from 'react';
 import { StyleSheet, type LayoutChangeEvent, type View, type ViewProps } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
-import { asText, OverlayRoot, OverlayTrigger, useOverlay, type OverlayRootProps } from '@/registry/marcn/lib/overlay-root';
+import { Overlay, type OverlayProps } from '@/registry/marcn/ui/overlay';
+import { asText, OverlayRoot, OverlayTrigger, useOverlay, type OverlayRootProps } from '@/registry/marcn/ui/overlay/overlay-root';
 import { renderElement, type RenderProp } from '@/registry/marcn/lib/render';
 import { useStyles, type Theme } from '@/registry/marcn/lib/theme';
 import { splitAnchored, useAnchoredPosition, type AnchoredOptions } from '@/registry/marcn/lib/use-anchored-position';

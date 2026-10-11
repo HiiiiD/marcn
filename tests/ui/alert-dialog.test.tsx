@@ -1,7 +1,7 @@
 import { createRef } from 'react';
 import { AccessibilityInfo, Text, View } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
-import { PortalHost } from '@/registry/marcn/lib/portal';
+import { PortalHost } from '@/registry/marcn/ui/portal';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
   AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, type AlertDialogContentProps, type AlertDialogProps,

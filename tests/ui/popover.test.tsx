@@ -1,7 +1,7 @@
 import { createRef } from 'react';
 import { Keyboard, StyleSheet, Text, View } from 'react-native';
 import { act, fireEvent, isHiddenFromAccessibility, render, screen } from '@testing-library/react-native';
-import { PortalHost } from '@/registry/marcn/lib/portal';
+import { PortalHost } from '@/registry/marcn/ui/portal';
 import { mockInsets } from '../insets';
 import { Popover, PopoverContent, PopoverTrigger, type PopoverContentProps } from '@/registry/marcn/ui/popover';
 

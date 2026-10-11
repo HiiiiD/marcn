@@ -1,9 +1,9 @@
 import { createContext, useContext, useMemo, useRef, type RefObject } from 'react';
 import type { View } from 'react-native';
-import { Overlay, type OverlayProps } from '@/registry/marcn/lib/overlay';
+import { Overlay, type OverlayProps } from '@/registry/marcn/ui/overlay';
 import {
   OverlayClose, OverlayRoot, OverlayTrigger, type OverlayCloseProps, type OverlayRootProps,
-} from '@/registry/marcn/lib/overlay-root';
+} from '@/registry/marcn/ui/overlay/overlay-root';
 import { mergeRefs } from '@/registry/marcn/lib/render';
 import { Button } from '@/registry/marcn/ui/button';
 import {
