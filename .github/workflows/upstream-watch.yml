@@ -1,0 +1,80 @@
+name: upstream-watch
+
+on:
+  schedule:
+    # 09:00 Europe/Rome = 07:00 UTC (CEST) or 08:00 UTC (CET); the guard step keeps only the 09:00 one.
+    - cron: '0 7 * * *'
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+    inputs:
+      hours:
+        description: Look back this many hours
+        default: '24'
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  UPSTREAM: shadcn-ui/ui
+  COMPONENTS_PATH: apps/v4/registry/bases/base/ui
+  CHANGELOG_PATH: apps/v4/content/docs/changelog
+  HOURS: ${{ inputs.hours || '24' }}
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Guard Rome hour
+        id: guard
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(TZ=Europe/Rome date +%H)" != "09" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Collect upstream changes
+        if: steps.guard.outputs.run == 'true'
+        run: |
+          since=$(date -u -d "$HOURS hours ago" +%Y-%m-%dT%H:%M:%SZ)
+
+          # Prints "- [sha](url) subject" plus one line per file under $2 for each commit touching it.
+          report() {
+            for sha in $(gh api --paginate "repos/$UPSTREAM/commits?path=$1&since=$since" --jq '.[].sha'); do
+              gh api "repos/$UPSTREAM/commits/$sha" | jq -r --arg p "$1/" '
+                "- [\(.sha[0:7])](\(.html_url)) \(.commit.message | split("\n")[0])",
+                (.files[] | select(.filename | startswith($p))
+                  | "  - \(if .status == "added" then "**NEW**" elif .status == "removed" then "**REMOVED**" else "edited" end) `\(.filename | ltrimstr($p))`")'
+            done
+          }
+
+          report "$COMPONENTS_PATH" > components.md
+          report "$CHANGELOG_PATH" > changelog.md
+
+          if [ -s components.md ] || [ -s changelog.md ]; then
+            echo "changed=true" >> "$GITHUB_ENV"
+            cat components.md changelog.md
+          else
+            echo "No upstream changes since $since"
+          fi
+
+      - name: Open issue
+        if: env.changed == 'true'
+        run: |
+          {
+            echo "shadcn/ui activity in the last ${HOURS}h. Compare with the Base UI version of each component."
+            if [ -s components.md ]; then
+              printf '\n## Components (`%s`)\n\n' "$COMPONENTS_PATH"
+              cat components.md
+            fi
+            if [ -s changelog.md ]; then
+              printf '\n## Changelog (`%s`)\n\n' "$CHANGELOG_PATH"
+              cat changelog.md
+              printf '\nFull changelog: https://ui.shadcn.com/docs/changelog\n'
+            fi
+          } > body.md
+          gh issue create --repo "${{ github.repository }}" \
+            --title "shadcn upstream changes $(date -u +%F)" \
+            --body-file body.md
