@@ -2,9 +2,8 @@ name: upstream-watch
 
 on:
   schedule:
-    # 09:00 Europe/Rome = 07:00 UTC (CEST) or 08:00 UTC (CET); the guard step keeps only the 09:00 one.
-    - cron: '0 7 * * *'
-    - cron: '0 8 * * *'
+    # 09:23 Rome in summer (CEST), 08:23 in winter. Off the hour because GitHub drops/delays :00 crons.
+    - cron: '23 7 * * *'
   workflow_dispatch:
     inputs:
       hours:
@@ -26,17 +25,7 @@ jobs:
   watch:
     runs-on: ubuntu-latest
     steps:
-      - name: Guard Rome hour
-        id: guard
-        run: |
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(TZ=Europe/Rome date +%H)" != "09" ]; then
-            echo "run=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "run=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Collect upstream changes
-        if: steps.guard.outputs.run == 'true'
         run: |
           since=$(date -u -d "$HOURS hours ago" +%Y-%m-%dT%H:%M:%SZ)
 
