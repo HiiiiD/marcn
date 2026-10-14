@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { createRef } from 'react';
-import { Pressable, View, type PressableProps } from 'react-native';
+import { Pressable, StyleSheet, View, type PressableProps } from 'react-native';
 import { Button, type ButtonState } from '@/registry/marcn/ui/button';
 import { Text } from '@/registry/marcn/ui/text';
 import { darkColors, lightColors } from '@/registry/marcn/lib/theme';
@@ -179,4 +179,16 @@ test('ref passed to Button and to the rendered element both receive the host', (
   render(<Button ref={ours} render={<Pressable ref={theirs} />}>Go</Button>);
   expect(ours.current).not.toBeNull();
   expect(theirs.current).toBe(ours.current);
+});
+
+test('link variant uses link role', () => {
+  render(<Button variant="link"><Text>x</Text></Button>);
+  expect(screen.getByRole('link')).toBeTruthy();
+});
+
+test('inline size has no height or padding', () => {
+  render(<Button variant="link" size="inline"><Text>x</Text></Button>);
+  const style = StyleSheet.flatten(screen.getByRole('link').props.style);
+  expect(style.height).toBeUndefined();
+  expect(style.paddingHorizontal).toBeUndefined();
 });

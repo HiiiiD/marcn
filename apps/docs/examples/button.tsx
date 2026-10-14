@@ -10,6 +10,9 @@ export default function Example() {
       <Button variant="outline"><Text>Outline</Text></Button>
       <Button variant="destructive"><Text>Destructive</Text></Button>
       <Button variant="ghost"><Text>Ghost</Text></Button>
+      <Text>
+        Read the <Button render={<Text />} variant="link" size="inline" onPress={() => {}}>terms</Button>.
+      </Text>
     </View>
   );
 }
