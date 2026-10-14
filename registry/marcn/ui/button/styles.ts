@@ -29,6 +29,7 @@ export const createStyles = (t: Theme) => {
       sm: { height: 32, paddingHorizontal: t.spacing[3] },
       lg: { height: 40, paddingHorizontal: t.spacing[6] },
       icon: { height: 36, width: 36 },
+      inline: { gap: 0, borderRadius: 0 },
     }),
     text: StyleSheet.create({
       default: { ...text, color: t.colors.primaryForeground },

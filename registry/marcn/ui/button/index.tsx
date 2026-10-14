@@ -11,6 +11,7 @@ export * from '@/registry/marcn/ui/button/types';
 export function Button({ variant = 'default', size = 'default', style, disabled, render, children, onPressIn, onPressOut, ...props }: ButtonProps) {
   const s = useStyles(createStyles);
   const [pressed, setPressed] = useState(false);
+  const role = variant === 'link' ? 'link' : 'button';
   const content = typeof children === 'string' || typeof children === 'number' ? <Text>{children}</Text> : children;
   const layers = (isPressed: boolean) => [
     s.base.root,
@@ -25,7 +26,7 @@ export function Button({ variant = 'default', size = 'default', style, disabled,
     return (
       <TextStyleContext.Provider value={s.text[variant]}>
         <Pressable
-          accessibilityRole="button"
+          accessibilityRole={role}
           accessibilityState={{ disabled: !!disabled }}
           disabled={disabled}
           onPressIn={onPressIn}
@@ -46,7 +47,7 @@ export function Button({ variant = 'default', size = 'default', style, disabled,
         Pressable,
         render,
         {
-          accessibilityRole: 'button',
+          accessibilityRole: role,
           accessibilityState: { disabled: !!disabled },
           disabled,
           style: layers(pressed),
